@@ -207,7 +207,7 @@ inline void exec(char* line) {
 // Run the shell loop forever (call from main thread).
 inline void run() {
     char line[LINE_BUF];
-    IO::println("\r\npicoOS  —  type 'help' for commands");
+    IO::println("\r\npicoOS  -  type 'help' for commands");
     while (true) {
         prompt();
         IO::readline(line, sizeof(line));

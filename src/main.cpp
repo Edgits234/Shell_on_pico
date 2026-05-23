@@ -16,6 +16,7 @@
 // ============================================================
 
 #include <Arduino.h>      // Arduino-pico / mbed glue
+#define ENABLE_BACKSPACE 1
 #include <AwesomeUI.h>
 #include "io.hpp"
 #include "scheduler.hpp"
@@ -53,7 +54,7 @@ void setup() {
 
     // Mount SD card (non-fatal — fs commands report errors if absent).
     if (!FS::init()) {
-        IO::println("[warn] SD card not found — filesystem commands unavailable");
+        IO::println("[warn] SD card not found - filesystem commands unavailable");
     }
 
     // Hand control to the shell (blocks forever).

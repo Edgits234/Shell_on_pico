@@ -1437,5 +1437,60 @@ char* create_string_copy(const char* str)
 }
 
 
+
+
+
+/**
+ * @param custom input a normal string with all of the characters you want to include as safe ending characters, if it found the specific text and after it was a character in your list than its going to allow it, else not. set to nullptr to include all
+ * @retval returns a boolean representing if the two strings are the same
+ */
+template<typename T1, typename T2>
+bool checkstr(T1 text1, T2 find1, bool ignore_case = 0, const char* custom = " ")
+{
+    HandleFlashString<T1> text = text1;
+    HandleFlashString<T2> find = find1;
+
+    if(flash_strcmp(find, "rightarrow") == 0) println(F("RIGHT ARROW CHECKSTR"));
+
+    //go through the find string because we want to find it inside of the bigger string (it only checks if its at the start)
+    int i = 0;
+    while(find[i] != '\0')
+    {
+        //if the characters at the same index are not the same then the strings are not the same, return false
+        if(ignore_case)
+        {
+            if(flash_strcmp(find, "rightarrow") == 0) println((char)UPPERCASE(text[i]),F(" == "),(char)UPPERCASE(find[i]));
+            if(UPPERCASE(text[i]) != UPPERCASE(find[i])) return false;
+        }else
+        {
+            if(text[i] != find[i]) return false;
+        }
+
+        i++;
+    }
+
+    if(custom == nullptr || text[i] == '\0')
+    {
+        return true;
+    }else
+    {
+        int j = 0;
+        while(custom[j] != '\0')
+        {
+            //check if the thing right after the word is an allowed character
+            if(text[i] == custom[j]) 
+            {
+                return true;
+            }
+            j++;
+        }
+        return false;
+    }
+
+}
+
+
+
+
 #endif
 

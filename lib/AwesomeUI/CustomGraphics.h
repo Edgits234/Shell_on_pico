@@ -92,7 +92,7 @@
 #if WOKWI_SIM
     #if defined(ARDUINO_ARCH_RP2040) || defined(ARDUINO_ARCH_MBED)
 
-        inline arduino::MbedSPI pico_wokwi_spi(TFT_MISO_PIN, TFT_MOSI_PIN, TFT_SCK_PIN);
+        arduino::MbedSPI pico_wokwi_spi(TFT_MISO_PIN, TFT_MOSI_PIN, TFT_SCK_PIN);
 
         #define SPI_BUS pico_wokwi_spi 
     #else
@@ -134,6 +134,11 @@
 
     // Hardware pointer to SPI5 (the actual peripheral pins 11,12,13 use)
     #define SPI5_HW ((SPI_TypeDef *)SPI5_BASE)
+#endif
+
+#if !defined(ENABLE_TEXT_BACKTRACKING)
+    //text backtracking isn't perfect
+    #define ENABLE_TEXT_BACKTRACKING 1
 #endif
 
 /*inline*/ void resetDrawnPixel()
@@ -461,12 +466,16 @@ class TFT
     int16_t gx;
     int16_t gy;
     int16_t cursor_x_start;
+    int16_t cursor_y_start;
     int16_t cursor_x;
     int16_t cursor_y;
     int8_t  fontSize;
     uint16_t fontColor;
     Point pencil[150];
     int16_t pencilIndex;
+    uint8_t override_char = 0;//are we overriding a character at the moment (used in s_prints when using backspace characters)
+    uint8_t special_sequence = 0;//special character sequences, used to capture them (also index for char_sequence)
+    char char_sequence[5];//array to store the special character sequence
 
 
     //TFT::setBrightness
@@ -962,16 +971,30 @@ class TFT
     //TFT::drawChar
     void drawChar(char c, int16_t x, int16_t y, int16_t si, uint16_t colour)
     {
-
-
-
-
-        DEBUG(c, x, y, si, colour);
-
         //return if the character is space (we don't need to draw space) (or carriage return, we don't allow for carriage returns, or well we could... but it would draw characters on top of characters)
-        if(c == ' ' || c == '\t' || c == '\r')
+        if(c == '\r')
         {
             return;
+        }
+
+        //are we overriding a character (going back, using backspace or smth)
+        if(override_char > 0)
+        {
+            //decrease override_char to indicate we override a character (backspace for example increases override, so it only overrides previous characters)
+            override_char--;
+
+            //print a square (override) previous character
+            fillRect(x, y, FONT_WIDTH * si, FONT_HEIGHT * si, 0);
+        }
+
+        if(c == ' ' || c == '\t' )
+        {
+            return;
+        }
+
+        if(c == '\b')
+        {
+            println("ERROR, ",__LINE__," in ",__FILE__,", not supposed to be drawing a \b (backspace) character (supposed to be handled by s_print)");
         }
 
         int charIndex = -1;
@@ -1041,6 +1064,104 @@ class TFT
         this->cursor_x_start = cursor_x_start;
     }
 
+    
+    //TFT::print
+    void s_print(char c)
+    {
+        if(special_sequence != 255)
+        {
+            //set current char_sequence character and increase index
+            char_sequence[special_sequence] = c;
+            special_sequence++;
+            
+            //if we see a letter, then its the end of the special sequence and we should print its output
+            if(ISLETTER(c))
+            {
+                //set last character to \0 (emulate a normal string)
+                char_sequence[special_sequence] = '\0';
+
+                //set to 255 indicating that we are no longer inside of a special sequence
+                special_sequence = 255;
+
+                //print based on the special sequence : 
+                char* cs = char_sequence;//short for char_sequence, make code more readable, same as if I was using char_sequence
+
+                //clear screen
+                if(checkstr(cs, "\033[2J", 0, nullptr))
+                {
+                    //clear all possible characters at the same time (with a big black square)
+                    fillRect(cursor_x_start, cursor_y_start, SCREEN_WIDTH - 1, cursor_y - cursor_y_start, 0);
+
+                //text color red
+                }else if(checkstr(cs, "\033[31m", 0, nullptr))
+                {
+                    fontColor = TFT_RED;
+
+                //text color yellow
+                }else if(checkstr(cs, "\033[33m", 0, nullptr))
+                {
+                    fontColor = TFT_YELLOW;
+
+                //text color white
+                }else if(checkstr(cs, "\033[37m", 0, nullptr))
+                {
+                    fontColor = TFT_WHITE;
+
+                //left arrow
+                }else if(checkstr(cs, "\033[D", 0, nullptr))
+                {
+                    s_print('\b');//simulate backspace character (it does the same thing)
+
+                //cursor home
+                }else if(checkstr(cs, "\033[H", 0, nullptr))
+                {
+                    cursor_x = cursor_x_start;
+                    cursor_y = cursor_y_start;
+                }
+            }
+
+            //early return, we don't want to print the code
+            return;
+        }
+
+        if(c == '\033')
+        {
+            //SPECIAL CHARACTER SEQUENCE
+            special_sequence = 0;
+
+            //set current char_sequence character and increase index
+            char_sequence[special_sequence] = c;
+            special_sequence++;
+
+        }else if(c == '\n')
+        {
+            cursor_y += (FONT_HEIGHT + 1) * fontSize;//step the cursor_y down (since new line)
+            cursor_x = cursor_x_start;//reset x
+            
+        }else if(c == '\b')
+        {
+            //if we specifically enabled the quirky backtracking feature
+            #if ENABLE_TEXT_BACKTRACKING
+                //only do backslash if we aren't gone past the cursor_x_start
+                if(cursor_x > cursor_x_start)
+                {
+                    //decrease the cursor x (move cursor to the left one character)
+                    cursor_x -= (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
+
+                    //increase override (keeps track of previous overrides)
+                    override_char++;
+                }
+            #endif
+
+        }else
+        {
+            //draw the character
+            drawChar(c, cursor_x, cursor_y, fontSize, fontColor);
+
+            cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
+        }
+    }
+
     //TFT::print
     void s_print(const char* s, int line = __builtin_LINE(), const char* file = __builtin_FILE())
     {
@@ -1054,18 +1175,8 @@ class TFT
         int i = 0;
         while(s[i] != '\0')
         {
-
-            if(s[i] == '\n')
-            {
-                cursor_y += (FONT_HEIGHT + 1) * fontSize;//step the cursor_y down (since new line)
-                cursor_x = cursor_x_start;//reset x
-                
-            }else
-            {
-                drawChar(s[i], cursor_x, cursor_y, fontSize, fontColor);
-
-                cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
-            }
+            //use single character s_print for short (does the same thing)
+            s_print(s[i]);
 
             i++;
         }
@@ -1078,33 +1189,13 @@ class TFT
     }
 
     //TFT::print
-    void s_print(char c)
-    {
-        if(c == '\n')
-        {
-            cursor_y += (FONT_HEIGHT + 1) * fontSize;//step the cursor_y down (since new line)
-            cursor_x = cursor_x_start;//reset x
-            
-        }else
-        {
-            //draw the character
-            drawChar(c, cursor_x, cursor_y, fontSize, fontColor);
-
-            cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
-        }
-    }
-
-    //TFT::print
     void s_print(long long n)
     {
         //if negative, draw "-" minus sign in front and revert to positive
         if(n < 0)
         {
-            //draw minus
-            drawChar('-', cursor_x, cursor_y, fontSize, fontColor);
-
-            //move the cursor to the right
-            cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
+            //print a minus sign
+            s_print('-');
 
             //revert back to normal
             n = -n;
@@ -1120,11 +1211,8 @@ class TFT
         //special case for 0 (as it doesn't work with current logic)
         if(n == 0)
         {
-            //draw that character
-            drawChar('0', cursor_x, cursor_y, fontSize, fontColor);
-
-            //move the cursor to the right
-            cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
+            //print zero
+            s_print('0');
 
             return;//return, handled zero
         }
@@ -1146,11 +1234,8 @@ class TFT
             //convert the number into a character
             char converted = '0' +  getDigits(n, nlength);
 
-            //draw that character
-            drawChar(converted, cursor_x, cursor_y, fontSize, fontColor);
-
-            //move the cursor to the right
-            cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
+            //print number
+            s_print(converted);
 
             //update our index, which is nlength
             nlength -= 1;
@@ -1223,11 +1308,8 @@ class TFT
         //print the "." if we have length bigger then 0 (0 means there are no decimals)
         if(nlength > 0)
         {
-            //draw dot
-            drawChar('.', cursor_x, cursor_y, fontSize, fontColor);
-
-            //move the cursor to the right
-            cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
+            //print a dot '.'
+            s_print('.');
 
             //draw decmials from left to right (most significant to less significant)
             for(int i = precision; i >= precision - nlength + 1; i--)
@@ -1238,11 +1320,8 @@ class TFT
                 //convert digit into a character
                 char converted = '0' + digit;
 
-                //print converted character
-                drawChar(converted, cursor_x, cursor_y, fontSize, fontColor);
-
-                //move the cursor to the right
-                cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
+                //print the number
+                s_print(converted);
             }
         }
     }
