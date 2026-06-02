@@ -32,8 +32,24 @@
 
 #define FRAMEBUFFER_SIZE SCREEN_WIDTH*SCREEN_HEIGHT*2
 
+#if !defined(ENABLE_ACCENTS)
+    #define ENABLE_ACCENTS 1
+#endif
+
 #define FONT_WIDTH  5
-#define FONT_HEIGHT 6
+
+#if ENABLE_ACCENTS
+    #define FONT_HEIGHT 11
+    #define FONT_CHAR_START_HEIGHT 3
+    #define FONT_CHAR_END_HEIGHT   2
+#else
+    #define FONT_HEIGHT 6
+    #define FONT_CHAR_START_HEIGHT 0
+    #define FONT_CHAR_END_HEIGHT   0
+#endif
+
+#define FONT_CHAR_WIDTH  5
+#define FONT_CHAR_HEIGHT 6
 
 #define ILI9341_CASET 0x2A
 #define ILI9341_PASET 0x2B
@@ -163,7 +179,10 @@
 #endif
 
 //for indexing the right character
-/*inline*/ const char* fontChar = "\x1A""aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ1234567890+-.,!?=:/*()'_$<>[]~#;&";
+/*inline*/ const char* fontChar = "\x1A""aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ1234567890+-.,!?=:/\\*(){}'\"_$<>[]~#;&\u0301\u0300\u0302\u0308";
+
+//the font
+const uint8_t font[] = {0b00000001,0b00010101,0b00010101,0b00010000,0b00000000,0b01110100,0b10100100,0b11110111,0b01000111,0b11110001,0b10001100,0b01100001,0b00001110,0b01001010,0b01001100,0b11110100,0b01111101,0b00011000,0b11111000,0b00000000,0b01110100,0b00100000,0b11100111,0b01000110,0b00010000,0b10001011,0b10000010,0b00010111,0b11000110,0b00101111,0b11110100,0b01100011,0b00011000,0b11111000,0b00001100,0b10010111,0b00100000,0b11101111,0b11000011,0b10010000,0b10000111,0b11000100,0b01000111,0b00010000,0b10000100,0b11111100,0b00111001,0b00001000,0b01000000,0b00001110,0b10001011,0b11000010,0b11100111,0b01000010,0b00010011,0b10001011,0b11100001,0b00001111,0b01000110,0b00110001,0b10001100,0b01111111,0b00011000,0b11000100,0b00000100,0b00000001,0b00001000,0b01000111,0b00010000,0b10000100,0b00100011,0b10001000,0b00000010,0b00010000,0b10001000,0b11111000,0b10000100,0b00101001,0b00110010,0b00010000,0b10100110,0b00101001,0b00101000,0b11001011,0b00010100,0b10010100,0b01001000,0b01000010,0b00010000,0b10000010,0b10000100,0b00100001,0b00001000,0b01111100,0b00000000,0b01010101,0b01101011,0b00011101,0b11010110,0b10110101,0b10101101,0b01000000,0b00001111,0b01000110,0b00110001,0b10001110,0b01101011,0b01011001,0b11000100,0b00000000,0b01110100,0b01100010,0b11100111,0b01000110,0b00110001,0b10001011,0b10000001,0b11101000,0b11111010,0b00010000,0b11110100,0b01100011,0b11101000,0b01000000,0b00001111,0b10001011,0b11000010,0b00010111,0b01000110,0b00110001,0b10011011,0b11000000,0b00000100,0b00111101,0b00001000,0b11110100,0b01111101,0b00011000,0b11000100,0b00000110,0b01000001,0b00000100,0b11000111,0b01000001,0b10000011,0b10001011,0b10001000,0b11100010,0b00010000,0b10000100,0b11111001,0b00001000,0b01000010,0b00010000,0b00000000,0b10001100,0b01100010,0b11111000,0b11000110,0b00110001,0b10001011,0b10000000,0b00001000,0b11000101,0b01000100,0b10001100,0b01100010,0b10100101,0b00010000,0b00000000,0b10101101,0b01101010,0b10101010,0b11010110,0b10110101,0b10101010,0b10000001,0b00011000,0b10111010,0b00110001,0b10001100,0b01011101,0b00011000,0b11000100,0b00010001,0b10001011,0b11000010,0b11101000,0b11000101,0b11000100,0b00100001,0b00000000,0b00001111,0b10001001,0b00011111,0b11111000,0b10001000,0b10001000,0b01111100,0b10001100,0b00100001,0b00001000,0b11100111,0b01000100,0b00101110,0b10000111,0b11011101,0b00010011,0b00000110,0b00101110,0b10010100,0b10111110,0b00100001,0b00001011,0b11110000,0b11110000,0b01100010,0b11100111,0b11000011,0b11010001,0b10001011,0b10111110,0b00010001,0b00010001,0b00001000,0b01110100,0b01011101,0b00011000,0b10111001,0b11010001,0b01111000,0b01000010,0b00010111,0b01000110,0b10110101,0b10001011,0b10000000,0b01000010,0b01111100,0b10000100,0b00000000,0b00000001,0b11110000,0b00000000,0b00000000,0b00000000,0b00000000,0b01000000,0b00000000,0b00000000,0b00100001,0b00001000,0b01000010,0b00010000,0b00000100,0b01110100,0b01000100,0b01000000,0b00010000,0b00000000,0b11111000,0b00111110,0b00000000,0b00010000,0b00000000,0b00100000,0b00000100,0b00100010,0b00010001,0b00001000,0b01000010,0b00001000,0b01000001,0b00001001,0b01000100,0b01010000,0b00000000,0b00000010,0b00100001,0b00001000,0b01000001,0b00001000,0b00100001,0b00001000,0b01000100,0b00110001,0b00010000,0b10000010,0b00011001,0b10000100,0b00010000,0b10001000,0b11000010,0b00010000,0b10000000,0b00000000,0b00010100,0b10100101,0b00000000,0b00000000,0b00000000,0b00000000,0b00000000,0b01111100,0b10001110,0b10100011,0b10001010,0b11100000,0b00001000,0b10001000,0b00100000,0b10000000,0b10000010,0b00001000,0b10001000,0b01110010,0b00010000,0b10000100,0b00111001,0b11000010,0b00010000,0b10000100,0b11100000,0b00000001,0b00010101,0b00010000,0b00000000,0b10101111,0b10101011,0b11101010,0b00000001,0b00000000,0b00000010,0b00010001,0b00010100,0b01001011,0b01100100,0b11010000,0b00000000,0b00000000,0b00111000,0b00000000,0b00000000,0b00000011,0b10000000,0b00000000,0b00000000,0b01000101,0b00000000,0b00000000,0b00000000,0b00010100,0b00000010,0b00100000,0b00000000,0b00000000,0b00000000};
 
 /*this is a very dumb function to let me see differences between stuff that have a different index so I can see if my shit is optimal, it probably doesn't do what you think it does*/
 /*inline*/ uint16_t convertNumberToColor(uint8_t number)
@@ -186,9 +205,6 @@
 
     return 0;
 }
-
-//the font
-const uint8_t font[] = {0b00000001,0b00010101,0b00010101,0b00010000,0b00000000,0b01110100,0b10100100,0b11110111,0b01000111,0b11110001,0b10001100,0b01100001,0b00001110,0b01001010,0b01001100,0b11110100,0b01111101,0b00011000,0b11111000,0b00000000,0b01110100,0b00100000,0b11100111,0b01000110,0b00010000,0b10001011,0b10000010,0b00010111,0b11000110,0b00101111,0b11110100,0b01100011,0b00011000,0b11111000,0b00001100,0b10010111,0b00100000,0b11101111,0b11000011,0b10010000,0b10000111,0b11000100,0b01000111,0b00010000,0b10000100,0b11111100,0b00111001,0b00001000,0b01000000,0b00001110,0b10001011,0b11000010,0b11100111,0b01000010,0b00010011,0b10001011,0b11100001,0b00001111,0b01000110,0b00110001,0b10001100,0b01111111,0b00011000,0b11000100,0b00000100,0b00000001,0b00001000,0b01000111,0b00010000,0b10000100,0b00100011,0b10001000,0b00000010,0b00010000,0b10001000,0b11111000,0b10000100,0b00101001,0b00110010,0b00010000,0b10100110,0b00101001,0b00101000,0b11001011,0b00010100,0b10010100,0b01001000,0b01000010,0b00010000,0b10000010,0b10000100,0b00100001,0b00001000,0b01111100,0b00000000,0b01010101,0b01101011,0b00011101,0b11010110,0b10110101,0b10101101,0b01000000,0b00001111,0b01000110,0b00110001,0b10001110,0b01101011,0b01011001,0b11000100,0b00000000,0b01110100,0b01100010,0b11100111,0b01000110,0b00110001,0b10001011,0b10000001,0b11101000,0b11111010,0b00010000,0b11110100,0b01100011,0b11101000,0b01000000,0b00001111,0b10001011,0b11000010,0b00010111,0b01000110,0b00110001,0b10011011,0b11000000,0b00000100,0b00111101,0b00001000,0b11110100,0b01111101,0b00011000,0b11000100,0b00000110,0b01000001,0b00000100,0b11000111,0b01000001,0b10000011,0b10001011,0b10001000,0b11100010,0b00010000,0b10000100,0b11111001,0b00001000,0b01000010,0b00010000,0b00000000,0b10001100,0b01100010,0b11111000,0b11000110,0b00110001,0b10001011,0b10000000,0b00001000,0b11000101,0b01000100,0b10001100,0b01100010,0b10100101,0b00010000,0b00000000,0b10101101,0b01101010,0b10101010,0b11010110,0b10110101,0b10101010,0b10000001,0b00011000,0b10111010,0b00110001,0b10001100,0b01011101,0b00011000,0b11000100,0b00010001,0b10001011,0b11000010,0b11101000,0b11000101,0b11000100,0b00100001,0b00000000,0b00001111,0b10001001,0b00011111,0b11111000,0b10001000,0b10001000,0b01111100,0b10001100,0b00100001,0b00001000,0b11100111,0b01000100,0b00101110,0b10000111,0b11011101,0b00010011,0b00000110,0b00101110,0b10010100,0b10111110,0b00100001,0b00001011,0b11110000,0b11110000,0b01100010,0b11100111,0b11000011,0b11010001,0b10001011,0b10111110,0b00010001,0b00010001,0b00001000,0b01110100,0b01011101,0b00011000,0b10111001,0b11010001,0b01111000,0b01000010,0b00010111,0b01000110,0b10110101,0b10001011,0b10000000,0b01000010,0b01111100,0b10000100,0b00000000,0b00000001,0b11110000,0b00000000,0b00000000,0b00000000,0b00000000,0b01000000,0b00000000,0b00000000,0b00100001,0b00001000,0b01000010,0b00010000,0b00000100,0b01110100,0b01000100,0b01000000,0b00010000,0b00000000,0b11111000,0b00111110,0b00000000,0b00010000,0b00000000,0b00100000,0b00000100,0b00100010,0b00010001,0b00001000,0b01010001,0b00010100,0b00000000,0b00000000,0b10001000,0b01000010,0b00010000,0b01000010,0b00001000,0b01000010,0b00010001,0b00001000,0b01000010,0b00000000,0b00000000,0b00000000,0b00000000,0b00000000,0b01111100,0b10001110,0b10100011,0b10001010,0b11100000,0b00001000,0b10001000,0b00100000,0b10000000,0b10000010,0b00001000,0b10001000,0b01110010,0b00010000,0b10000100,0b00111001,0b11000010,0b00010000,0b10000100,0b11100000,0b00000001,0b00010101,0b00010000,0b00000000,0b10101111,0b10101011,0b11101010,0b00000001,0b00000000,0b00000010,0b00010001,0b00010100,0b01001011,0b01100100,0b11010000};
 
 /*inline*/ bool fontUnpacker(int i)
 {
@@ -474,9 +490,85 @@ class TFT
     Point pencil[150];
     int16_t pencilIndex;
     uint8_t override_char = 0;//are we overriding a character at the moment (used in s_prints when using backspace characters)
-    uint8_t special_sequence = 0;//special character sequences, used to capture them (also index for char_sequence)
+    uint8_t sequence_length = 0;
+    uint8_t special_sequence = 255;//special character sequences, used to capture them (also index for char_sequence)
     char char_sequence[5];//array to store the special character sequence
+    char prev_char = 0;
+    int16_t screen_width  =  SCREEN_WIDTH;
+    int16_t screen_height = SCREEN_HEIGHT;
+    uint8_t screen_orientation = 0;//default portrait, every increase is a 90deg clockwise rotation
 
+    /**
+     * @param a set screen rotation (90deg ONLY) (in degrees)
+     */
+    void rotate(int16_t a)
+    {
+        //check if defaulted viewport (if yes, then persmission to change it)
+        bool default_viewport = false;
+        if(vx == 0 && vy == 0 && vw == screen_width && vh == screen_height) default_viewport = true;
+
+        a /= 90;
+
+        screen_orientation = a % 4;
+
+        //set correct screen width and height
+        if(screen_orientation % 2 != 0)
+        {
+            //if we had a orientation that switched x and y, make screen_height output screen_width and vise versa
+            screen_width = SCREEN_HEIGHT;
+            screen_height = SCREEN_WIDTH;
+        }
+
+        if(default_viewport)
+        {
+            
+            //set new default viewport
+            setViewport(0, 0, screen_width, screen_height);
+            
+            DEBUG_BANNER;
+            ::println("setting viewport");
+            DEBUG(vx, vy, vw, vh);
+        }
+
+    }
+
+    //rotates point to simulate rotation of screen
+    void internal_screen_rotate(int16_t& x, int16_t& y)
+    {
+        //c stands for center
+        int16_t cx = SCREEN_WIDTH  / 2;
+        int16_t cy = SCREEN_HEIGHT / 2;
+
+        if(screen_orientation % 4 == 1 || screen_orientation % 4 == 3)
+        {
+            //set proper center of rotation you would expect the display to do (change the 0,0 corner)
+            cx = SCREEN_WIDTH / 2;
+            cy = SCREEN_WIDTH / 2;
+        }
+
+        Pointd p = pivot({(double)x, (double)y}, {(double)cx - 0.5, (double)cy - 0.5}, screen_orientation * 90);
+
+        x = p.x;
+        y = p.y;
+    }
+
+    //rotates point to simulate rotation of screen
+    void internal_screen_rotate(int16_t& x, int16_t& y, int16_t& w, int16_t& h)
+    {
+        if(screen_orientation == 1)
+        {
+            y -= h - 1;
+        }else if(screen_orientation == 2)
+        {
+            x -= w - 1;
+            y -= h - 1;
+        }else if(screen_orientation == 3)
+        {
+            x -= w - 1;
+        }
+
+        internal_screen_rotate(x, y);
+    }
 
     //TFT::setBrightness
     /**
@@ -673,10 +765,10 @@ class TFT
         w = w + x - 1;
         h = h + y - 1;
     
-        x = max( 0, min(240, x));
-        y = max( 0, min(320, y));
-        w = max(-1, min(239, w));
-        h = max(-1, min(319, h));
+        x = max( 0, min(screen_width , x));
+        y = max( 0, min(screen_height, y));
+        w = max(-1, min(screen_width  - 1, w));
+        h = max(-1, min(screen_height - 1, h));
 
         w = w - x + 1;
         h = h - y + 1;
@@ -690,6 +782,8 @@ class TFT
     //TFT::drawPixel
     void drawPixel(int16_t x, int16_t y, uint16_t color) {
 
+        internal_screen_rotate(x, y);
+        
         // //update position based on global
         // x += gx;
         // y += gy;
@@ -750,24 +844,32 @@ class TFT
     void fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color) {
         
         #if WOKWI_SIM
-            //update position to be based on global
-            // x += gx;
-            // y += gy;
+        //update position to be based on global
+        // x += gx;
+        // y += gy;
         #endif
 
         w = w + x - 1;
         h = h + y - 1;
     
-        x = max((vx), min((vx + vw), x)); // (vx), (vx + vw)
-        y = max((vy), min((vy + vh), y)); // (vy), (vy + vh)
-        w = max((vx - 1), min((vx + vw - 1), w)); // (vx - 1), (vx + vw - 1)
-        h = max((vy - 1), min((vy + vh - 1), h)); // (vy - 1), (vy + vh - 1)
+        x = max((vx), min((vx + vw - 1), x)); // (vx), (vx + vw)
+        y = max((vy), min((vy + vh - 1), y)); // (vy), (vy + vh)
+        w = max((vx), min((vx + vw - 1), w)); // (vx - 1), (vx + vw - 1)
+        h = max((vy), min((vy + vh - 1), h)); // (vy - 1), (vy + vh - 1)
 
         w = w - x + 1;
         h = h - y + 1;
-        
+
+        DEBUG_BANNER;
+
+        DEBUG(x, y, x + w - 1, y + h - 1);
+
+        internal_screen_rotate(x, y, w, h);
+
+        DEBUG(x, y, x + w - 1, y + h - 1);
+
         //if on mega, then directly transfer the fillRect to the screen
-        #if WOKWI_SIM   
+        #if WOKWI_SIM  
             setWindow(x, y, x + w - 1, y + h - 1);
             
             uint32_t totalPixels = (uint32_t)w * (uint32_t)h;
@@ -862,7 +964,7 @@ class TFT
         #endif
     }
 
-
+    //TFT::testfillRect
     void testfillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color) {
         
         #if WOKWI_SIM
@@ -969,42 +1071,108 @@ class TFT
     }
 
     //TFT::drawChar
-    void drawChar(char c, int16_t x, int16_t y, int16_t si, uint16_t colour)
+    void drawChar(const char* str, int16_t x, int16_t y, int16_t si, uint16_t colour)
     {
+        //take the first character of str no matter what (if the first character isn't a special character (most signficant bit isn't turned on) then we don't need to worry about the other characters)
+        const char c = *str;
+
         //return if the character is space (we don't need to draw space) (or carriage return, we don't allow for carriage returns, or well we could... but it would draw characters on top of characters)
         if(c == '\r')
         {
             return;
         }
 
-        //are we overriding a character (going back, using backspace or smth)
-        if(override_char > 0)
+
+        if(c == ' ' || c == '\t' )
+        {
+
+            //are we overriding a character (going back, using backspace or smth)
+            if(override_char > 0)
+            {
+                //decrease override_char to indicate we override a character (backspace for example increases override, so it only overrides previous characters)
+                override_char--;
+
+                //print a square (override) previous character
+                fillRect(x, y, FONT_WIDTH * si, FONT_HEIGHT * si, 0);
+            }
+
+            return;
+        }
+
+        if(c == '\b')
+        {
+            ::println("ERROR, ",__LINE__," in ",__FILE__,", not supposed to be drawing a \b (backspace) character (supposed to be handled by s_print)");
+        }
+
+        int charIndex = 0;
+        bool isAccent = 0;
+        bool isDiacritic = 0;
+        {
+            int i = 0;
+            while(i < (int)(strlen(fontChar)))
+            {
+                //short for character of fontchar at index "i"
+                char f = fontChar[i];
+
+                //are we currently in a continuation character (not a character, so increase index and skip all checks)
+                if(0x80 <= f && f <= 0xBF)
+                {
+                    i++;
+                    continue;
+                }
+
+                //result for character check (are)
+                bool result = false;
+
+                //if the original input is a string
+                if(c & 0b10000000)
+                {
+                    //0xCC = any type of accent/diacritic
+                    //0x80 - 0x9F = Accents specifically
+                    //0xA0 - 0xBF = diacritics specifically
+
+                    if(str[0] == 0xCC && (0x80 <= str[1] && str[1] <= 0x9F))
+                    {
+                        isAccent = 1;
+                    }else if(str[0] == 0xCC && (0xA0 <= str[1] && str[1] <= 0xBF))
+                    {
+                        isDiacritic = 1;
+                    }
+
+                    //check for the multi byte character
+                    result = checkstr(fontChar, str, i, 0, nullptr);
+                }else
+                {
+                    //check for regular character match
+                    result = fontChar[i] == c;
+                }
+
+                //if we found the character, get out of the loop
+                if(result)
+                {
+                    break;
+                }
+
+                i++;
+                charIndex++;//increase the character index (the character index dictates the position inside of the font)
+            }
+        
+            //if we went past fontChar (didn't find anything)
+            if(i >= (int)(strlen(fontChar)))
+            {
+                //set charIndex to -1 to indicate that we didn't find a character in the list
+                charIndex = -1;
+            }
+        }
+
+        //are we overriding a character (do not override when we are working with an accent) (going back, using backspace or smth)
+        if(!isAccent && !isDiacritic && override_char > 0)
         {
             //decrease override_char to indicate we override a character (backspace for example increases override, so it only overrides previous characters)
             override_char--;
 
             //print a square (override) previous character
             fillRect(x, y, FONT_WIDTH * si, FONT_HEIGHT * si, 0);
-        }
-
-        if(c == ' ' || c == '\t' )
-        {
-            return;
-        }
-
-        if(c == '\b')
-        {
-            println("ERROR, ",__LINE__," in ",__FILE__,", not supposed to be drawing a \b (backspace) character (supposed to be handled by s_print)");
-        }
-
-        int charIndex = -1;
-        for (int i = 0; (int unsigned)i < strlen(fontChar); i++)
-        {
-            if(fontChar[i] == c)
-            {
-                charIndex = i;
-                break;
-            }
         }
 
         //si ont a pas trouvé le charactère (c)
@@ -1021,21 +1189,40 @@ class TFT
         for (int iChar = charIndex; iChar < 1 + charIndex; iChar ++) //ont rajoute charIndex pour modifier où ont itère (trust sa marche)
         {
             //itération de la position y de la lettre
-            for (int posY = 0; posY < 6 * si; posY += si) //ont ajoute la position pour déplacé la lettre
+            for (int posY = 0; posY < FONT_CHAR_HEIGHT * si; posY += si) //ont ajoute la position pour déplacé la lettre
             {
-            //itération de la position x de la lettre
-            for (int posX = 0; posX < 5 * si; posX += si)
-            {
-                //ont vas déterminé l'index qu'il faut pour déterminé l'index dans la variables font
-                int trueIndex = iChar * 5 * 6 + posY / si * 5 + posX / si;
-
-                if (fontUnpacker(trueIndex))
+                //itération de la position x de la lettre
+                for (int posX = 0; posX < FONT_CHAR_WIDTH * si; posX += si)
                 {
-                    fillRect((uint16_t)(posX + x), (uint16_t)(posY + y), (uint16_t)(si), (uint16_t)(si), colour);
+                    //ont vas déterminé l'index qu'il faut pour déterminé l'index dans la variables font
+                    int trueIndex = iChar * FONT_CHAR_WIDTH * FONT_CHAR_HEIGHT + posY / si * FONT_WIDTH + posX / si;
+
+                    //handle diactricits and accent offset (they should be drawn either on top or bellow the letter)
+                    int y_offset = 0;
+
+                    if(isAccent == 1)
+                    {
+                        y_offset -= FONT_CHAR_HEIGHT * si;
+                    }
+
+                    if(isDiacritic)
+                    {
+                        y_offset += FONT_CHAR_HEIGHT * si;
+                    }
+
+                    if (fontUnpacker(trueIndex))
+                    {
+                        fillRect(posX + x, posY + y + FONT_CHAR_START_HEIGHT * si + y_offset, si, si, colour);
+                    }
                 }
             }
-            }
         }
+    }
+
+    //TFT::drawChar
+    void drawChar(char c, int16_t x, int16_t y, int16_t si, uint16_t colour)
+    {
+        drawChar(&c, x, y, si, colour);
     }
 
     //TFT::setCursor
@@ -1055,19 +1242,24 @@ class TFT
     }
 
     //TFT::setCursor
-    void setCursor(int16_t cursor_x, int16_t cursor_y, int8_t fontSize, uint16_t fontColor, int16_t cursor_x_start)
+    void setCursor(int16_t cursor_x, int16_t cursor_y, int8_t fontSize, uint16_t fontColor, int16_t cursor_x_start, int16_t cursor_y_start)
     {
         this->cursor_x = cursor_x;
         this->cursor_y = cursor_y;
         this->fontSize = fontSize;
         this->fontColor = fontColor;
         this->cursor_x_start = cursor_x_start;
+        this->cursor_y_start = cursor_y_start;
     }
 
     
     //TFT::print
     void s_print(char c)
     {
+        // ::print("'",c,"' -> ",(int)(c)," (0x");
+        // Serial.print((int)(c), HEX);
+        // ::println(")");
+
         if(special_sequence != 255)
         {
             //set current char_sequence character and increase index
@@ -1075,8 +1267,11 @@ class TFT
             special_sequence++;
             
             //if we see a letter, then its the end of the special sequence and we should print its output
-            if(ISLETTER(c))
+            if((ISLETTER(c) && char_sequence[0] == '\033') || ((0xC2  <= char_sequence[0] && char_sequence[0] <= 0xF4) && special_sequence >= sequence_length))
             {
+                //reset sequence_length to 0
+                sequence_length = 0;
+
                 //set last character to \0 (emulate a normal string)
                 char_sequence[special_sequence] = '\0';
 
@@ -1087,56 +1282,303 @@ class TFT
                 char* cs = char_sequence;//short for char_sequence, make code more readable, same as if I was using char_sequence
 
                 //clear screen
-                if(checkstr(cs, "\033[2J", 0, nullptr))
+                if(checkstr(cs, "\033[2J", 0, 0, nullptr))
                 {
                     //clear all possible characters at the same time (with a big black square)
-                    fillRect(cursor_x_start, cursor_y_start, SCREEN_WIDTH - 1, cursor_y - cursor_y_start, 0);
+                    fillRect(cursor_x_start, cursor_y_start, screen_width - 1, cursor_y - cursor_y_start, 0);
 
                 //text color red
-                }else if(checkstr(cs, "\033[31m", 0, nullptr))
+                }else if(checkstr(cs, "\033[31m", 0, 0, nullptr))
                 {
                     fontColor = TFT_RED;
 
                 //text color yellow
-                }else if(checkstr(cs, "\033[33m", 0, nullptr))
+                }else if(checkstr(cs, "\033[33m", 0, 0, nullptr))
                 {
                     fontColor = TFT_YELLOW;
 
                 //text color white
-                }else if(checkstr(cs, "\033[37m", 0, nullptr))
+                }else if(checkstr(cs, "\033[37m", 0, 0, nullptr))
                 {
                     fontColor = TFT_WHITE;
 
                 //left arrow
-                }else if(checkstr(cs, "\033[D", 0, nullptr))
+                }else if(checkstr(cs, "\033[D", 0, 0, nullptr))
                 {
                     s_print('\b');//simulate backspace character (it does the same thing)
 
                 //cursor home
-                }else if(checkstr(cs, "\033[H", 0, nullptr))
+                }else if(checkstr(cs, "\033[H", 0, 0, nullptr))
                 {
                     cursor_x = cursor_x_start;
                     cursor_y = cursor_y_start;
+                }else if(checkstr(cs, "\xC3\xA9", 0, 0, nullptr))
+                {
+                    //draw letter
+                    drawChar('e', cursor_x, cursor_y, fontSize, fontColor);
+                    
+                    #if ENABLE_ACCENTS
+                        //draw the accent on top
+                        drawChar("\u0301", cursor_x, cursor_y, fontSize, fontColor);
+                    #endif
+
+                    //advance cursor
+                    cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
+
+                }else if(checkstr(cs, "\xC3\x89", 0, 0, nullptr))
+                {
+                    //draw letter
+                    drawChar('E', cursor_x, cursor_y, fontSize, fontColor);
+                    
+                    #if ENABLE_ACCENTS
+                        //draw the accent on top
+                        drawChar("\u0301", cursor_x, cursor_y, fontSize, fontColor);
+                    #endif
+
+                    //advance cursor
+                    cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
+
+                }else if(checkstr(cs, "\xC3\xA8", 0, 0, nullptr))
+                {
+                    //draw letter
+                    drawChar('e', cursor_x, cursor_y, fontSize, fontColor);
+                    
+                    #if ENABLE_ACCENTS
+                        //draw the accent on top
+                        drawChar("\u0300", cursor_x, cursor_y, fontSize, fontColor);
+                    #endif
+
+                    //advance cursor
+                    cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
+
+                }else if(checkstr(cs, "\xC3\xA0", 0, 0, nullptr))
+                {
+                    //draw letter
+                    drawChar('a', cursor_x, cursor_y, fontSize, fontColor);
+                    
+                    #if ENABLE_ACCENTS
+                        //draw the accent on top
+                        drawChar("\u0300", cursor_x, cursor_y, fontSize, fontColor);
+                    #endif
+
+                    //advance cursor
+                    cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
+
+                }else if(checkstr(cs, "\xC3\x88", 0, 0, nullptr))
+                {
+                    //draw letter
+                    drawChar('E', cursor_x, cursor_y, fontSize, fontColor);
+                    
+                    #if ENABLE_ACCENTS
+                        //draw the accent on top
+                        drawChar("\u0300", cursor_x, cursor_y, fontSize, fontColor);
+                    #endif
+
+                    //advance cursor
+                    cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
+
+                }else if(checkstr(cs, "\xC3\x80", 0, 0, nullptr))
+                {
+                    //draw letter
+                    drawChar('A', cursor_x, cursor_y, fontSize, fontColor);
+                    
+                    #if ENABLE_ACCENTS
+                        //draw the accent on top
+                        drawChar("\u0300", cursor_x, cursor_y, fontSize, fontColor);
+                    #endif
+
+                    //advance cursor
+                    cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
+
+                }else if(checkstr(cs, "\xC3\xAA", 0, 0, nullptr))
+                {
+                    //draw letter
+                    drawChar('e', cursor_x, cursor_y, fontSize, fontColor);
+                    
+                    #if ENABLE_ACCENTS
+                        //draw the accent on top
+                        drawChar("\u0302", cursor_x, cursor_y, fontSize, fontColor);
+                    #endif
+
+                    //advance cursor
+                    cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
+
+                }else if(checkstr(cs, "\xC3\xA2", 0, 0, nullptr))
+                {
+                    //draw letter
+                    drawChar('a', cursor_x, cursor_y, fontSize, fontColor);
+                    
+                    #if ENABLE_ACCENTS
+                        //draw the accent on top
+                        drawChar("\u0302", cursor_x, cursor_y, fontSize, fontColor);
+                    #endif
+
+                    //advance cursor
+                    cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
+
+                }else if(checkstr(cs, "\xC3\x8A", 0, 0, nullptr))
+                {
+                    //draw letter
+                    drawChar('E', cursor_x, cursor_y, fontSize, fontColor);
+                    
+                    #if ENABLE_ACCENTS
+                        //draw the accent on top
+                        drawChar("\u0302", cursor_x, cursor_y, fontSize, fontColor);
+                    #endif
+
+                    //advance cursor
+                    cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
+
+                }else if(checkstr(cs, "\xC3\x82", 0, 0, nullptr))
+                {
+                    //draw letter
+                    drawChar('A', cursor_x, cursor_y, fontSize, fontColor);
+                    
+                    #if ENABLE_ACCENTS
+                        //draw the accent on top
+                        drawChar("\u0302", cursor_x, cursor_y, fontSize, fontColor);
+                    #endif
+
+                    //advance cursor
+                    cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
+
+                }else if(checkstr(cs, "\xC3\xAB", 0, 0, nullptr))
+                {
+                    //draw letter
+                    drawChar('e', cursor_x, cursor_y, fontSize, fontColor);
+                    
+                    #if ENABLE_ACCENTS
+                        //draw the accent on top
+                        drawChar("\u0308", cursor_x, cursor_y, fontSize, fontColor);
+                    #endif
+
+                    //advance cursor
+                    cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
+
+                }else if(checkstr(cs, "\xC3\xAF", 0, 0, nullptr))
+                {
+                    //draw letter
+                    drawChar('i', cursor_x, cursor_y, fontSize, fontColor);
+                    
+                    #if ENABLE_ACCENTS
+                        //draw the accent on top
+                        drawChar("\u0308", cursor_x, cursor_y, fontSize, fontColor);
+                    #endif
+
+                    //advance cursor
+                    cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
+
+                }else if(checkstr(cs, "\xC3\x8B", 0, 0, nullptr))
+                {
+                    //draw letter
+                    drawChar('E', cursor_x, cursor_y, fontSize, fontColor);
+                    
+                    #if ENABLE_ACCENTS
+                        //draw the accent on top
+                        drawChar("\u0308", cursor_x, cursor_y, fontSize, fontColor);
+                    #endif
+
+                    //advance cursor
+                    cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
+
+                }else if(checkstr(cs, "\xC3\x8F", 0, 0, nullptr))
+                {
+                    //draw letter
+                    drawChar('I', cursor_x, cursor_y, fontSize, fontColor);
+                    
+                    #if ENABLE_ACCENTS
+                        //draw the accent on top
+                        drawChar("\u0308", cursor_x, cursor_y, fontSize, fontColor);
+                    #endif
+
+                    //advance cursor
+                    cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
+
+                }else if(checkstr(cs, "\xC3\xA7", 0, 0, nullptr))
+                {
+                    //draw letter
+                    drawChar('c', cursor_x, cursor_y, fontSize, fontColor);
+                    
+                    #if ENABLE_ACCENTS
+                        //draw the accent on top
+                        drawChar("\u0327", cursor_x, cursor_y, fontSize, fontColor);
+                    #endif
+
+                    //advance cursor
+                    cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
+
+                }else if(checkstr(cs, "\xC3\x87", 0, 0, nullptr))
+                {
+                    //draw letter
+                    drawChar('C', cursor_x, cursor_y, fontSize, fontColor);
+                    
+                    #if ENABLE_ACCENTS
+                        //draw the accent on top
+                        drawChar("\u0327", cursor_x, cursor_y, fontSize, fontColor);
+                    #endif
+
+                    //advance cursor
+                    cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
+
+                }else
+                {
+                    //draw unknown character
+                    drawChar('\x1A', cursor_x, cursor_y, fontSize, fontColor);
+
+                    //advance cursor
+                    cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
                 }
+                
+                #if ENABLE_ACCENTS
+                    //special accent (accent will go somewhere else depending on the state of the letter before (capital or lowercase))
+                    if(char_sequence[0] == 0xCC)
+                    {
+                        //go back one character
+                        if(cursor_x > cursor_x_start)
+                        {
+                            cursor_x -= (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
+                        }
+
+                        //draw the accent
+                        drawChar(cs, cursor_x, cursor_y, fontSize, fontColor);
+
+                        //go back on the character you just were
+                        cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
+
+                    }
+                #endif
             }
 
             //early return, we don't want to print the code
             return;
         }
 
-        if(c == '\033')
+        //if c is a starting byte or a escape sequence startin character
+        if(c == '\033' || (0xC2  <= c && c <= 0xF4))
         {
             //SPECIAL CHARACTER SEQUENCE
             special_sequence = 0;
+
+            //if we found a multi byte character start, figure out the length based that character 
+            if(0xC2  <= c && c <= 0xF4)
+            {
+                sequence_length = getMultiByteCharLen(c);
+            }
 
             //set current char_sequence character and increase index
             char_sequence[special_sequence] = c;
             special_sequence++;
 
+            //early return so to not update the prev_char variable
+            return;
+
         }else if(c == '\n')
         {
             cursor_y += (FONT_HEIGHT + 1) * fontSize;//step the cursor_y down (since new line)
             cursor_x = cursor_x_start;//reset x
+
+            //reset the override_char (new line = no override)
+            override_char = 0;
             
         }else if(c == '\b')
         {
@@ -1153,6 +1595,24 @@ class TFT
                 }
             #endif
 
+        //handle carriage returns
+        }else if(c == '\r')
+        {
+            //if we specifically enabled the quirky backtracking feature
+            #if ENABLE_TEXT_BACKTRACKING
+                
+                //handle for override (do simple math based on font size)
+                int n_of_char_between = (cursor_x_start - cursor_x) / (FONT_WIDTH + 1);
+
+                //skip for negative number of char
+                if(n_of_char_between > 0)
+                {
+                    override_char += n_of_char_between;
+                }
+
+                //set cursor x to start (move the cursor all the way left on the current line) (carriage return)
+                cursor_x = cursor_x_start;
+            #endif
         }else
         {
             //draw the character
@@ -1160,6 +1620,8 @@ class TFT
 
             cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
         }
+    
+        prev_char = c;
     }
 
     //TFT::print
@@ -1358,12 +1820,12 @@ class TFT
                 
             }else if(sChar != ' ')//if its not a space
             {
-                drawChar(sChar, x + i * 6 * si + displacement * 6 * si, y, si, colour);
+                drawChar(&sChar, x + i * 6 * si + displacement * 6 * si, y, si, colour);
             }
 
             if(sChar != '\n')
             {
-                if((SCREEN_WIDTH - 1 < (x + i * 6 * si + displacement * 6 * si) + (FONT_WIDTH + 1) * si) && wrapText)
+                if((screen_width - 1 < (x + i * 6 * si + displacement * 6 * si) + (FONT_WIDTH + 1) * si) && wrapText)
                 {
                     //simulate a new line
                     y += si * 7;//move the text down one line
@@ -2432,8 +2894,8 @@ class TFT
         //Variable Initializations
         this->vx = 0;
         this->vy = 0;
-        this->vw = SCREEN_WIDTH;
-        this->vh = SCREEN_HEIGHT;
+        this->vw = screen_width;
+        this->vh = screen_height;
         this->gx = 0;
         this->gy = 0;
         this->cursor_x_start = 0;
@@ -2609,3 +3071,5 @@ class Rectangle
 };
 
 #endif
+
+

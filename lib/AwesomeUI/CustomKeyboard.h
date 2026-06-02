@@ -273,225 +273,225 @@ struct KeyPress
 int strToKey(const char* str, const char* include = " ")
 {
 
-    if(checkstr(str, F("NONE")                              , 1, include)) return 0x00;
-    if(checkstr(str, F("ERRORROLLOVER")                     , 1, include)) return 0x01;
-    if(checkstr(str, F("POSTFAIL")                          , 1, include)) return 0x02;
-    if(checkstr(str, F("ERRORUNDEFINED")                    , 1, include)) return 0x03;
-    if(checkstr(str, F("A")                                 , 1, include)) return 0x04;
-    if(checkstr(str, F("B")                                 , 1, include)) return 0x05;
-    if(checkstr(str, F("C")                                 , 1, include)) return 0x06;
-    if(checkstr(str, F("D")                                 , 1, include)) return 0x07;
-    if(checkstr(str, F("E")                                 , 1, include)) return 0x08;
-    if(checkstr(str, F("F")                                 , 1, include)) return 0x09;
-    if(checkstr(str, F("G")                                 , 1, include)) return 0x0A;
-    if(checkstr(str, F("H")                                 , 1, include)) return 0x0B;
-    if(checkstr(str, F("I")                                 , 1, include)) return 0x0C;
-    if(checkstr(str, F("J")                                 , 1, include)) return 0x0D;
-    if(checkstr(str, F("K")                                 , 1, include)) return 0x0E;
-    if(checkstr(str, F("L")                                 , 1, include)) return 0x0F;
-    if(checkstr(str, F("M")                                 , 1, include)) return 0x10;
-    if(checkstr(str, F("N")                                 , 1, include)) return 0x11;
-    if(checkstr(str, F("O")                                 , 1, include)) return 0x12;
-    if(checkstr(str, F("P")                                 , 1, include)) return 0x13;
-    if(checkstr(str, F("Q")                                 , 1, include)) return 0x14;
-    if(checkstr(str, F("R")                                 , 1, include)) return 0x15;
-    if(checkstr(str, F("S")                                 , 1, include)) return 0x16;
-    if(checkstr(str, F("T")                                 , 1, include)) return 0x17;
-    if(checkstr(str, F("U")                                 , 1, include)) return 0x18;
-    if(checkstr(str, F("V")                                 , 1, include)) return 0x19;
-    if(checkstr(str, F("W")                                 , 1, include)) return 0x1A;
-    if(checkstr(str, F("X")                                 , 1, include)) return 0x1B;
-    if(checkstr(str, F("Y")                                 , 1, include)) return 0x1C;
-    if(checkstr(str, F("Z")                                 , 1, include)) return 0x1D;
-    if(checkstr(str, F("1_EXCLAMATION_MARK")                , 1, include)) return 0x1E;
-    if(checkstr(str, F("2_AT")                              , 1, include)) return 0x1F;
-    if(checkstr(str, F("3_NUMBER_SIGN")                     , 1, include)) return 0x20;
-    if(checkstr(str, F("4_DOLLAR")                          , 1, include)) return 0x21;
-    if(checkstr(str, F("5_PERCENT")                         , 1, include)) return 0x22;
-    if(checkstr(str, F("6_CARET")                           , 1, include)) return 0x23;
-    if(checkstr(str, F("7_AMPERSAND")                       , 1, include)) return 0x24;
-    if(checkstr(str, F("8_ASTERISK")                        , 1, include)) return 0x25;
-    if(checkstr(str, F("9_OPARENTHESIS")                    , 1, include)) return 0x26;
-    if(checkstr(str, F("0_CPARENTHESIS")                    , 1, include)) return 0x27;
-    if(checkstr(str, F("ENTER")                             , 1, include)) return 0x28;
-    if(checkstr(str, F("ESCAPE")                            , 1, include)) return 0x29;
-    if(checkstr(str, F("BACKSPACE")                         , 1, include)) return 0x2A;
-    if(checkstr(str, F("TAB")                               , 1, include)) return 0x2B;
-    if(checkstr(str, F("SPACEBAR")                          , 1, include)) return 0x2C;
-    if(checkstr(str, F("MINUS_UNDERSCORE")                  , 1, include)) return 0x2D;
-    if(checkstr(str, F("EQUAL_PLUS")                        , 1, include)) return 0x2E;
-    if(checkstr(str, F("OBRACKET_AND_OBRACE")               , 1, include)) return 0x2F;
-    if(checkstr(str, F("CBRACKET_AND_CBRACE")               , 1, include)) return 0x30;
-    if(checkstr(str, F("BACKSLASH_VERTICAL_BAR")            , 1, include)) return 0x31;
-    if(checkstr(str, F("NONUS_NUMBER_SIGN_TILDE")           , 1, include)) return 0x32;
-    if(checkstr(str, F("SEMICOLON_COLON")                   , 1, include)) return 0x33;
-    if(checkstr(str, F("SINGLE_AND_DOUBLE_QUOTE")           , 1, include)) return 0x34;
-    if(checkstr(str, F("GRAVE_ACCENT_AND_TILDE")            , 1, include)) return 0x35;
-    if(checkstr(str, F("COMMA_AND_LESS")                    , 1, include)) return 0x36;
-    if(checkstr(str, F("DOT_GREATER")                       , 1, include)) return 0x37;
-    if(checkstr(str, F("SLASH_QUESTION")                    , 1, include)) return 0x38;
-    if(checkstr(str, F("CAPS_LOCK")                         , 1, include)) return 0x39;
-    if(checkstr(str, F("F1")                                , 1, include)) return 0x3A;
-    if(checkstr(str, F("F2")                                , 1, include)) return 0x3B;
-    if(checkstr(str, F("F3")                                , 1, include)) return 0x3C;
-    if(checkstr(str, F("F4")                                , 1, include)) return 0x3D;
-    if(checkstr(str, F("F5")                                , 1, include)) return 0x3E;
-    if(checkstr(str, F("F6")                                , 1, include)) return 0x3F;
-    if(checkstr(str, F("F7")                                , 1, include)) return 0x40;
-    if(checkstr(str, F("F8")                                , 1, include)) return 0x41;
-    if(checkstr(str, F("F9")                                , 1, include)) return 0x42;
-    if(checkstr(str, F("F10")                               , 1, include)) return 0x43;
-    if(checkstr(str, F("F11")                               , 1, include)) return 0x44;
-    if(checkstr(str, F("F12")                               , 1, include)) return 0x45;
-    if(checkstr(str, F("PRINTSCREEN")                       , 1, include)) return 0x46;
-    if(checkstr(str, F("SCROLL_LOCK")                       , 1, include)) return 0x47;
-    if(checkstr(str, F("PAUSE")                             , 1, include)) return 0x48;
-    if(checkstr(str, F("INSERT")                            , 1, include)) return 0x49;
-    if(checkstr(str, F("HOME")                              , 1, include)) return 0x4A;
-    if(checkstr(str, F("PAGEUP")                            , 1, include)) return 0x4B;
-    if(checkstr(str, F("DELETE")                            , 1, include)) return 0x4C;
-    if(checkstr(str, F("END1")                              , 1, include)) return 0x4D;
-    if(checkstr(str, F("PAGEDOWN")                          , 1, include)) return 0x4E;
-    if(checkstr(str, F("RIGHTARROW")                        , 1, include)) return 0x4F;
-    if(checkstr(str, F("LEFTARROW")                         , 1, include)) return 0x50;
-    if(checkstr(str, F("DOWNARROW")                         , 1, include)) return 0x51;
-    if(checkstr(str, F("UPARROW")                           , 1, include)) return 0x52;
-    if(checkstr(str, F("KEYPAD_NUM_LOCK_AND_CLEAR")         , 1, include)) return 0x53;
-    if(checkstr(str, F("KEYPAD_SLASH")                      , 1, include)) return 0x54;
-    if(checkstr(str, F("KEYPAD_ASTERIKS")                   , 1, include)) return 0x55;
-    if(checkstr(str, F("KEYPAD_MINUS")                      , 1, include)) return 0x56;
-    if(checkstr(str, F("KEYPAD_PLUS")                       , 1, include)) return 0x57;
-    if(checkstr(str, F("KEYPAD_ENTER")                      , 1, include)) return 0x58;
-    if(checkstr(str, F("KEYPAD_1_END")                      , 1, include)) return 0x59;
-    if(checkstr(str, F("KEYPAD_2_DOWN_ARROW")               , 1, include)) return 0x5A;
-    if(checkstr(str, F("KEYPAD_3_PAGEDN")                   , 1, include)) return 0x5B;
-    if(checkstr(str, F("KEYPAD_4_LEFT_ARROW")               , 1, include)) return 0x5C;
-    if(checkstr(str, F("KEYPAD_5")                          , 1, include)) return 0x5D;
-    if(checkstr(str, F("KEYPAD_6_RIGHT_ARROW")              , 1, include)) return 0x5E;
-    if(checkstr(str, F("KEYPAD_7_HOME")                     , 1, include)) return 0x5F;
-    if(checkstr(str, F("KEYPAD_8_UP_ARROW")                 , 1, include)) return 0x60;
-    if(checkstr(str, F("KEYPAD_9_PAGEUP")                   , 1, include)) return 0x61;
-    if(checkstr(str, F("KEYPAD_0_INSERT")                   , 1, include)) return 0x62;
-    if(checkstr(str, F("KEYPAD_DECIMAL_SEPARATOR_DELETE")   , 1, include)) return 0x63;
-    if(checkstr(str, F("NONUS_BACK_SLASH_VERTICAL_BAR")     , 1, include)) return 0x64;
-    if(checkstr(str, F("APPLICATION")                       , 1, include)) return 0x65;
-    if(checkstr(str, F("POWER")                             , 1, include)) return 0x66;
-    if(checkstr(str, F("KEYPAD_EQUAL")                      , 1, include)) return 0x67;
-    if(checkstr(str, F("F13")                               , 1, include)) return 0x68;
-    if(checkstr(str, F("F14")                               , 1, include)) return 0x69;
-    if(checkstr(str, F("F15")                               , 1, include)) return 0x6A;
-    if(checkstr(str, F("F16")                               , 1, include)) return 0x6B;
-    if(checkstr(str, F("F17")                               , 1, include)) return 0x6C;
-    if(checkstr(str, F("F18")                               , 1, include)) return 0x6D;
-    if(checkstr(str, F("F19")                               , 1, include)) return 0x6E;
-    if(checkstr(str, F("F20")                               , 1, include)) return 0x6F;
-    if(checkstr(str, F("F21")                               , 1, include)) return 0x70;
-    if(checkstr(str, F("F22")                               , 1, include)) return 0x71;
-    if(checkstr(str, F("F23")                               , 1, include)) return 0x72;
-    if(checkstr(str, F("F24")                               , 1, include)) return 0x73;
-    if(checkstr(str, F("EXECUTE")                           , 1, include)) return 0x74;
-    if(checkstr(str, F("HELP")                              , 1, include)) return 0x75;
-    if(checkstr(str, F("MENU")                              , 1, include)) return 0x76;
-    if(checkstr(str, F("SELECT")                            , 1, include)) return 0x77;
-    if(checkstr(str, F("STOP")                              , 1, include)) return 0x78;
-    if(checkstr(str, F("AGAIN")                             , 1, include)) return 0x79;
-    if(checkstr(str, F("UNDO")                              , 1, include)) return 0x7A;
-    if(checkstr(str, F("CUT")                               , 1, include)) return 0x7B;
-    if(checkstr(str, F("COPY")                              , 1, include)) return 0x7C;
-    if(checkstr(str, F("PASTE")                             , 1, include)) return 0x7D;
-    if(checkstr(str, F("FIND")                              , 1, include)) return 0x7E;
-    if(checkstr(str, F("MUTE")                              , 1, include)) return 0x7F;
-    if(checkstr(str, F("VOLUME_UP")                         , 1, include)) return 0x80;
-    if(checkstr(str, F("VOLUME_DOWN")                       , 1, include)) return 0x81;
-    if(checkstr(str, F("LOCKING_CAPS_LOCK")                 , 1, include)) return 0x82;
-    if(checkstr(str, F("LOCKING_NUM_LOCK")                  , 1, include)) return 0x83;
-    if(checkstr(str, F("LOCKING_SCROLL_LOCK")               , 1, include)) return 0x84;
-    if(checkstr(str, F("KEYPAD_COMMA")                      , 1, include)) return 0x85;
-    if(checkstr(str, F("KEYPAD_EQUAL_SIGN")                 , 1, include)) return 0x86;
-    if(checkstr(str, F("INTERNATIONAL1")                    , 1, include)) return 0x87;
-    if(checkstr(str, F("INTERNATIONAL2")                    , 1, include)) return 0x88;
-    if(checkstr(str, F("INTERNATIONAL3")                    , 1, include)) return 0x89;
-    if(checkstr(str, F("INTERNATIONAL4")                    , 1, include)) return 0x8A;
-    if(checkstr(str, F("INTERNATIONAL5")                    , 1, include)) return 0x8B;
-    if(checkstr(str, F("INTERNATIONAL6")                    , 1, include)) return 0x8C;
-    if(checkstr(str, F("INTERNATIONAL7")                    , 1, include)) return 0x8D;
-    if(checkstr(str, F("INTERNATIONAL8")                    , 1, include)) return 0x8E;
-    if(checkstr(str, F("INTERNATIONAL9")                    , 1, include)) return 0x8F;
-    if(checkstr(str, F("LANG1")                             , 1, include)) return 0x90;
-    if(checkstr(str, F("LANG2")                             , 1, include)) return 0x91;
-    if(checkstr(str, F("LANG3")                             , 1, include)) return 0x92;
-    if(checkstr(str, F("LANG4")                             , 1, include)) return 0x93;
-    if(checkstr(str, F("LANG5")                             , 1, include)) return 0x94;
-    if(checkstr(str, F("LANG6")                             , 1, include)) return 0x95;
-    if(checkstr(str, F("LANG7")                             , 1, include)) return 0x96;
-    if(checkstr(str, F("LANG8")                             , 1, include)) return 0x97;
-    if(checkstr(str, F("LANG9")                             , 1, include)) return 0x98;
-    if(checkstr(str, F("ALTERNATE_ERASE")                   , 1, include)) return 0x99;
-    if(checkstr(str, F("SYSREQ")                            , 1, include)) return 0x9A;
-    if(checkstr(str, F("CANCEL")                            , 1, include)) return 0x9B;
-    if(checkstr(str, F("CLEAR")                             , 1, include)) return 0x9C;
-    if(checkstr(str, F("PRIOR")                             , 1, include)) return 0x9D;
-    if(checkstr(str, F("RETURN")                            , 1, include)) return 0x9E;
-    if(checkstr(str, F("SEPARATOR")                         , 1, include)) return 0x9F;
-    if(checkstr(str, F("OUT")                               , 1, include)) return 0xA0;
-    if(checkstr(str, F("OPER")                              , 1, include)) return 0xA1;
-    if(checkstr(str, F("CLEAR_AGAIN")                       , 1, include)) return 0xA2;
-    if(checkstr(str, F("CRSEL")                             , 1, include)) return 0xA3;
-    if(checkstr(str, F("EXSEL")                             , 1, include)) return 0xA4;
-    if(checkstr(str, F("KEYPAD_00")                         , 1, include)) return 0xB0;
-    if(checkstr(str, F("KEYPAD_000")                        , 1, include)) return 0xB1;
-    if(checkstr(str, F("THOUSANDS_SEPARATOR")               , 1, include)) return 0xB2;
-    if(checkstr(str, F("DECIMAL_SEPARATOR")                 , 1, include)) return 0xB3;
-    if(checkstr(str, F("CURRENCY_UNIT")                     , 1, include)) return 0xB4;
-    if(checkstr(str, F("CURRENCY_SUB_UNIT")                 , 1, include)) return 0xB5;
-    if(checkstr(str, F("KEYPAD_OPARENTHESIS")               , 1, include)) return 0xB6;
-    if(checkstr(str, F("KEYPAD_CPARENTHESIS")               , 1, include)) return 0xB7;
-    if(checkstr(str, F("KEYPAD_OBRACE")                     , 1, include)) return 0xB8;
-    if(checkstr(str, F("KEYPAD_CBRACE")                     , 1, include)) return 0xB9;
-    if(checkstr(str, F("KEYPAD_TAB")                        , 1, include)) return 0xBA;
-    if(checkstr(str, F("KEYPAD_BACKSPACE")                  , 1, include)) return 0xBB;
-    if(checkstr(str, F("KEYPAD_A")                          , 1, include)) return 0xBC;
-    if(checkstr(str, F("KEYPAD_B")                          , 1, include)) return 0xBD;
-    if(checkstr(str, F("KEYPAD_C")                          , 1, include)) return 0xBE;
-    if(checkstr(str, F("KEYPAD_D")                          , 1, include)) return 0xBF;
-    if(checkstr(str, F("KEYPAD_E")                          , 1, include)) return 0xC0;
-    if(checkstr(str, F("KEYPAD_F")                          , 1, include)) return 0xC1;
-    if(checkstr(str, F("KEYPAD_XOR")                        , 1, include)) return 0xC2;
-    if(checkstr(str, F("KEYPAD_CARET")                      , 1, include)) return 0xC3;
-    if(checkstr(str, F("KEYPAD_PERCENT")                    , 1, include)) return 0xC4;
-    if(checkstr(str, F("KEYPAD_LESS")                       , 1, include)) return 0xC5;
-    if(checkstr(str, F("KEYPAD_GREATER")                    , 1, include)) return 0xC6;
-    if(checkstr(str, F("KEYPAD_AMPERSAND")                  , 1, include)) return 0xC7;
-    if(checkstr(str, F("KEYPAD_LOGICAL_AND")                , 1, include)) return 0xC8;
-    if(checkstr(str, F("KEYPAD_VERTICAL_BAR")               , 1, include)) return 0xC9;
-    if(checkstr(str, F("KEYPAD_LOGIACL_OR")                 , 1, include)) return 0xCA;
-    if(checkstr(str, F("KEYPAD_COLON")                      , 1, include)) return 0xCB;
-    if(checkstr(str, F("KEYPAD_NUMBER_SIGN")                , 1, include)) return 0xCC;
-    if(checkstr(str, F("KEYPAD_SPACE")                      , 1, include)) return 0xCD;
-    if(checkstr(str, F("KEYPAD_AT")                         , 1, include)) return 0xCE;
-    if(checkstr(str, F("KEYPAD_EXCLAMATION_MARK")           , 1, include)) return 0xCF;
-    if(checkstr(str, F("KEYPAD_MEMORY_STORE")               , 1, include)) return 0xD0;
-    if(checkstr(str, F("KEYPAD_MEMORY_RECALL")              , 1, include)) return 0xD1;
-    if(checkstr(str, F("KEYPAD_MEMORY_CLEAR")               , 1, include)) return 0xD2;
-    if(checkstr(str, F("KEYPAD_MEMORY_ADD")                 , 1, include)) return 0xD3;
-    if(checkstr(str, F("KEYPAD_MEMORY_SUBTRACT")            , 1, include)) return 0xD4;
-    if(checkstr(str, F("KEYPAD_MEMORY_MULTIPLY")            , 1, include)) return 0xD5;
-    if(checkstr(str, F("KEYPAD_MEMORY_DIVIDE")              , 1, include)) return 0xD6;
-    if(checkstr(str, F("KEYPAD_PLUSMINUS")                  , 1, include)) return 0xD7;
-    if(checkstr(str, F("KEYPAD_CLEAR")                      , 1, include)) return 0xD8;
-    if(checkstr(str, F("KEYPAD_CLEAR_ENTRY")                , 1, include)) return 0xD9;
-    if(checkstr(str, F("KEYPAD_BINARY")                     , 1, include)) return 0xDA;
-    if(checkstr(str, F("KEYPAD_OCTAL")                      , 1, include)) return 0xDB;
-    if(checkstr(str, F("KEYPAD_DECIMAL")                    , 1, include)) return 0xDC;
-    if(checkstr(str, F("KEYPAD_HEXADECIMAL")                , 1, include)) return 0xDD;
-    if(checkstr(str, F("LEFTCONTROL")                       , 1, include)) return 0xE0;
-    if(checkstr(str, F("LEFTSHIFT")                         , 1, include)) return 0xE1;
-    if(checkstr(str, F("LEFTALT")                           , 1, include)) return 0xE2;
-    if(checkstr(str, F("LEFT_GUI")                          , 1, include)) return 0xE3;
-    if(checkstr(str, F("RIGHTCONTROL")                      , 1, include)) return 0xE4;
-    if(checkstr(str, F("RIGHTSHIFT")                        , 1, include)) return 0xE5;
-    if(checkstr(str, F("RIGHTALT")                          , 1, include)) return 0xE6;
-    if(checkstr(str, F("RIGHT_GUI")                         , 1, include)) return 0xE7;
+    if(checkstr(str, F("NONE")                              , 0, 1, include)) return 0x00;
+    if(checkstr(str, F("ERRORROLLOVER")                     , 0, 1, include)) return 0x01;
+    if(checkstr(str, F("POSTFAIL")                          , 0, 1, include)) return 0x02;
+    if(checkstr(str, F("ERRORUNDEFINED")                    , 0, 1, include)) return 0x03;
+    if(checkstr(str, F("A")                                 , 0, 1, include)) return 0x04;
+    if(checkstr(str, F("B")                                 , 0, 1, include)) return 0x05;
+    if(checkstr(str, F("C")                                 , 0, 1, include)) return 0x06;
+    if(checkstr(str, F("D")                                 , 0, 1, include)) return 0x07;
+    if(checkstr(str, F("E")                                 , 0, 1, include)) return 0x08;
+    if(checkstr(str, F("F")                                 , 0, 1, include)) return 0x09;
+    if(checkstr(str, F("G")                                 , 0, 1, include)) return 0x0A;
+    if(checkstr(str, F("H")                                 , 0, 1, include)) return 0x0B;
+    if(checkstr(str, F("I")                                 , 0, 1, include)) return 0x0C;
+    if(checkstr(str, F("J")                                 , 0, 1, include)) return 0x0D;
+    if(checkstr(str, F("K")                                 , 0, 1, include)) return 0x0E;
+    if(checkstr(str, F("L")                                 , 0, 1, include)) return 0x0F;
+    if(checkstr(str, F("M")                                 , 0, 1, include)) return 0x10;
+    if(checkstr(str, F("N")                                 , 0, 1, include)) return 0x11;
+    if(checkstr(str, F("O")                                 , 0, 1, include)) return 0x12;
+    if(checkstr(str, F("P")                                 , 0, 1, include)) return 0x13;
+    if(checkstr(str, F("Q")                                 , 0, 1, include)) return 0x14;
+    if(checkstr(str, F("R")                                 , 0, 1, include)) return 0x15;
+    if(checkstr(str, F("S")                                 , 0, 1, include)) return 0x16;
+    if(checkstr(str, F("T")                                 , 0, 1, include)) return 0x17;
+    if(checkstr(str, F("U")                                 , 0, 1, include)) return 0x18;
+    if(checkstr(str, F("V")                                 , 0, 1, include)) return 0x19;
+    if(checkstr(str, F("W")                                 , 0, 1, include)) return 0x1A;
+    if(checkstr(str, F("X")                                 , 0, 1, include)) return 0x1B;
+    if(checkstr(str, F("Y")                                 , 0, 1, include)) return 0x1C;
+    if(checkstr(str, F("Z")                                 , 0, 1, include)) return 0x1D;
+    if(checkstr(str, F("1_EXCLAMATION_MARK")                , 0, 1, include)) return 0x1E;
+    if(checkstr(str, F("2_AT")                              , 0, 1, include)) return 0x1F;
+    if(checkstr(str, F("3_NUMBER_SIGN")                     , 0, 1, include)) return 0x20;
+    if(checkstr(str, F("4_DOLLAR")                          , 0, 1, include)) return 0x21;
+    if(checkstr(str, F("5_PERCENT")                         , 0, 1, include)) return 0x22;
+    if(checkstr(str, F("6_CARET")                           , 0, 1, include)) return 0x23;
+    if(checkstr(str, F("7_AMPERSAND")                       , 0, 1, include)) return 0x24;
+    if(checkstr(str, F("8_ASTERISK")                        , 0, 1, include)) return 0x25;
+    if(checkstr(str, F("9_OPARENTHESIS")                    , 0, 1, include)) return 0x26;
+    if(checkstr(str, F("0_CPARENTHESIS")                    , 0, 1, include)) return 0x27;
+    if(checkstr(str, F("ENTER")                             , 0, 1, include)) return 0x28;
+    if(checkstr(str, F("ESCAPE")                            , 0, 1, include)) return 0x29;
+    if(checkstr(str, F("BACKSPACE")                         , 0, 1, include)) return 0x2A;
+    if(checkstr(str, F("TAB")                               , 0, 1, include)) return 0x2B;
+    if(checkstr(str, F("SPACEBAR")                          , 0, 1, include)) return 0x2C;
+    if(checkstr(str, F("MINUS_UNDERSCORE")                  , 0, 1, include)) return 0x2D;
+    if(checkstr(str, F("EQUAL_PLUS")                        , 0, 1, include)) return 0x2E;
+    if(checkstr(str, F("OBRACKET_AND_OBRACE")               , 0, 1, include)) return 0x2F;
+    if(checkstr(str, F("CBRACKET_AND_CBRACE")               , 0, 1, include)) return 0x30;
+    if(checkstr(str, F("BACKSLASH_VERTICAL_BAR")            , 0, 1, include)) return 0x31;
+    if(checkstr(str, F("NONUS_NUMBER_SIGN_TILDE")           , 0, 1, include)) return 0x32;
+    if(checkstr(str, F("SEMICOLON_COLON")                   , 0, 1, include)) return 0x33;
+    if(checkstr(str, F("SINGLE_AND_DOUBLE_QUOTE")           , 0, 1, include)) return 0x34;
+    if(checkstr(str, F("GRAVE_ACCENT_AND_TILDE")            , 0, 1, include)) return 0x35;
+    if(checkstr(str, F("COMMA_AND_LESS")                    , 0, 1, include)) return 0x36;
+    if(checkstr(str, F("DOT_GREATER")                       , 0, 1, include)) return 0x37;
+    if(checkstr(str, F("SLASH_QUESTION")                    , 0, 1, include)) return 0x38;
+    if(checkstr(str, F("CAPS_LOCK")                         , 0, 1, include)) return 0x39;
+    if(checkstr(str, F("F1")                                , 0, 1, include)) return 0x3A;
+    if(checkstr(str, F("F2")                                , 0, 1, include)) return 0x3B;
+    if(checkstr(str, F("F3")                                , 0, 1, include)) return 0x3C;
+    if(checkstr(str, F("F4")                                , 0, 1, include)) return 0x3D;
+    if(checkstr(str, F("F5")                                , 0, 1, include)) return 0x3E;
+    if(checkstr(str, F("F6")                                , 0, 1, include)) return 0x3F;
+    if(checkstr(str, F("F7")                                , 0, 1, include)) return 0x40;
+    if(checkstr(str, F("F8")                                , 0, 1, include)) return 0x41;
+    if(checkstr(str, F("F9")                                , 0, 1, include)) return 0x42;
+    if(checkstr(str, F("F10")                               , 0, 1, include)) return 0x43;
+    if(checkstr(str, F("F11")                               , 0, 1, include)) return 0x44;
+    if(checkstr(str, F("F12")                               , 0, 1, include)) return 0x45;
+    if(checkstr(str, F("PRINTSCREEN")                       , 0, 1, include)) return 0x46;
+    if(checkstr(str, F("SCROLL_LOCK")                       , 0, 1, include)) return 0x47;
+    if(checkstr(str, F("PAUSE")                             , 0, 1, include)) return 0x48;
+    if(checkstr(str, F("INSERT")                            , 0, 1, include)) return 0x49;
+    if(checkstr(str, F("HOME")                              , 0, 1, include)) return 0x4A;
+    if(checkstr(str, F("PAGEUP")                            , 0, 1, include)) return 0x4B;
+    if(checkstr(str, F("DELETE")                            , 0, 1, include)) return 0x4C;
+    if(checkstr(str, F("END1")                              , 0, 1, include)) return 0x4D;
+    if(checkstr(str, F("PAGEDOWN")                          , 0, 1, include)) return 0x4E;
+    if(checkstr(str, F("RIGHTARROW")                        , 0, 1, include)) return 0x4F;
+    if(checkstr(str, F("LEFTARROW")                         , 0, 1, include)) return 0x50;
+    if(checkstr(str, F("DOWNARROW")                         , 0, 1, include)) return 0x51;
+    if(checkstr(str, F("UPARROW")                           , 0, 1, include)) return 0x52;
+    if(checkstr(str, F("KEYPAD_NUM_LOCK_AND_CLEAR")         , 0, 1, include)) return 0x53;
+    if(checkstr(str, F("KEYPAD_SLASH")                      , 0, 1, include)) return 0x54;
+    if(checkstr(str, F("KEYPAD_ASTERIKS")                   , 0, 1, include)) return 0x55;
+    if(checkstr(str, F("KEYPAD_MINUS")                      , 0, 1, include)) return 0x56;
+    if(checkstr(str, F("KEYPAD_PLUS")                       , 0, 1, include)) return 0x57;
+    if(checkstr(str, F("KEYPAD_ENTER")                      , 0, 1, include)) return 0x58;
+    if(checkstr(str, F("KEYPAD_1_END")                      , 0, 1, include)) return 0x59;
+    if(checkstr(str, F("KEYPAD_2_DOWN_ARROW")               , 0, 1, include)) return 0x5A;
+    if(checkstr(str, F("KEYPAD_3_PAGEDN")                   , 0, 1, include)) return 0x5B;
+    if(checkstr(str, F("KEYPAD_4_LEFT_ARROW")               , 0, 1, include)) return 0x5C;
+    if(checkstr(str, F("KEYPAD_5")                          , 0, 1, include)) return 0x5D;
+    if(checkstr(str, F("KEYPAD_6_RIGHT_ARROW")              , 0, 1, include)) return 0x5E;
+    if(checkstr(str, F("KEYPAD_7_HOME")                     , 0, 1, include)) return 0x5F;
+    if(checkstr(str, F("KEYPAD_8_UP_ARROW")                 , 0, 1, include)) return 0x60;
+    if(checkstr(str, F("KEYPAD_9_PAGEUP")                   , 0, 1, include)) return 0x61;
+    if(checkstr(str, F("KEYPAD_0_INSERT")                   , 0, 1, include)) return 0x62;
+    if(checkstr(str, F("KEYPAD_DECIMAL_SEPARATOR_DELETE")   , 0, 1, include)) return 0x63;
+    if(checkstr(str, F("NONUS_BACK_SLASH_VERTICAL_BAR")     , 0, 1, include)) return 0x64;
+    if(checkstr(str, F("APPLICATION")                       , 0, 1, include)) return 0x65;
+    if(checkstr(str, F("POWER")                             , 0, 1, include)) return 0x66;
+    if(checkstr(str, F("KEYPAD_EQUAL")                      , 0, 1, include)) return 0x67;
+    if(checkstr(str, F("F13")                               , 0, 1, include)) return 0x68;
+    if(checkstr(str, F("F14")                               , 0, 1, include)) return 0x69;
+    if(checkstr(str, F("F15")                               , 0, 1, include)) return 0x6A;
+    if(checkstr(str, F("F16")                               , 0, 1, include)) return 0x6B;
+    if(checkstr(str, F("F17")                               , 0, 1, include)) return 0x6C;
+    if(checkstr(str, F("F18")                               , 0, 1, include)) return 0x6D;
+    if(checkstr(str, F("F19")                               , 0, 1, include)) return 0x6E;
+    if(checkstr(str, F("F20")                               , 0, 1, include)) return 0x6F;
+    if(checkstr(str, F("F21")                               , 0, 1, include)) return 0x70;
+    if(checkstr(str, F("F22")                               , 0, 1, include)) return 0x71;
+    if(checkstr(str, F("F23")                               , 0, 1, include)) return 0x72;
+    if(checkstr(str, F("F24")                               , 0, 1, include)) return 0x73;
+    if(checkstr(str, F("EXECUTE")                           , 0, 1, include)) return 0x74;
+    if(checkstr(str, F("HELP")                              , 0, 1, include)) return 0x75;
+    if(checkstr(str, F("MENU")                              , 0, 1, include)) return 0x76;
+    if(checkstr(str, F("SELECT")                            , 0, 1, include)) return 0x77;
+    if(checkstr(str, F("STOP")                              , 0, 1, include)) return 0x78;
+    if(checkstr(str, F("AGAIN")                             , 0, 1, include)) return 0x79;
+    if(checkstr(str, F("UNDO")                              , 0, 1, include)) return 0x7A;
+    if(checkstr(str, F("CUT")                               , 0, 1, include)) return 0x7B;
+    if(checkstr(str, F("COPY")                              , 0, 1, include)) return 0x7C;
+    if(checkstr(str, F("PASTE")                             , 0, 1, include)) return 0x7D;
+    if(checkstr(str, F("FIND")                              , 0, 1, include)) return 0x7E;
+    if(checkstr(str, F("MUTE")                              , 0, 1, include)) return 0x7F;
+    if(checkstr(str, F("VOLUME_UP")                         , 0, 1, include)) return 0x80;
+    if(checkstr(str, F("VOLUME_DOWN")                       , 0, 1, include)) return 0x81;
+    if(checkstr(str, F("LOCKING_CAPS_LOCK")                 , 0, 1, include)) return 0x82;
+    if(checkstr(str, F("LOCKING_NUM_LOCK")                  , 0, 1, include)) return 0x83;
+    if(checkstr(str, F("LOCKING_SCROLL_LOCK")               , 0, 1, include)) return 0x84;
+    if(checkstr(str, F("KEYPAD_COMMA")                      , 0, 1, include)) return 0x85;
+    if(checkstr(str, F("KEYPAD_EQUAL_SIGN")                 , 0, 1, include)) return 0x86;
+    if(checkstr(str, F("INTERNATIONAL1")                    , 0, 1, include)) return 0x87;
+    if(checkstr(str, F("INTERNATIONAL2")                    , 0, 1, include)) return 0x88;
+    if(checkstr(str, F("INTERNATIONAL3")                    , 0, 1, include)) return 0x89;
+    if(checkstr(str, F("INTERNATIONAL4")                    , 0, 1, include)) return 0x8A;
+    if(checkstr(str, F("INTERNATIONAL5")                    , 0, 1, include)) return 0x8B;
+    if(checkstr(str, F("INTERNATIONAL6")                    , 0, 1, include)) return 0x8C;
+    if(checkstr(str, F("INTERNATIONAL7")                    , 0, 1, include)) return 0x8D;
+    if(checkstr(str, F("INTERNATIONAL8")                    , 0, 1, include)) return 0x8E;
+    if(checkstr(str, F("INTERNATIONAL9")                    , 0, 1, include)) return 0x8F;
+    if(checkstr(str, F("LANG1")                             , 0, 1, include)) return 0x90;
+    if(checkstr(str, F("LANG2")                             , 0, 1, include)) return 0x91;
+    if(checkstr(str, F("LANG3")                             , 0, 1, include)) return 0x92;
+    if(checkstr(str, F("LANG4")                             , 0, 1, include)) return 0x93;
+    if(checkstr(str, F("LANG5")                             , 0, 1, include)) return 0x94;
+    if(checkstr(str, F("LANG6")                             , 0, 1, include)) return 0x95;
+    if(checkstr(str, F("LANG7")                             , 0, 1, include)) return 0x96;
+    if(checkstr(str, F("LANG8")                             , 0, 1, include)) return 0x97;
+    if(checkstr(str, F("LANG9")                             , 0, 1, include)) return 0x98;
+    if(checkstr(str, F("ALTERNATE_ERASE")                   , 0, 1, include)) return 0x99;
+    if(checkstr(str, F("SYSREQ")                            , 0, 1, include)) return 0x9A;
+    if(checkstr(str, F("CANCEL")                            , 0, 1, include)) return 0x9B;
+    if(checkstr(str, F("CLEAR")                             , 0, 1, include)) return 0x9C;
+    if(checkstr(str, F("PRIOR")                             , 0, 1, include)) return 0x9D;
+    if(checkstr(str, F("RETURN")                            , 0, 1, include)) return 0x9E;
+    if(checkstr(str, F("SEPARATOR")                         , 0, 1, include)) return 0x9F;
+    if(checkstr(str, F("OUT")                               , 0, 1, include)) return 0xA0;
+    if(checkstr(str, F("OPER")                              , 0, 1, include)) return 0xA1;
+    if(checkstr(str, F("CLEAR_AGAIN")                       , 0, 1, include)) return 0xA2;
+    if(checkstr(str, F("CRSEL")                             , 0, 1, include)) return 0xA3;
+    if(checkstr(str, F("EXSEL")                             , 0, 1, include)) return 0xA4;
+    if(checkstr(str, F("KEYPAD_00")                         , 0, 1, include)) return 0xB0;
+    if(checkstr(str, F("KEYPAD_000")                        , 0, 1, include)) return 0xB1;
+    if(checkstr(str, F("THOUSANDS_SEPARATOR")               , 0, 1, include)) return 0xB2;
+    if(checkstr(str, F("DECIMAL_SEPARATOR")                 , 0, 1, include)) return 0xB3;
+    if(checkstr(str, F("CURRENCY_UNIT")                     , 0, 1, include)) return 0xB4;
+    if(checkstr(str, F("CURRENCY_SUB_UNIT")                 , 0, 1, include)) return 0xB5;
+    if(checkstr(str, F("KEYPAD_OPARENTHESIS")               , 0, 1, include)) return 0xB6;
+    if(checkstr(str, F("KEYPAD_CPARENTHESIS")               , 0, 1, include)) return 0xB7;
+    if(checkstr(str, F("KEYPAD_OBRACE")                     , 0, 1, include)) return 0xB8;
+    if(checkstr(str, F("KEYPAD_CBRACE")                     , 0, 1, include)) return 0xB9;
+    if(checkstr(str, F("KEYPAD_TAB")                        , 0, 1, include)) return 0xBA;
+    if(checkstr(str, F("KEYPAD_BACKSPACE")                  , 0, 1, include)) return 0xBB;
+    if(checkstr(str, F("KEYPAD_A")                          , 0, 1, include)) return 0xBC;
+    if(checkstr(str, F("KEYPAD_B")                          , 0, 1, include)) return 0xBD;
+    if(checkstr(str, F("KEYPAD_C")                          , 0, 1, include)) return 0xBE;
+    if(checkstr(str, F("KEYPAD_D")                          , 0, 1, include)) return 0xBF;
+    if(checkstr(str, F("KEYPAD_E")                          , 0, 1, include)) return 0xC0;
+    if(checkstr(str, F("KEYPAD_F")                          , 0, 1, include)) return 0xC1;
+    if(checkstr(str, F("KEYPAD_XOR")                        , 0, 1, include)) return 0xC2;
+    if(checkstr(str, F("KEYPAD_CARET")                      , 0, 1, include)) return 0xC3;
+    if(checkstr(str, F("KEYPAD_PERCENT")                    , 0, 1, include)) return 0xC4;
+    if(checkstr(str, F("KEYPAD_LESS")                       , 0, 1, include)) return 0xC5;
+    if(checkstr(str, F("KEYPAD_GREATER")                    , 0, 1, include)) return 0xC6;
+    if(checkstr(str, F("KEYPAD_AMPERSAND")                  , 0, 1, include)) return 0xC7;
+    if(checkstr(str, F("KEYPAD_LOGICAL_AND")                , 0, 1, include)) return 0xC8;
+    if(checkstr(str, F("KEYPAD_VERTICAL_BAR")               , 0, 1, include)) return 0xC9;
+    if(checkstr(str, F("KEYPAD_LOGIACL_OR")                 , 0, 1, include)) return 0xCA;
+    if(checkstr(str, F("KEYPAD_COLON")                      , 0, 1, include)) return 0xCB;
+    if(checkstr(str, F("KEYPAD_NUMBER_SIGN")                , 0, 1, include)) return 0xCC;
+    if(checkstr(str, F("KEYPAD_SPACE")                      , 0, 1, include)) return 0xCD;
+    if(checkstr(str, F("KEYPAD_AT")                         , 0, 1, include)) return 0xCE;
+    if(checkstr(str, F("KEYPAD_EXCLAMATION_MARK")           , 0, 1, include)) return 0xCF;
+    if(checkstr(str, F("KEYPAD_MEMORY_STORE")               , 0, 1, include)) return 0xD0;
+    if(checkstr(str, F("KEYPAD_MEMORY_RECALL")              , 0, 1, include)) return 0xD1;
+    if(checkstr(str, F("KEYPAD_MEMORY_CLEAR")               , 0, 1, include)) return 0xD2;
+    if(checkstr(str, F("KEYPAD_MEMORY_ADD")                 , 0, 1, include)) return 0xD3;
+    if(checkstr(str, F("KEYPAD_MEMORY_SUBTRACT")            , 0, 1, include)) return 0xD4;
+    if(checkstr(str, F("KEYPAD_MEMORY_MULTIPLY")            , 0, 1, include)) return 0xD5;
+    if(checkstr(str, F("KEYPAD_MEMORY_DIVIDE")              , 0, 1, include)) return 0xD6;
+    if(checkstr(str, F("KEYPAD_PLUSMINUS")                  , 0, 1, include)) return 0xD7;
+    if(checkstr(str, F("KEYPAD_CLEAR")                      , 0, 1, include)) return 0xD8;
+    if(checkstr(str, F("KEYPAD_CLEAR_ENTRY")                , 0, 1, include)) return 0xD9;
+    if(checkstr(str, F("KEYPAD_BINARY")                     , 0, 1, include)) return 0xDA;
+    if(checkstr(str, F("KEYPAD_OCTAL")                      , 0, 1, include)) return 0xDB;
+    if(checkstr(str, F("KEYPAD_DECIMAL")                    , 0, 1, include)) return 0xDC;
+    if(checkstr(str, F("KEYPAD_HEXADECIMAL")                , 0, 1, include)) return 0xDD;
+    if(checkstr(str, F("LEFTCONTROL")                       , 0, 1, include)) return 0xE0;
+    if(checkstr(str, F("LEFTSHIFT")                         , 0, 1, include)) return 0xE1;
+    if(checkstr(str, F("LEFTALT")                           , 0, 1, include)) return 0xE2;
+    if(checkstr(str, F("LEFT_GUI")                          , 0, 1, include)) return 0xE3;
+    if(checkstr(str, F("RIGHTCONTROL")                      , 0, 1, include)) return 0xE4;
+    if(checkstr(str, F("RIGHTSHIFT")                        , 0, 1, include)) return 0xE5;
+    if(checkstr(str, F("RIGHTALT")                          , 0, 1, include)) return 0xE6;
+    if(checkstr(str, F("RIGHT_GUI")                         , 0, 1, include)) return 0xE7;
 
     Serial.print("ERROR keyboard emulation, \"");
     
@@ -566,7 +566,7 @@ class KeyboardManager
         {
 
             //check to find " KEY_" sorta sketchy but we keep increasing the pointer essentially moving the start of the first string every time
-            if(checkstr(str + i, "/add"))
+            if(checkstr(str, "/add", i))
             {
                 Serial.println("ADDING A KEY");
 
@@ -624,7 +624,7 @@ class KeyboardManager
                 }
 
 
-            }else if(checkstr(str + i, "/del"))
+            }else if(checkstr(str, "/del", i))
             {
                 int key = strToKey(str + i + 5 /*size of the string*/);
 
@@ -652,7 +652,7 @@ class KeyboardManager
                         Serial.println("ERROR, couldn't remove the key ");
                     }
                 }
-            }else if(checkstr(str + i, "/set_buffer"))
+            }else if(checkstr(str, "/set_buffer", i))
             {
 
                 println(F("setting the buffer..."));
@@ -701,7 +701,7 @@ class KeyboardManager
                 }
 
                 println(F("successfully set buffer to \""),buffer,F("\""));
-            }else if(checkstr(str + i, "/skip"))
+            }else if(checkstr(str, "/skip", i))
             {
                 println(F("found /skip command, skipping for desired amount..."));
 
@@ -715,7 +715,7 @@ class KeyboardManager
 
                 println(F("set keyboard delay to "),skipKeyboardDelay);
 
-            }else if(checkstr(str + i, "key_sequence{", 0, nullptr))
+            }else if(checkstr(str, "key_sequence{", i, 0, nullptr))
             {
                 //cursor to naviage the text
                 int j = i + 14;//skip right up to the good part
@@ -783,7 +783,7 @@ class KeyboardManager
                     
                     */
                 }
-            }else if(checkstr(str + i, "/help"))
+            }else if(checkstr(str, "/help", i))
             {
 
                 for(int n = 0; n < 30; n++)
@@ -1481,7 +1481,7 @@ class KeyboardManager
                                 }
                             } 
 
-                            if(len >= 6 && checkstr(input + len - 6, "/enter", 0, nullptr) && c == ' ')
+                            if(len >= 6 && checkstr(input, "/enter", len - 6, 0, nullptr) && c == ' ')
                             {
                                 len -= 6;
                                 c = 13;
@@ -1513,13 +1513,13 @@ class KeyboardManager
                             if(c == '\n' || c == 13)
                             {
                                 //text mode on command
-                                if(len >= 12 && checkstr(input + len - 12, "/textmode on"))
+                                if(len >= 12 && checkstr(input, "/textmode on", len - 12))
                                 {
                                     len -= 12;
                                     state = 1;
                                 
                                 //text mode on command
-                                }else if(len >= 13 && checkstr(input + len - 13, "/textmode off"))
+                                }else if(len >= 13 && checkstr(input, "/textmode off", len - 13))
                                 {
                                     len -= 13;
                                     state = 0;
@@ -1572,7 +1572,7 @@ class KeyboardManager
                             }
 
                             //newline command
-                            if(len >= 9 && checkstr(input + len - 9, "/newline "))
+                            if(len >= 9 && checkstr(input, "/newline ", len - 9))
                             {
                                 len -= 8;
                                 input[len - 1] = '\n';

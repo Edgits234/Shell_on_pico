@@ -16,7 +16,7 @@ namespace IO {
 // ---- backend function pointers --------------------------------
 // Replace these at runtime to redirect all shell I/O.
 inline int  (*read_char)()          = []() -> int  { return Serial.read(); };
-inline void (*write_char)(char c)   = [](char c)   { tft.print(c); };
+inline void (*write_char)(char c)   = [](char c)   { tft.s_print(c); };
 inline int  (*available)()          = []() -> int  { return Serial.available(); };
 
 inline void set_backend(
@@ -55,6 +55,11 @@ inline int readline(char* buf, int len) {
         int c = read_char();
         if (c == '\r' || c == '\n') break;
         if (c == 0x7F || c == '\b') {   // backspace
+            //skip all continuation character
+            while (i > 0 && 0x80 <= buf[i - 1] && buf[i - 1] <= 0xBF) 
+            {
+                i--;
+            }
             if (i > 0) { i--; write_char('\b'); write_char(' '); write_char('\b'); }
             continue;
         }

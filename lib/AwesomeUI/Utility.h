@@ -37,6 +37,8 @@ for(unsigned int __pAgD67o5 = 0; __pAgD67o5 < sizeofarray(arr); __pAgD67o5++)\
 }
 #define LOWERCASE(x) (('A' <= x && x <= 'Z')?('a' - 'A' + x):(x))
 #define UPPERCASE(x) (('a' <= x && x <= 'z')?('A' - 'a' + x):(x))
+#define ISLOWERCASE(x) (('a' <= x && x <= 'z')?(true):(false))
+#define ISUPPERCASE(x) (('A' <= x && x <= 'Z')?(true):(false))
 #define ISLETTER(x)  ((('a' <= x && x <= 'z')||('A' <= x && x <= 'Z'))?(true):(false))
 #define ISNUMBER(x)  (('0' <= x && x <= '9')?(true):(false))
 
@@ -258,7 +260,7 @@ void printArrayHelper(T* input, size_t size)
 //automatically give what input arguments look like as well as the arguments themselfs
 #define DEBUG(...) debugHelper(0, #__VA_ARGS__, __VA_ARGS__)
 
-
+#define DEBUG_BANNER ::println("===========[DEBUGGING]===========")
 
 
 
@@ -1151,20 +1153,22 @@ void recieveInput_h(char* str, size_t size, int line = __builtin_LINE(), const c
 
 
 /**
-     * @brief function to visually show where index "i" is
-     *
-     * #### Example:
-     * 
-     * `this is the string`
-     * 
-     * `­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ^ ­ ­ ­ ­ ­ ­ ­`
-     * 
-     * @param i the index
-     * @param input the string
-
-    */
-void display_info(const char* input, int i, int iend = -1)
+ * @brief function to visually show where index "i" is
+ *
+ * #### Example:
+ * 
+ * `this is the string`
+ * 
+ * `­ ­ ­ ­ ­ ­ ­ ­ ­ ­ ^ ­ ­ ­ ­ ­ ­ ­`
+ * 
+ * @param i the index
+ * @param input1  the string
+ */
+template<typename T1>
+void display_info(T1 input1, int i, int iend = -1)
 {
+    HandleFlashString<T1> input = input1;
+
     if(iend == -1)
     {
         iend = i;
@@ -1436,21 +1440,88 @@ char* create_string_copy(const char* str)
    return nullptr;
 }
 
+//strlen but for flash strings
+int strlen(const __FlashStringHelper* str)
+{
+    size_t length = 0;
 
-
+    // Loop until the pointer points to the null terminator '\0'
+    while (pgm_read_byte((const char*)(str) + length) != '\0') {
+        length++;
+    }
+    
+    return length;
+}
 
 
 /**
- * @param custom input a normal string with all of the characters you want to include as safe ending characters, if it found the specific text and after it was a character in your list than its going to allow it, else not. set to nullptr to include all
+ * @brief function to find text in other text with custom end characters
+ * @param text the text you want to search in
+ * @param find the text you want to find
+ * @param find_i the index where you want to search at
+ * @param custom_end input a normal string with all of the characters you want to include as safe ending characters, if it found the specific text and after it was a character in your list than its going to allow it, else not. set to nullptr to include all
+ * @param exclude_end affects custom_end whether to exclude or include the custom strings (include meaning characters you put in custom string will be safe characters while exclude means that any character you put is unsafe)
+ * @param custom_start input a normal string with all of the characters you want to include as safe starting characters, if it found the specific text and after it was a character in your list than its going to allow it, else not. set to nullptr to include all (defaults to including all)
+ * @param exclude_start affects custom_start whether to exclude or include the custom strings (include meaning characters you put in custom string will be safe characters while exclude means that any character you put is unsafe)
  * @retval returns a boolean representing if the two strings are the same
  */
 template<typename T1, typename T2>
-bool checkstr(T1 text1, T2 find1, bool ignore_case = 0, const char* custom = " ")
+bool checkstr(T1 text1, T2 find1, int find_i = 0, bool ignore_case = 0, const char* custom_end = " ", bool exclude_end = false, const char* custom_start = nullptr, bool exclude_start = false)
 {
+    //handle flash string automatically by a class
     HandleFlashString<T1> text = text1;
     HandleFlashString<T2> find = find1;
 
-    if(flash_strcmp(find, "rightarrow") == 0) println(F("RIGHT ARROW CHECKSTR"));
+    //exclude if the start characters don't match
+    if(custom_start == nullptr || text[find_i] == '\0')
+    {
+        //do nothing
+    }else
+    {
+        if(exclude_start)
+        {
+            //bound check, if we are currently at index 0 there is no point in searching one index before as there is no characters (we know its going to work)
+            if((find_i - 1) >= 0)
+            {
+                int j = 0;
+                while(custom_start[j] != '\0')
+                {
+                    //check if the thing right after the word is an allowed character
+                    if(text[find_i - 1] == custom_start[j]) 
+                    {
+                        return false;
+                    }
+                    j++;
+                }
+            }
+
+        }else
+        {
+            //bound check, if we are currently at index 0 there is no point in searching one index before as there is no characters (we know its going to work)
+            if((find_i - 1) >= 0)
+            {
+                bool success = false;
+                int j = 0;
+                while(custom_start[j] != '\0')
+                {
+                    //check if the thing right after the word is an allowed character
+                    if(text[find_i - 1] == custom_start[j]) 
+                    {
+                        success = true;
+                        break;
+                    }
+                    j++;
+                }
+                
+                //if we didn't succeed in finding any of the characters then return false checkstr failed
+                if(!success)
+                {
+                    return false;                    
+                }
+            }
+        }
+    }
+
 
     //go through the find string because we want to find it inside of the bigger string (it only checks if its at the start)
     int i = 0;
@@ -1459,38 +1530,83 @@ bool checkstr(T1 text1, T2 find1, bool ignore_case = 0, const char* custom = " "
         //if the characters at the same index are not the same then the strings are not the same, return false
         if(ignore_case)
         {
-            if(flash_strcmp(find, "rightarrow") == 0) println((char)UPPERCASE(text[i]),F(" == "),(char)UPPERCASE(find[i]));
-            if(UPPERCASE(text[i]) != UPPERCASE(find[i])) return false;
+            if(flash_strcmp(find, "rightarrow") == 0) println((char)UPPERCASE(text[find_i + i])," == ",(char)UPPERCASE(find[i]));
+            if(UPPERCASE(text[find_i + i]) != UPPERCASE(find[i]))
+            {
+                return false;
+            }
         }else
         {
-            if(text[i] != find[i]) return false;
+            if(text[find_i + i] != find[i]) 
+            {
+                return false;
+            }
         }
 
         i++;
     }
 
-    if(custom == nullptr || text[i] == '\0')
+    if(custom_end == nullptr || text[find_i + i] == '\0')
     {
         return true;
     }else
     {
-        int j = 0;
-        while(custom[j] != '\0')
+        if(exclude_end)
         {
-            //check if the thing right after the word is an allowed character
-            if(text[i] == custom[j]) 
+            int j = 0;
+            while(custom_end[j] != '\0')
             {
-                return true;
+                //check if the thing right after the word is an allowed character
+                if(text[find_i + i] == custom_end[j]) 
+                {
+                    return false;
+                }
+                j++;
             }
-            j++;
+            return true;
+        }else
+        {
+            int j = 0;
+            while(custom_end[j] != '\0')
+            {
+                //check if the thing right after the word is an allowed character
+                if(text[find_i + i] == custom_end[j]) 
+                {
+                    return true;
+                }
+                j++;
+            }
+            return false;
         }
-        return false;
     }
-
 }
 
+template<typename T1, typename T2>
+int searchstr(T1 text, T2 find, bool ignore_case = 0, const char* custom_end = " ", bool exclude_end = false, const char* custom_start = nullptr, bool exclude_start = false)
+{
+    for(int i = 0; i < strlen(text); i++)
+    {
+        if(checkstr(text, find, i, ignore_case, custom_end, exclude_end, custom_start, exclude_start))
+        {
+            return i;
+        }
+    }
 
+    return -1;
+}
 
+inline int getMultiByteCharLen(unsigned char leading_byte) {
+    // A tiny lookup table for the upper 4 bits of the byte (0x0 to 0xF)
+    static const int lookup[16] = {
+        1, 1, 1, 1, 1, 1, 1, 1, // 0x00 to 0x7F: 1 byte (ASCII)
+        1, 1, 1, 1,             // 0x80 to 0xBF: Continuation bytes (fallback to 1)
+        2, 2,                   // 0xC0 to 0xDF: 2 bytes
+        3,                      // 0xE0 to 0xEF: 3 bytes
+        4                       // 0xF0 to 0xFF: 4 bytes
+    };
+    
+    return lookup[leading_byte >> 4];
+}
 
 #endif
 

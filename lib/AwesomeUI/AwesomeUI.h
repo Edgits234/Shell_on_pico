@@ -937,8 +937,8 @@ double handleSetPosWords(void* extraData, const char* str, int len)
     TS_Point p = ctp.getPoint(); // Get the touch point
 
     // fix the points, bcs they reverse for some reason
-    p.x = SCREEN_WIDTH  - p.x;
-    p.y = SCREEN_HEIGHT - p.y;
+    p.x = tft.screen_width  - p.x;
+    p.y = tft.screen_height - p.y;
 
     return {p.x, p.y};
   #else
@@ -949,8 +949,8 @@ double handleSetPosWords(void* extraData, const char* str, int len)
 
 /*inline*/ int16_t gvx = 0;
 /*inline*/ int16_t gvy = 0;
-/*inline*/ int16_t gvw = SCREEN_WIDTH;
-/*inline*/ int16_t gvh = SCREEN_HEIGHT;
+/*inline*/ int16_t gvw = tft.screen_width;
+/*inline*/ int16_t gvh = tft.screen_height;
 /*inline*/ void setTestViewport(int16_t x, int16_t y, int16_t w, int16_t h)
 {
   gvx = tft.vx;
@@ -1940,11 +1940,11 @@ class UI
 };
 
 
-// #define RELW(a, b) (b * (a / SCREEN_WIDTH ))//relative width
-// #define RELH(a, b) (b * (a / SCREEN_HEIGHT))//relative height
+// #define RELW(a, b) (b * (a / tft.screen_width ))//relative width
+// #define RELH(a, b) (b * (a / tft.screen_height))//relative height
 
-#define RELW(a) ((int32_t)(currUI->w) * a / SCREEN_WIDTH)
-#define RELH(a) ((int32_t)(currUI->h) * a / SCREEN_HEIGHT)
+#define RELW(a) ((int32_t)(currUI->w) * a / tft.screen_width)
+#define RELH(a) ((int32_t)(currUI->h) * a / tft.screen_height)
 
 class UIBridge
 {
@@ -2484,7 +2484,7 @@ class Text : public UIelement
     // tft.drawText(fixedText + text, (x + d.x), (y + d.y), fontsize, colour);
     //combine both the fixed text and the text (for cursor and selector reasons
     // String combined = fixedText + text;
-    tft.setCursor((x + d.x), (y + d.y), fontsize, colour, (x + d.x));
+    tft.setCursor((x + d.x), (y + d.y), fontsize, colour, (x + d.x), (y + d.y));
 
     //print the fixed text first
     tft.print(fixedText);
@@ -3712,8 +3712,8 @@ class Window : public UIBridge, public UIelement
         {
           x = 0;
           y = -10;
-          w = SCREEN_WIDTH;
-          h = SCREEN_HEIGHT + 10;
+          w = tft.screen_width;
+          h = tft.screen_height + 10;
         }
       }
     }

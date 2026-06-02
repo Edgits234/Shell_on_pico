@@ -16,7 +16,7 @@
 // ============================================================
 
 #include <Arduino.h>      // Arduino-pico / mbed glue
-#define ENABLE_BACKSPACE 1
+#define ENABLE_ACCENTS 1
 #include <AwesomeUI.h>
 #include "io.hpp"
 #include "scheduler.hpp"
@@ -48,6 +48,11 @@ void setup() {
         delay(10);
 
     ui.begin();
+
+    tft.setCursor(0, 10, 2, TFT_WHITE, 0, 10);
+
+    // tft.rotate(90);
+
 
     // Start the 1 ms tick thread.
     Scheduler::init();
