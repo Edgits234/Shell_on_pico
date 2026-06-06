@@ -5,7 +5,7 @@
 
 //pins and usefull screen related constants
 
-#if defined(ARDUINO_ARCH_RP2040) || defined(ARDUINO_ARCH_MBED)
+#if defined(ARDUINO_ARCH_RP2040) || defined(ARDUINO_ARCH_MBED) && !defined(ARDUINO_GIGA)
   // Pin assignments for the Pico
   
   #define TFT_MISO_PIN 12 // GP12
@@ -91,10 +91,11 @@
 
 // Are we running Wokwi simulation? (automatically assigns based on the current board (if its a mega its wokwiSIM))
 #ifndef WOKWI_SIM
-  #if defined(__AVR_ATmega2560__) || defined(ARDUINO_AVR_MEGA2560) || defined(ARDUINO_ARCH_RP2040) || defined(ARDUINO_ARCH_MBED)
-    #define WOKWI_SIM 1
-  #elif defined(ARDUINO_GIGA)
+
+  #if defined(ARDUINO_GIGA)
     #define WOKWI_SIM 0
+  #elif defined(__AVR_ATmega2560__) || defined(ARDUINO_AVR_MEGA2560) || defined(ARDUINO_ARCH_RP2040) || defined(ARDUINO_ARCH_MBED)
+    #define WOKWI_SIM 1
   #else
     #warning "ERROR, if you don't have a GIGA or a MEGA board, this library most likely wont work, if you want to try anyways do '#define WOKWI_SIM [0 or 1]' just before including the library"
   #endif
@@ -182,7 +183,7 @@
 /*inline*/ const char* fontChar = "\x1A""aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ1234567890+-.,!?=:/\\*(){}'\"_$<>[]~#;&\u0301\u0300\u0302\u0308";
 
 //the font
-const uint8_t font[] = {0b00000001,0b00010101,0b00010101,0b00010000,0b00000000,0b01110100,0b10100100,0b11110111,0b01000111,0b11110001,0b10001100,0b01100001,0b00001110,0b01001010,0b01001100,0b11110100,0b01111101,0b00011000,0b11111000,0b00000000,0b01110100,0b00100000,0b11100111,0b01000110,0b00010000,0b10001011,0b10000010,0b00010111,0b11000110,0b00101111,0b11110100,0b01100011,0b00011000,0b11111000,0b00001100,0b10010111,0b00100000,0b11101111,0b11000011,0b10010000,0b10000111,0b11000100,0b01000111,0b00010000,0b10000100,0b11111100,0b00111001,0b00001000,0b01000000,0b00001110,0b10001011,0b11000010,0b11100111,0b01000010,0b00010011,0b10001011,0b11100001,0b00001111,0b01000110,0b00110001,0b10001100,0b01111111,0b00011000,0b11000100,0b00000100,0b00000001,0b00001000,0b01000111,0b00010000,0b10000100,0b00100011,0b10001000,0b00000010,0b00010000,0b10001000,0b11111000,0b10000100,0b00101001,0b00110010,0b00010000,0b10100110,0b00101001,0b00101000,0b11001011,0b00010100,0b10010100,0b01001000,0b01000010,0b00010000,0b10000010,0b10000100,0b00100001,0b00001000,0b01111100,0b00000000,0b01010101,0b01101011,0b00011101,0b11010110,0b10110101,0b10101101,0b01000000,0b00001111,0b01000110,0b00110001,0b10001110,0b01101011,0b01011001,0b11000100,0b00000000,0b01110100,0b01100010,0b11100111,0b01000110,0b00110001,0b10001011,0b10000001,0b11101000,0b11111010,0b00010000,0b11110100,0b01100011,0b11101000,0b01000000,0b00001111,0b10001011,0b11000010,0b00010111,0b01000110,0b00110001,0b10011011,0b11000000,0b00000100,0b00111101,0b00001000,0b11110100,0b01111101,0b00011000,0b11000100,0b00000110,0b01000001,0b00000100,0b11000111,0b01000001,0b10000011,0b10001011,0b10001000,0b11100010,0b00010000,0b10000100,0b11111001,0b00001000,0b01000010,0b00010000,0b00000000,0b10001100,0b01100010,0b11111000,0b11000110,0b00110001,0b10001011,0b10000000,0b00001000,0b11000101,0b01000100,0b10001100,0b01100010,0b10100101,0b00010000,0b00000000,0b10101101,0b01101010,0b10101010,0b11010110,0b10110101,0b10101010,0b10000001,0b00011000,0b10111010,0b00110001,0b10001100,0b01011101,0b00011000,0b11000100,0b00010001,0b10001011,0b11000010,0b11101000,0b11000101,0b11000100,0b00100001,0b00000000,0b00001111,0b10001001,0b00011111,0b11111000,0b10001000,0b10001000,0b01111100,0b10001100,0b00100001,0b00001000,0b11100111,0b01000100,0b00101110,0b10000111,0b11011101,0b00010011,0b00000110,0b00101110,0b10010100,0b10111110,0b00100001,0b00001011,0b11110000,0b11110000,0b01100010,0b11100111,0b11000011,0b11010001,0b10001011,0b10111110,0b00010001,0b00010001,0b00001000,0b01110100,0b01011101,0b00011000,0b10111001,0b11010001,0b01111000,0b01000010,0b00010111,0b01000110,0b10110101,0b10001011,0b10000000,0b01000010,0b01111100,0b10000100,0b00000000,0b00000001,0b11110000,0b00000000,0b00000000,0b00000000,0b00000000,0b01000000,0b00000000,0b00000000,0b00100001,0b00001000,0b01000010,0b00010000,0b00000100,0b01110100,0b01000100,0b01000000,0b00010000,0b00000000,0b11111000,0b00111110,0b00000000,0b00010000,0b00000000,0b00100000,0b00000100,0b00100010,0b00010001,0b00001000,0b01000010,0b00001000,0b01000001,0b00001001,0b01000100,0b01010000,0b00000000,0b00000010,0b00100001,0b00001000,0b01000001,0b00001000,0b00100001,0b00001000,0b01000100,0b00110001,0b00010000,0b10000010,0b00011001,0b10000100,0b00010000,0b10001000,0b11000010,0b00010000,0b10000000,0b00000000,0b00010100,0b10100101,0b00000000,0b00000000,0b00000000,0b00000000,0b00000000,0b01111100,0b10001110,0b10100011,0b10001010,0b11100000,0b00001000,0b10001000,0b00100000,0b10000000,0b10000010,0b00001000,0b10001000,0b01110010,0b00010000,0b10000100,0b00111001,0b11000010,0b00010000,0b10000100,0b11100000,0b00000001,0b00010101,0b00010000,0b00000000,0b10101111,0b10101011,0b11101010,0b00000001,0b00000000,0b00000010,0b00010001,0b00010100,0b01001011,0b01100100,0b11010000,0b00000000,0b00000000,0b00111000,0b00000000,0b00000000,0b00000011,0b10000000,0b00000000,0b00000000,0b01000101,0b00000000,0b00000000,0b00000000,0b00010100,0b00000010,0b00100000,0b00000000,0b00000000,0b00000000};
+const uint8_t font[] = {0b00000001,0b00010101,0b00010101,0b00010000,0b00000000,0b01110100,0b10100100,0b11110111,0b01000111,0b11110001,0b10001100,0b01100001,0b00001110,0b01001010,0b01001100,0b11110100,0b01111101,0b00011000,0b11111000,0b00000000,0b01110100,0b00100000,0b11100111,0b01000110,0b00010000,0b10001011,0b10000010,0b00010111,0b11000110,0b00101111,0b11110100,0b01100011,0b00011000,0b11111000,0b00001100,0b10010111,0b00100000,0b11101111,0b11000011,0b10010000,0b10000111,0b11000100,0b01000111,0b00010000,0b10000100,0b11111100,0b00111001,0b00001000,0b01000000,0b00001110,0b10001011,0b11000010,0b11100111,0b01000010,0b00010011,0b10001011,0b11100001,0b00001111,0b01000110,0b00110001,0b10001100,0b01111111,0b00011000,0b11000100,0b00000100,0b00000001,0b00001000,0b01000111,0b00010000,0b10000100,0b00100011,0b10001000,0b00000010,0b00010000,0b10001000,0b11111000,0b10000100,0b00101001,0b00110010,0b00010000,0b10100110,0b00101001,0b00101001,0b01010011,0b00010100,0b10010100,0b01001000,0b01000010,0b00010000,0b10000010,0b10000100,0b00100001,0b00001000,0b01111100,0b00000000,0b01010101,0b01101011,0b00011101,0b11010110,0b10110101,0b10101101,0b01000000,0b00001111,0b01000110,0b00110001,0b10001110,0b01101011,0b01011001,0b11000100,0b00000000,0b01110100,0b01100010,0b11100111,0b01000110,0b00110001,0b10001011,0b10000001,0b11101000,0b11111010,0b00010000,0b11110100,0b01100011,0b11101000,0b01000000,0b00001111,0b10001011,0b11000010,0b00010111,0b01000110,0b00110001,0b10011011,0b11000000,0b00000100,0b00111101,0b00001000,0b11110100,0b01111101,0b00011000,0b11000100,0b00000110,0b01000001,0b00000100,0b11000111,0b01000001,0b10000011,0b10001011,0b10001000,0b11100010,0b00010000,0b10000100,0b11111001,0b00001000,0b01000010,0b00010000,0b00000000,0b10001100,0b01100010,0b11111000,0b11000110,0b00110001,0b10001011,0b10000000,0b00001000,0b11000101,0b01000100,0b10001100,0b01100010,0b10100101,0b00010000,0b00000000,0b10101101,0b01101010,0b10101010,0b11010110,0b10110101,0b10101010,0b10000001,0b00011000,0b10111010,0b00110001,0b10001100,0b01011101,0b00011000,0b11000100,0b00010001,0b10001011,0b11000010,0b11101000,0b11000101,0b11000100,0b00100001,0b00000000,0b00001111,0b10001001,0b00011111,0b11111000,0b10001000,0b10001000,0b01111100,0b10001100,0b00100001,0b00001000,0b11100111,0b01000100,0b00101110,0b10000111,0b11011101,0b00010011,0b00000110,0b00101110,0b10010100,0b10111110,0b00100001,0b00001011,0b11110000,0b11110000,0b01100010,0b11100111,0b11000011,0b11010001,0b10001011,0b10111110,0b00010001,0b00010001,0b00001000,0b01110100,0b01011101,0b00011000,0b10111001,0b11010001,0b01111000,0b01000010,0b00010111,0b01000110,0b10110101,0b10001011,0b10000000,0b01000010,0b01111100,0b10000100,0b00000000,0b00000001,0b11110000,0b00000000,0b00000000,0b00000000,0b00000000,0b01000000,0b00000000,0b00000000,0b00100001,0b00001000,0b01000010,0b00010000,0b00000100,0b01110100,0b01000100,0b01000000,0b00010000,0b00000000,0b11111000,0b00111110,0b00000000,0b00010000,0b00000000,0b00100000,0b00000100,0b00100010,0b00010001,0b00001000,0b01000010,0b00001000,0b01000001,0b00001001,0b01000100,0b01010000,0b00000000,0b00000010,0b00100001,0b00001000,0b01000001,0b00001000,0b00100001,0b00001000,0b01000100,0b00110001,0b00010000,0b10000010,0b00011001,0b10000100,0b00011000,0b10001000,0b11000010,0b00010000,0b10000000,0b00000000,0b00010100,0b10100101,0b00000000,0b00000000,0b00000000,0b00000000,0b00000000,0b01111100,0b10001110,0b10100011,0b10001010,0b11100000,0b00001000,0b10001000,0b00100000,0b10000000,0b10000010,0b00001000,0b10001000,0b01110010,0b00010000,0b10000100,0b00111001,0b11000010,0b00010000,0b10000100,0b11100000,0b00000001,0b00010101,0b00010000,0b00000000,0b10101111,0b10101011,0b11101010,0b00000001,0b00000000,0b00000010,0b00010001,0b00010100,0b01001011,0b01100100,0b11010000,0b00000000,0b00000000,0b00111000,0b00000000,0b00000000,0b00000011,0b10000000,0b00000000,0b00000000,0b01000101,0b00000000,0b00000000,0b00000000,0b00010100,0b00000010,0b00100000,0b00000000,0b00000000,0b00000000};
 
 /*this is a very dumb function to let me see differences between stuff that have a different index so I can see if my shit is optimal, it probably doesn't do what you think it does*/
 /*inline*/ uint16_t convertNumberToColor(uint8_t number)
@@ -339,7 +340,7 @@ const uint8_t font[] = {0b00000001,0b00010101,0b00010101,0b00010000,0b00000000,0
     #endif
 
     /*inline*/ void displayFrameBuffer() {
-        
+
         #if defined(EMULATE_SCREEN)
             displayFrameBufferSerial();
         #endif
@@ -652,6 +653,7 @@ class TFT
         // SPI_BUS.setRX(0);   // Binds MISO to GP0
         // SPI_BUS.begin();
         
+        
         #if WOKWI_SIM
             // SPI_BUS.setClockDivider(SPI_CLOCK_DIV2);
             SPI_BUS.begin();
@@ -782,7 +784,7 @@ class TFT
     //TFT::drawPixel
     void drawPixel(int16_t x, int16_t y, uint16_t color) {
 
-        internal_screen_rotate(x, y);
+        // internal_screen_rotate(x, y);
         
         // //update position based on global
         // x += gx;
@@ -860,13 +862,13 @@ class TFT
         w = w - x + 1;
         h = h - y + 1;
 
-        DEBUG_BANNER;
+        // DEBUG_BANNER;
 
-        DEBUG(x, y, x + w - 1, y + h - 1);
+        // DEBUG(x, y, x + w - 1, y + h - 1);
 
-        internal_screen_rotate(x, y, w, h);
+        // internal_screen_rotate(x, y, w, h);
 
-        DEBUG(x, y, x + w - 1, y + h - 1);
+        // DEBUG(x, y, x + w - 1, y + h - 1);
 
         //if on mega, then directly transfer the fillRect to the screen
         #if WOKWI_SIM  
@@ -963,6 +965,127 @@ class TFT
             #endif
         #endif
     }
+
+    //TFT::fillRect
+    void fillFullScreenBinImage(int16_t x, int16_t y, const uint8_t* buffer, bool is_buffer_horizontal = false, bool inverse_byte = false) {
+
+        int w = 240;
+        int h = 320;
+
+        w = w + x - 1;
+        h = h + y - 1;
+    
+        x = max((vx), min((vx + vw - 1), x)); // (vx), (vx + vw)
+        y = max((vy), min((vy + vh - 1), y)); // (vy), (vy + vh)
+        w = max((vx), min((vx + vw - 1), w)); // (vx - 1), (vx + vw - 1)
+        h = max((vy), min((vy + vh - 1), h)); // (vy - 1), (vy + vh - 1)
+
+        w = w - x + 1;
+        h = h - y + 1;
+
+        // DEBUG_BANNER;
+
+        // DEBUG(x, y, x + w - 1, y + h - 1);
+
+        // internal_screen_rotate(x, y, w, h);
+
+        // DEBUG(x, y, x + w - 1, y + h - 1);
+
+        //if on mega, then directly transfer the fillRect to the screen
+        #if WOKWI_SIM  
+            setWindow(x, y, x + w - 1, y + h - 1);
+            
+            digitalWrite(CS_PIN, LOW);
+            digitalWrite(DC_PIN, HIGH);
+            
+            //print the output_bin_data array
+            for(int i = 0; i < h; i++)
+            {
+                for(int j = 0; j < w; j++)
+                {
+                    //figure out the true index
+                    int trueIndex;
+                    if(is_buffer_horizontal)
+                    {
+                        trueIndex = j * SCREEN_HEIGHT + SCREEN_HEIGHT - i - 1;
+                    }else
+                    {
+                        trueIndex = i * SCREEN_HEIGHT + j;
+                    }
+
+                    uint8_t currByte = pgm_read_byte(buffer + trueIndex / 8);
+                    uint8_t currBit; 
+                    if(inverse_byte)   
+                    {
+                        currBit = currByte & (0b10000000 >> (trueIndex % 8));
+                    }else
+                    {
+                        currBit = currByte & (1 << (trueIndex % 8));
+                    }
+                    uint16_t color  = (currBit) ? (rgb(255, 255, 255)) : (rgb(0, 0, 0));
+
+                    uint8_t hi = color >> 8;
+                    uint8_t lo = color & 0xFF;
+                
+                    SPI_BUS.transfer(hi);
+                    SPI_BUS.transfer(lo);
+                }
+            }
+
+            digitalWrite(CS_PIN, HIGH);
+
+        //else, on giga, we have enough space for a screen buffer so write to the screen buffer instead
+        #else
+            
+            //print the output_bin_data array
+            for(int i = 0; i < h; i++)
+            {
+                for(int j = 0; j < w; j++)
+                {
+                     //figure out the true index
+                    int trueIndex;
+                    if(is_buffer_horizontal)
+                    {
+                        trueIndex = j * SCREEN_HEIGHT + SCREEN_HEIGHT - i - 1;
+                    }else
+                    {
+                        trueIndex = i * SCREEN_HEIGHT + j;
+                    }
+
+                    uint8_t currByte = pgm_read_byte(buffer + trueIndex / 8);
+                    uint8_t currBit  ;
+                    if(inverse_byte)
+                    {
+                        currBit = currByte & (0b10000000 >> (trueIndex % 8));
+                    }else
+                    {
+                        currBit = currByte & (1 << (trueIndex % 8));
+                    }
+                    uint16_t color  = (currBit) ? (rgb(255, 255, 255)) : (rgb(0, 0, 0));
+
+                    #if NORMAL_DRAWING_ORDER
+                        //draw the pixel in the screen buffer
+                        *((uint16_t*)(screenBuffer + ((i + y) * SCREEN_WIDTH * 2) + ((j + x) * 2))) = color;
+                    #else
+                        // calculate the index in the array based on the position of the pixel (assuming that each pixel has a different index and that the array is all of the rows of the screen one after the other starting from top of the screen to the bottom)
+                        int truei = (j + SCREEN_WIDTH * i);
+                        
+                        //index it in the array of bytes (uint8_t) to see if we've already drawn at this place (if yes, don't waste time on drawing it)(if no, draw it and add it to the list)
+                        if(!(drawnPixel[truei / 8] & (0b1 << (truei % 8))))
+                        {
+                            //draw the pixel in the screen buffer
+                            *((uint16_t*)(screenBuffer + ((i + y) * SCREEN_WIDTH * 2) + ((j + x) * 2))) = color;
+                            
+                            //add the pixel to the list of no draws
+                            drawnPixel[truei / 8] |= (0b1 << (truei % 8));
+                        }
+                    #endif
+                }
+            }
+
+        #endif
+    }
+
 
     //TFT::testfillRect
     void testfillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color) {
@@ -1282,7 +1405,7 @@ class TFT
                 char* cs = char_sequence;//short for char_sequence, make code more readable, same as if I was using char_sequence
 
                 //clear screen
-                if(checkstr(cs, "\033[2J", 0, 0, nullptr))
+                if      (checkstr(cs, "\033[2J" , 0, 0, nullptr))
                 {
                     //clear all possible characters at the same time (with a big black square)
                     fillRect(cursor_x_start, cursor_y_start, screen_width - 1, cursor_y - cursor_y_start, 0);
@@ -1303,12 +1426,12 @@ class TFT
                     fontColor = TFT_WHITE;
 
                 //left arrow
-                }else if(checkstr(cs, "\033[D", 0, 0, nullptr))
+                }else if(checkstr(cs, "\033[D"  , 0, 0, nullptr))
                 {
                     s_print('\b');//simulate backspace character (it does the same thing)
 
                 //cursor home
-                }else if(checkstr(cs, "\033[H", 0, 0, nullptr))
+                }else if(checkstr(cs, "\033[H"  , 0, 0, nullptr))
                 {
                     cursor_x = cursor_x_start;
                     cursor_y = cursor_y_start;
@@ -1623,7 +1746,7 @@ class TFT
     
         prev_char = c;
     }
-
+    
     //TFT::print
     void s_print(const char* s, int line = __builtin_LINE(), const char* file = __builtin_FILE())
     {
@@ -2126,157 +2249,157 @@ class TFT
         drawTriangle(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, colour);
     }
 
-    //TFT::oldfillTriangle
-    void oldfillTriangle(int16_t x1, int16_t y1, int16_t x2, int16_t y2, int16_t x3, int16_t y3, uint16_t colour, int line = __builtin_LINE(), const char* file = __builtin_FILE())
-    {
-        
-        // debug triangle
-        // drawTriangle(x1, y1, x2, y2, x3, y3, color(255, 0, 0));
-
-        //classify all of the x and y coordinates highest to lowest y
-        {
-            int16_t y[3];
-            int16_t x[3];
-
-            y[0] = y1;
-            y[1] = y2;
-            y[2] = y3;
-            x[0] = x1;
-            x[1] = x2;
-            x[2] = x3;
-
-            //find the lowest of the numbers
-            int16_t best_i = -1;
-            for(int i = 0; i < 3; i++)
-            {
-                //if we found a smaller y
-                if((best_i == -1 && y[i] != INT16_MAX) || (best_i != -1 && y[i] < y[best_i]))
-                {
-                    best_i = i;
-                }
-            }
-
-            if(best_i == -1)
-            {
-                println(F("ERROR line "),line,F(" in "),file,F(", could not find the lowest number"));
-            }
-
-            y1 = y[best_i];//set smallest number
-            x1 = x[best_i];//set smallest number
-
-            y[best_i] = INT16_MAX;//remove off list
-            x[best_i] = INT16_MAX;//remove off list
-
-            //find the lowest of the numbers
-            best_i = -1;
-            for(int i = 0; i < 3; i++)
-            {
-                //if we found a smaller y
-                if((best_i == -1 && y[i] != INT16_MAX) || (best_i != -1 && y[i] < y[best_i]))
-                {
-                    best_i = i;
-                }
-            }
-
-            if(best_i == -1)
-            {
-                println(F("ERROR line "),line,F(" in "),file,F(", could not find the lowest number"));
-            }
-
-            y2 = y[best_i];//set smallest number
-            x2 = x[best_i];//set smallest number
-
-            y[best_i] = INT16_MAX;//remove off list
-            x[best_i] = INT16_MAX;//remove off list
-
-            //find the lowest of the numbers
-            best_i = -1;
-            for(int i = 0; i < 3; i++)
-            {
-                //if we found a smaller y
-                if((best_i == -1 && y[i] != INT16_MAX) || (best_i != -1 && y[i] < y[best_i]))
-                {
-                    best_i = i;
-                }
-            }
-
-            if(best_i == -1)
-            {
-                println(F("ERROR line "),line,F(" in "),file,F(", could not find the lowest number"));
-            }
-
-            y3 = y[best_i];//set smallest number
-            x3 = x[best_i];//set smallest number
-
-            y[best_i] = INT16_MAX;//remove off list
-            x[best_i] = INT16_MAX;//remove off list
-
-            if(x1 == INT16_MAX || x2 == INT16_MAX || x3 == INT16_MAX || y1 == INT16_MAX || y2 == INT16_MAX || y3 == INT16_MAX){println(F("ERROR line "),line,F(" in "),file,F(", was not able to sort the coordinates given in a correct order (had INT16_MIN in numbers)"));}
-        }
-
-
-        //1 and 2
-        float a1 = (float)(y1 - y2) / (float)(x1 - x2);
-        float b1 = (float)y1 - a1 * (float)x1;
-
-
-        //1 and 3
-        float a2 = (float)(y1 - y3) / (float)(x1 - x3);
-        float b2 = (float)y1 - a2 * (float)x1;
-
-
-        //2 and 3
-        float a3 = (float)(y2 - y3) / (float)(x2 - x3);
-        float b3 = (float)y2 - a3 * (float)x2;
-
-
-        //get the starting points of each of the lines (xs -> x_start, xe -> x_end, xis -> x_increment_start, xie -> x_increment_end)
-        float xs = (x2==x3)?(x2):(y3 - b3) / a3;
-        float xe = (x1==x3)?(x1):(y3 - b2) / a2;
-
-        //get the increment for those lines
-        float xis = (x2==x3)?(0):1 / a3;
-        float xie = (x1==x3)?(0):1 / a2;
-
-        //go through all of the lines one by one top to bottom until we reach the middle
-        for(float i = y3; i > y2; i--)
-        { 
-            //if numbers are both not nan then we draw because normal numbers
-            if(xs == xs && xe == xe)
-            {
-                //draw the line of the triangle
-                fillRect(roundf(MIN(xs, xe)), i, roundf(MAX(xs, xe)) - roundf(MIN(xs, xe)) + 1, 1, colour);
-            }
-            
-            //get the current line start x and end x
-            xs -= xis;
-            xe -= xie;
-        }
-
-
-        //get the starting points of each of the lines (xs -> x_start, xe -> x_end, xis -> x_increment_start, xie -> x_increment_end)
-        xs = (x1==x3)?(x1):(y2 - b2) / a2;
-        xe = (x1==x2)?(x1):(y2 - b1) / a1;
-
-        //get the increment for those lines
-        xis = (x1==x3)?(0):1 / a2;
-        xie = (x1==x2)?(0):1 / a1;
-
-        //go through all of the lines one by one middle to the bottom
-        for(float i = y2; i >= y1; i--)
-        {
-            //if numbers are both not nan then we draw because normal numbers
-            if(xs == xs && xe == xe)
-            {
-                //draw the line of the triangle
-                fillRect(roundf(MIN(xs, xe)), i, roundf(MAX(xs, xe)) - roundf(MIN(xs, xe)) + 1, 1, colour);
-            }
-
-            //get the current line start x and end x
-            xs -= xis;
-            xe -= xie;
-        }
-    }
+    // //TFT::oldfillTriangle
+    // void oldfillTriangle(int16_t x1, int16_t y1, int16_t x2, int16_t y2, int16_t x3, int16_t y3, uint16_t colour, int line = __builtin_LINE(), const char* file = __builtin_FILE())
+    // {
+    //
+    //     // debug triangle
+    //     // drawTriangle(x1, y1, x2, y2, x3, y3, color(255, 0, 0));
+    //
+    //     //classify all of the x and y coordinates highest to lowest y
+    //     {
+    //         int16_t y[3];
+    //         int16_t x[3];
+    //
+    //         y[0] = y1;
+    //         y[1] = y2;
+    //         y[2] = y3;
+    //         x[0] = x1;
+    //         x[1] = x2;
+    //         x[2] = x3;
+    //
+    //         //find the lowest of the numbers
+    //         int16_t best_i = -1;
+    //         for(int i = 0; i < 3; i++)
+    //         {
+    //             //if we found a smaller y
+    //             if((best_i == -1 && y[i] != INT16_MAX) || (best_i != -1 && y[i] < y[best_i]))
+    //             {
+    //                 best_i = i;
+    //             }
+    //         }
+    //
+    //         if(best_i == -1)
+    //         {
+    //             println(F("ERROR line "),line,F(" in "),file,F(", could not find the lowest number"));
+    //         }
+    //
+    //         y1 = y[best_i];//set smallest number
+    //         x1 = x[best_i];//set smallest number
+    //
+    //         y[best_i] = INT16_MAX;//remove off list
+    //         x[best_i] = INT16_MAX;//remove off list
+    //
+    //         //find the lowest of the numbers
+    //         best_i = -1;
+    //         for(int i = 0; i < 3; i++)
+    //         {
+    //             //if we found a smaller y
+    //             if((best_i == -1 && y[i] != INT16_MAX) || (best_i != -1 && y[i] < y[best_i]))
+    //             {
+    //                 best_i = i;
+    //             }
+    //         }
+    //
+    //         if(best_i == -1)
+    //         {
+    //             println(F("ERROR line "),line,F(" in "),file,F(", could not find the lowest number"));
+    //         }
+    //
+    //         y2 = y[best_i];//set smallest number
+    //         x2 = x[best_i];//set smallest number
+    //
+    //         y[best_i] = INT16_MAX;//remove off list
+    //         x[best_i] = INT16_MAX;//remove off list
+    //
+    //         //find the lowest of the numbers
+    //         best_i = -1;
+    //         for(int i = 0; i < 3; i++)
+    //         {
+    //             //if we found a smaller y
+    //             if((best_i == -1 && y[i] != INT16_MAX) || (best_i != -1 && y[i] < y[best_i]))
+    //             {
+    //                 best_i = i;
+    //             }
+    //         }
+    //
+    //         if(best_i == -1)
+    //         {
+    //             println(F("ERROR line "),line,F(" in "),file,F(", could not find the lowest number"));
+    //         }
+    //
+    //         y3 = y[best_i];//set smallest number
+    //         x3 = x[best_i];//set smallest number
+    //
+    //         y[best_i] = INT16_MAX;//remove off list
+    //         x[best_i] = INT16_MAX;//remove off list
+    //
+    //         if(x1 == INT16_MAX || x2 == INT16_MAX || x3 == INT16_MAX || y1 == INT16_MAX || y2 == INT16_MAX || y3 == INT16_MAX){println(F("ERROR line "),line,F(" in "),file,F(", was not able to sort the coordinates given in a correct order (had INT16_MIN in numbers)"));}
+    //     }
+    //
+    //
+    //     //1 and 2
+    //     float a1 = (float)(y1 - y2) / (float)(x1 - x2);
+    //     float b1 = (float)y1 - a1 * (float)x1;
+    //
+    //
+    //     //1 and 3
+    //     float a2 = (float)(y1 - y3) / (float)(x1 - x3);
+    //     float b2 = (float)y1 - a2 * (float)x1;
+    //
+    //
+    //     //2 and 3
+    //     float a3 = (float)(y2 - y3) / (float)(x2 - x3);
+    //     float b3 = (float)y2 - a3 * (float)x2;
+    //
+    //
+    //     //get the starting points of each of the lines (xs -> x_start, xe -> x_end, xis -> x_increment_start, xie -> x_increment_end)
+    //     float xs = (x2==x3)?(x2):(y3 - b3) / a3;
+    //     float xe = (x1==x3)?(x1):(y3 - b2) / a2;
+    //
+    //     //get the increment for those lines
+    //     float xis = (x2==x3)?(0):1 / a3;
+    //     float xie = (x1==x3)?(0):1 / a2;
+    //
+    //     //go through all of the lines one by one top to bottom until we reach the middle
+    //     for(float i = y3; i > y2; i--)
+    //     { 
+    //         //if numbers are both not nan then we draw because normal numbers
+    //         if(xs == xs && xe == xe)
+    //         {
+    //             //draw the line of the triangle
+    //             fillRect(roundf(MIN(xs, xe)), i, roundf(MAX(xs, xe)) - roundf(MIN(xs, xe)) + 1, 1, colour);
+    //         }
+    //
+    //         //get the current line start x and end x
+    //         xs -= xis;
+    //         xe -= xie;
+    //     }
+    //
+    //
+    //     //get the starting points of each of the lines (xs -> x_start, xe -> x_end, xis -> x_increment_start, xie -> x_increment_end)
+    //     xs = (x1==x3)?(x1):(y2 - b2) / a2;
+    //     xe = (x1==x2)?(x1):(y2 - b1) / a1;
+    //
+    //     //get the increment for those lines
+    //     xis = (x1==x3)?(0):1 / a2;
+    //     xie = (x1==x2)?(0):1 / a1;
+    //
+    //     //go through all of the lines one by one middle to the bottom
+    //     for(float i = y2; i >= y1; i--)
+    //     {
+    //         //if numbers are both not nan then we draw because normal numbers
+    //         if(xs == xs && xe == xe)
+    //         {
+    //             //draw the line of the triangle
+    //             fillRect(roundf(MIN(xs, xe)), i, roundf(MAX(xs, xe)) - roundf(MIN(xs, xe)) + 1, 1, colour);
+    //         }
+    //
+    //         //get the current line start x and end x
+    //         xs -= xis;
+    //         xe -= xie;
+    //     }
+    // }
 
     //TFT::fillTriangle
     void fillTriangle(int16_t x1, int16_t y1, int16_t x2, int16_t y2, int16_t x3, int16_t y3, uint16_t colour, int line = __builtin_LINE(), const char* file = __builtin_FILE())
@@ -2886,6 +3009,11 @@ class TFT
         {   
             drawPixel(pencil[i], convertNumberToColor(i));
         }
+    }
+
+    void displayFrameBuffer()
+    {
+        ::displayFrameBuffer();
     }
 
     //TFT::TFT

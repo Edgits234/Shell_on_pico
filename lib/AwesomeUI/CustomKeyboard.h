@@ -246,6 +246,8 @@
     #define KEY_RIGHTSHIFT                         0xE5
     #define KEY_RIGHTALT                           0xE6
     #define KEY_RIGHT_GUI                          0xE7
+    
+
 
 #else
 
@@ -515,6 +517,10 @@ int strToKey(const char* str, const char* include = " ")
     /*inline*/ Keyboard keyb;
 #endif
 
+// quick explaination for later confused me or other people as to how this works
+// you use the "update()" function to update the internal states of the keyboard and everything, this "fetches" the keyboard keys and puts em in the "keys" array. You can use dedicated functions like "checkForKey" to check if a key is inside of the "kbd.keys.keys" array
+// The keyboard can sometimes fetch slower than it recieves the keys, to check if you have keys that are waiting to be put inside of the "keys" variable, check "available"
+// available contains the number of keys currently stored, a "1" would mean you have one key input of the keyboard, the current key input you are seeing. a 2 would mean there is 1 extra key waiting after the current keys you are looking at, and a 0 would mean you are just simply not pressing any key on the keyboard.
 class KeyboardManager
 {
     public:
@@ -523,7 +529,7 @@ class KeyboardManager
     uint8_t lastKey;
     uint8_t currKey;
     char currChar;
-    size_t Available;
+    size_t available;
     HID_KEYBD_Info_TypeDef keys;
     long long lastPress;
     long long lastRepeat;
@@ -554,9 +560,9 @@ class KeyboardManager
         //if the string is nothing, we set the keyboard to not available (since we are sure 100% we don't have any keyboard emulation commands)
         if(str[0] == '\0')
         {
-            println(F("string was nothing, setting Available to 0"));
-            Available = 0;
-            println(F("Available : "),Available);
+            println(F("string was nothing, setting available to 0"));
+            available = 0;
+            println(F("available : "),available);
             return;
         }
 
@@ -585,8 +591,8 @@ class KeyboardManager
                         //set it to the correct key value based on the string right after (if its not a valid key its just going to set it to empty)
                         keys.keys[j] = val;
 
-                        //set Available to true (because we just set a new key, we technically pressed a new key)
-                        Available = true;
+                        //set available to true (because we just set a new key, we technically pressed a new key)
+                        available = true;
 
                         Serial.print("Successfully added key \"");
                             
@@ -639,8 +645,8 @@ class KeyboardManager
                         //set to empty
                         keys.keys[j] = 0x00;
 
-                        //set Available to true (because we just removed a key, we technically changed the pressed keys)
-                        Available = true;
+                        //set available to true (because we just removed a key, we technically changed the pressed keys)
+                        available = true;
 
 
                         //break out of the loop, we only want to set one key, and we're done
@@ -823,20 +829,10 @@ class KeyboardManager
     void begin()
     {
         #if !defined(EMULATE_KEYBOARD)
+            ::println("initializing the keyboard");
             keyb.begin();
+            ::println("initialized");
         #endif
-    }
-    
-    size_t available()
-    {
-        if(Available == true)
-        {
-            Available -= 1;
-            return Available + 1;
-        }else
-        {
-            return Available;
-        }
     }
 
     void testKeys(HID_KEYBD_Info_TypeDef key)
@@ -1612,10 +1608,10 @@ class KeyboardManager
             }    
 
         #else
-            Available = keyb.available();
+            available = keyb.available();
         #endif
 
-        if(Available)
+        if(available)
         {
 
             #if defined(EMULATE_KEYBOARD)
@@ -1698,7 +1694,7 @@ class KeyboardManager
         //keyboard lib doesn't do repeat by default so we check if no change has been made on the keys and repeat
         //we first check if the last change / (last key press) was delayms which changes based on delayLimter this is the initial delay (for text 500 ms)
         //we then pass the initial delay for good and we then go on the the lastRepeat delay, this one has a shorter fixed, 30 ms cooldown
-        if(Available == 0 && millis() - lastPress > delayms && millis() - lastRepeat > 30 && currKey != 0 && delayLimiter != 2)
+        if(available == 0 && millis() - lastPress > delayms && millis() - lastRepeat > 30 && currKey != 0 && delayLimiter != 2)
         {
             // println("REPEATING");
 
@@ -1709,7 +1705,7 @@ class KeyboardManager
                 testKeys(keys);
             }
 
-            Available += 1;
+            available += 1;
         }
     }
 
@@ -1727,7 +1723,7 @@ class KeyboardManager
         this->lastKey = 0;
         this->currKey = 0;
         this->currChar = 0;
-        this->Available = false;
+        this->available = false;
         this->lastPress = __LONG_LONG_MAX__;
         this->lastRepeat = 0;
         this->enableBuffer = false;

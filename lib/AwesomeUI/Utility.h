@@ -369,8 +369,6 @@ class LambdaCallable : public BaseCallable<Return, Args...>
     }
 };
 
-
-
 //super sofisticated line tracker to track lines even for operator= one argument thing
 template<typename T>
 struct LineTracker
@@ -386,6 +384,11 @@ struct LineTracker
     file(file1)
     {}
 };
+
+template <typename T>
+struct TypePrinter; // Intentionally incomplete, has no size
+
+#define DUMP_TYPE(Type) static_assert(sizeof(TypePrinter<Type>) == 0, "Check type here")
 
 
 template<typename Return, typename... Args>
@@ -417,21 +420,32 @@ class Function
         //static const variable to easly index when using it I guess
         static const bool value = true;
     };
+
+    //specific template if its a Function type with any Return type and any arguments I guess
+    template <typename R, typename... A>
+    struct is_Function<Function<R, A...>&>
+    {
+        //static const variable to easly index when using it I guess
+        static const bool value = true;
+    };
     
+
+    template <typename T>
+    struct DisplayTypeAtCompileTime; // No body! Intentionally incomplete.
 
 
     //Function constructor that sets the lambda but not a Function
     template<typename Lambda> //second typename has no name and default argument is either set to void or not set depening on compile time computed types
-    Function(Lambda& lambda, typename enable_if<!is_Function<Lambda>::value, void>::type* = nullptr)
+    Function(const Lambda& lambda, typename enable_if<!is_Function<Lambda>::value, void>::type* = nullptr)
     {
-        //dynamic memory allocation for a LambdaCallable object that we are going to store disguised as a BaseCallable to be able to call it
+        //dynamic memory allocation for a new LambdaCallable object
         lambdaCallable = new LambdaCallable<Lambda, Return, Args...>(lambda);
     }
 
     
     //constructor for functions that don't have the same template as this e
     template<typename Lambda>
-    Function(Lambda& function, typename enable_if<is_Function<Lambda>::value, void>::type* = nullptr, int line = __builtin_LINE(), const char* file = __builtin_FILE())
+    Function(const Lambda& function, typename enable_if<is_Function<Lambda>::value, void>::type* = nullptr, int line = __builtin_LINE(), const char* file = __builtin_FILE())
     {
         if(function.lambdaCallable == nullptr) return;
         println(F("ERROR line "),line,F(" in "),file,F(", tried setting a Function class to another Function class with different Return type or Arguments"));
@@ -459,6 +473,9 @@ class Function
             println(F("ERROR line "),__LINE__,F(", function was set to a pointer other than nullptr, this is not supposed to happen (this constructor might be running instead of another correct one)"));
         }
     }
+    
+    //Function constructor (same as default constructor, for nullptr)
+    Function(decltype(nullptr) ptr){}
 
     //default function constructor if you wish to set the lambda afterwards
     Function(){}
@@ -701,11 +718,11 @@ struct HandleFlashString<T, typename enable_if<is_same<T, const __FlashStringHel
 
 
 //global::Array
-template<typename T>
+template<typename T, size_t S = 10>
 class Array
 {
   public:
-  T array[20];
+  T array[S];
   unsigned int size;
   T nothing;
 
