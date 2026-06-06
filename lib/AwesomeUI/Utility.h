@@ -4,7 +4,7 @@
 //include default arduino stuff
 #include <Arduino.h>
 
-#define LINE_DEBUG println(F("line : "),__LINE__);
+#define LINE_DEBUG ::println(F("line : "),__LINE__);
 
 // 1. Helper macros to turn whatever is in WOKWI_SIM into a "string"
 #define STRINGIZE_INTERNAL(x) #x
@@ -260,7 +260,18 @@ void printArrayHelper(T* input, size_t size)
 //automatically give what input arguments look like as well as the arguments themselfs
 #define DEBUG(...) debugHelper(0, #__VA_ARGS__, __VA_ARGS__)
 
-#define DEBUG_BANNER ::println("===========[DEBUGGING]===========")
+#define DEBUG_BANNER debug_banner_h
+
+void debug_banner_h()
+{
+    ::println("===========[DEBUGGING]===========");
+}
+
+template<typename... Args>
+void debug_banner_h(Args... args)
+{
+    ::println("===========[",args...,"]===========");
+}
 
 
 
@@ -755,7 +766,7 @@ class Array
   }
 
   //Array::remove
-  void remove(unsigned int index)
+  void remove(unsigned int index, int line = __builtin_LINE(), const char* file = __builtin_FILE())
   {
     //if the index is between 0 and the current size of the array (if its not, than can't delete)
     if(0 <= index && index <= min((size - 1), (sizeof(array) / sizeof(T) - 1)))
@@ -770,7 +781,7 @@ class Array
       size -= 1;
     }else
     {
-      println(F("ERROR, tried accessing index : "),index,F(" but the range of possible is : "),0,F(" to "),size - 1);
+      println("ERROR ",line," in ",file,", tried accessing index : ",index,F(" but the range of possible is : "),0,F(" to "),size - 1);
     }
   }
 

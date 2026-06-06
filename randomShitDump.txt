@@ -1,0 +1,128 @@
+
+
+// #define UI_SETTINGS 0b00000001
+#include <AwesomeUI.h>
+
+// Pinout defaults (see fs.hpp):
+//   SD CS   → GP17
+//   SD MOSI → GP19  (SPI0 MOSI)
+//   SD MISO → GP16  (SPI0 MISO)
+//   SD SCK  → GP18  (SPI0 SCK)
+
+// CustomGraphics does not have this feature
+// uint16_t lineBuffer[WIDTH];
+
+unsigned long start = 0;
+
+void setup() {
+    ui.begin();
+
+    Window& win = ui.add<Window>("win");
+    win.add<BadApplePlayer>("player");
+}
+
+void loop() {
+    ui.update();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -498,6 +498,7 @@ class TFT
     int16_t screen_width  =  SCREEN_WIDTH;
     int16_t screen_height = SCREEN_HEIGHT;
     uint8_t screen_orientation = 0;//default portrait, every increase is a 90deg clockwise rotation
+    uint8_t disable_fillRect = 0;//boolean to disable fillRectangle for performence (usually for Wokwi users)
 
     /**
      * @param a set screen rotation (90deg ONLY) (in degrees)
@@ -526,9 +527,9 @@ class TFT
             //set new default viewport
             setViewport(0, 0, screen_width, screen_height);
             
-            DEBUG_BANNER;
-            ::println("setting viewport");
-            DEBUG(vx, vy, vw, vh);
+            // DEBUG_BANNER();
+            // ::println("setting viewport");
+            // DEBUG(vx, vy, vw, vh);
         }
 
     }
@@ -845,30 +846,33 @@ class TFT
     //TFT::fillRect
     void fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color) {
         
+        if(disable_fillRect)
+        {
+            return;
+        }
+
         #if WOKWI_SIM
         //update position to be based on global
         // x += gx;
         // y += gy;
         #endif
 
+
+        //fit to the viewport
+
+        //transform width into a secondary position to make math easier
         w = w + x - 1;
         h = h + y - 1;
     
-        x = max((vx), min((vx + vw - 1), x)); // (vx), (vx + vw)
-        y = max((vy), min((vy + vh - 1), y)); // (vy), (vy + vh)
-        w = max((vx), min((vx + vw - 1), w)); // (vx - 1), (vx + vw - 1)
-        h = max((vy), min((vy + vh - 1), h)); // (vy - 1), (vy + vh - 1)
+        //when x goes too much to the right we want it to warp at 240 instead of 239 bcs thats going to make the result width 0 (so we display nothing)
+        x = max((vx), min((vx + vw), x));
+        y = max((vy), min((vy + vh), y));
+        w = max((vx - 1), min((vx + vw - 1), w));
+        h = max((vy - 1), min((vy + vh - 1), h));
 
+        //transform width back into original position
         w = w - x + 1;
         h = h - y + 1;
-
-        // DEBUG_BANNER;
-
-        // DEBUG(x, y, x + w - 1, y + h - 1);
-
-        // internal_screen_rotate(x, y, w, h);
-
-        // DEBUG(x, y, x + w - 1, y + h - 1);
 
         //if on mega, then directly transfer the fillRect to the screen
         #if WOKWI_SIM  
@@ -967,29 +971,29 @@ class TFT
     }
 
     //TFT::fillRect
-    void fillFullScreenBinImage(int16_t x, int16_t y, const uint8_t* buffer, bool is_buffer_horizontal = false, bool inverse_byte = false) {
+    void fillBinImage(int16_t x, int16_t y, int16_t w, int16_t h, const uint8_t* buffer, bool is_buffer_horizontal = false, bool inverse_byte = false) {
 
-        int w = 240;
-        int h = 320;
+        int16_t original_x = x;
+        int16_t original_y = y;
+        // int16_t original_w = w;
+        int16_t original_h = h;
 
+        //fit to the viewport
+
+        //transform width into a secondary position to make math easier
         w = w + x - 1;
         h = h + y - 1;
     
-        x = max((vx), min((vx + vw - 1), x)); // (vx), (vx + vw)
-        y = max((vy), min((vy + vh - 1), y)); // (vy), (vy + vh)
-        w = max((vx), min((vx + vw - 1), w)); // (vx - 1), (vx + vw - 1)
-        h = max((vy), min((vy + vh - 1), h)); // (vy - 1), (vy + vh - 1)
+        //when x goes too much to the right we want it to warp at 240 instead of 239 bcs thats going to make the result width 0 (so we display nothing)
+        x = max((vx), min((vx + vw), x));
+        y = max((vy), min((vy + vh), y));
+        w = max((vx - 1), min((vx + vw - 1), w));
+        h = max((vy - 1), min((vy + vh - 1), h));
 
+        //transform width back into original position
         w = w - x + 1;
         h = h - y + 1;
 
-        // DEBUG_BANNER;
-
-        // DEBUG(x, y, x + w - 1, y + h - 1);
-
-        // internal_screen_rotate(x, y, w, h);
-
-        // DEBUG(x, y, x + w - 1, y + h - 1);
 
         //if on mega, then directly transfer the fillRect to the screen
         #if WOKWI_SIM  
@@ -1007,10 +1011,10 @@ class TFT
                     int trueIndex;
                     if(is_buffer_horizontal)
                     {
-                        trueIndex = j * SCREEN_HEIGHT + SCREEN_HEIGHT - i - 1;
+                        trueIndex = (j + MAX(0, x - original_x)) * original_h + original_h - (i + MAX(0, y - original_y)) - 1;
                     }else
                     {
-                        trueIndex = i * SCREEN_HEIGHT + j;
+                        trueIndex = (i + MAX(0, y - original_y)) * original_h + (j + MAX(0, x - original_x));
                     }
 
                     uint8_t currByte = pgm_read_byte(buffer + trueIndex / 8);
@@ -1042,14 +1046,14 @@ class TFT
             {
                 for(int j = 0; j < w; j++)
                 {
-                     //figure out the true index
+                    //figure out the true index
                     int trueIndex;
                     if(is_buffer_horizontal)
                     {
-                        trueIndex = j * SCREEN_HEIGHT + SCREEN_HEIGHT - i - 1;
+                        trueIndex = (j + MAX(0, x - original_x)) * original_h + original_h - (i + MAX(0, y - original_y)) - 1;
                     }else
                     {
-                        trueIndex = i * SCREEN_HEIGHT + j;
+                        trueIndex = (i + MAX(0, y - original_y)) * original_h + (j + MAX(0, x - original_x));
                     }
 
                     uint8_t currByte = pgm_read_byte(buffer + trueIndex / 8);

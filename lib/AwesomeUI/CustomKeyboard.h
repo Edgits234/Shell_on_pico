@@ -560,9 +560,7 @@ class KeyboardManager
         //if the string is nothing, we set the keyboard to not available (since we are sure 100% we don't have any keyboard emulation commands)
         if(str[0] == '\0')
         {
-            println(F("string was nothing, setting available to 0"));
             available = 0;
-            println(F("available : "),available);
             return;
         }
 
@@ -646,7 +644,7 @@ class KeyboardManager
                         keys.keys[j] = 0x00;
 
                         //set available to true (because we just removed a key, we technically changed the pressed keys)
-                        available = true;
+                        available = 1;
 
 
                         //break out of the loop, we only want to set one key, and we're done
@@ -1355,7 +1353,7 @@ class KeyboardManager
         cursorIndex += 1;
     }
 
-    //simple function that checks if you are currently holding the specific key
+    //simple function that checks too many initializer valuesC/if you are currently holding the specific key (other keys can be pressed)
     bool checkForKey(uint8_t key)
     {
         for(int i = 0; i < 6; i++)

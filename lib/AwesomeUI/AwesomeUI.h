@@ -1265,27 +1265,8 @@ class UIBridge
     return false;
   }
 
-  //UI::remove
-  void remove(const char* id)
-  {
-    println(F("SHOULD NOT BE REMOVING ANY UI ELEMENT WHAT THE FUCK"));
-    // we go through all of the ui elements
-    for (unsigned int i = 0; i < arr->size; i++)
-    {
-      // if the ui element has the specific id we are looking for
-      if (strcmp(arr->at(i)->id, id) == 0)
-      {
-        delete arr->at(i);
-        arr->remove(i); // don't forget to remove it from the array too
-        
-        return;
-      }
-    }
-    
-    // if we didn't find a corresponding id
-    println(F("ERROR, couldn't find '"), id, F("' in the list of ui elements"));
-  }
-  
+  void remove(const char* id);
+
   //UI::remove
   void remove(UIelement* ptr)
   {
@@ -1849,75 +1830,10 @@ class UI : public UIBridge
     }
   }
 
-  //UI::remove
-  void remove(const char* id)
-  {
-    // println(F("SHOULD NOT BE REMOVING ANY UI ELEMENT WHAT THE FUCK"));
-    // we go through all of the ui elements
-    for (unsigned int i = 0; i < arr.size; i++)
-    {
-      // if the ui element has the specific id we are looking for
-      if (strcmp(arr.at(i)->id, id) == 0)
-      {
-        delete arr.at(i);
-        arr.remove(i); // don't forget to remove it from the array too
-        
-        return;
-      }
-    }
-    
-    // if we didn't find a corresponding id
-    println(F("ERROR, couldn't find '"), id, F("' in the list of ui elements"));
-  }
-  
-  //UI::remove
-  void remove(UIelement* ptr)
-  {
-    // we go through all of the ui elements
-    for (unsigned int i = 0; i < arr.size; i++)
-    {
-      //if the ui element has the specific pointer we are looking for
-      if(arr.at(i) == ptr)
-      {
-        delete arr.at(i);
-        arr.remove(i); // don't forget to remove it from the array too
-        return;//return early no need to continue checking
-      }
-    }
-    
-    // // if we didn't find a corresponding id
-    println(F("ERROR line "),__LINE__,F(" in "),__FILE__,F(" couldn't find the pointer in the list of ui elements"));
-  }
-
-  //UI::clear
-  void clear()
-  {
-    unsigned int staticSize = arr.size;
-
-    // we go through all of the ui elements
-    for (unsigned int i = 0; i < staticSize; i++)
-    {
-      
-      if(arr.at(0) == nullptr)
-      {
-        println(F("ERROR line "),__LINE__,F(" in "),__FILE__,F(", nullptr detected in the arr"));
-        while(true);
-      }else
-      {
-        
-        // then we delete
-        delete arr.at(0);
-        arr.remove(0); // don't forget to remove from the array too
-      }
-    }
-  }
-
-
   //UI::touchUpdateAddition
   virtual void touchUpdateAddition(){}
 
   //UI::update
-  // FIX 4: Add bounds checking to update() loop
   void update()
   {
 
@@ -1925,7 +1841,7 @@ class UI : public UIBridge
     
     touchUpdateAddition();
 
-    drawingTime = millis();//store time of start of drawing
+    drawingTime = millis();//temporarly store time of start of drawing
 
     //after the keyboard (bcs emulation is weird and stops the whole code so we don't want to stop code after we drew a window)
     #if defined(NORMAL_DRAWING_ORDER)
@@ -2081,19 +1997,11 @@ class UI : public UIBridge
     // test print println("displaying the frame buffer");
     if(isManager && !(UI_SETTINGS & 0b100))
     {
-      // test print println("step one (!kbd.available => ",kbd.available,")");
-      //UI_SETTINGS == 1                   -> true
-      //UI_SETTINGS == 0 && !kbd.available -> true  
-      if((UI_SETTINGS & 0b10) || !kbd.available || true)
-      {
-        // test print println("step two");
-        //wokwi_sim's graphical commands print straight to the screen, we can therefor skip the displayFrameBuffer part... and fuck I just remembered I changed everything to be drawn in inverse order, damn thats annoying
-        #if !WOKWI_SIM
-          displayFrameBuffer();//display on the actuall screen
-          resetDrawnPixel();//reset the drawn pixel so that we can actually darw afterwards
-        #endif
-        // test print println("you should be seeing stuff now");
-      }
+      //wokwi_sim's graphical commands print straight to the screen, we can therefor skip the displayFrameBuffer part... and fuck I just remembered I changed everything to be drawn in inverse order, damn thats annoying
+      #if !WOKWI_SIM
+        displayFrameBuffer();//display on the actuall screen
+        resetDrawnPixel();//reset the drawn pixel so that we can actually darw afterwards
+      #endif
     }
   
     //calculate time it took to draw and set drawingTime to that
@@ -2168,6 +2076,41 @@ UIBridge::UIBridge(UI* currUI = nullptr)
     arr = &currUI->arr;
   }
 }
+
+//UI::remove
+void UIBridge::remove(const char* id)
+{
+  println(F("SHOULD NOT BE REMOVING ANY UI ELEMENT WHAT THE FUCK"));
+
+  currUI->printarray();
+
+  // we go through all of the ui elements
+  for (unsigned int i = 0; i < arr->size; i++)
+  {
+    // if the ui element has the specific id we are looking for
+    if (strcmp(arr->at(i)->id, id) == 0)
+    {
+      UIelement* elem = arr->at(i);
+      delete elem;
+
+      DEBUG_BANNER("after deleting the Shell");
+      currUI->printarray();
+
+      //remove from pointer (and not known i, since the destructor of the element might have deleted some elements)
+      remove(elem);
+
+      DEBUG_BANNER("after remove of \"",id,"\" : ");
+      currUI->printarray();
+
+
+      return;
+    }
+  }
+  
+  // if we didn't find a corresponding id
+  println(F("ERROR, couldn't find '"), id, F("' in the list of ui elements"));
+}
+
 
 // #define RELW(a, b) (b * (a / tft.screen_width ))//relative width
 // #define RELH(a, b) (b * (a / tft.screen_height))//relative height
@@ -2255,7 +2198,6 @@ class UIManager : public UI
     endLoop:
     #endif
 
-    Serial.println("Starting...");    
     Serial.println("Starting...");  
     kbd.begin();
 
@@ -2297,14 +2239,9 @@ class UIManager : public UI
     #endif
   }
 
-  //UIManager::touchUpdateAddition
-  //add the touch updating to the UIManager UI only because we don't want to update the whole touch thingy when we simply want to update UIs
-  void touchUpdateAddition()
+  void handleTouch()
   {
-
-    //update the keyboard (fetch the keys that have been pressed or unpressed)
-    kbd.update();
-
+    
     if(enabletouch == 1)
     {
       if(touched())
@@ -2319,14 +2256,13 @@ class UIManager : public UI
 
           // check if we are holding
           #if WOKWI_SIM
-          if (millis() - lastTouch - drawingTime <= 75)
+          if ((long long)(millis()) - (long long)(lastTouch) - (long long)(drawingTime) <= 75)
           #else
-          if (millis() - lastTouch - drawingTime <= 200)
+          if ((long long)(millis()) - (long long)(lastTouch) - (long long)(drawingTime) <= 200)
           #endif
           {
             holding = true;
-          }
-          else
+          }else
           {
             holding = false;
           }
@@ -2342,7 +2278,11 @@ class UIManager : public UI
         }
       }
 
-      if(millis() - lastTouch > 75 && focus == 1)
+      #if WOKWI_SIM
+      if ((long long)(millis()) - (long long)(lastTouch) > 75)
+      #else
+      if ((long long)(millis()) - (long long)(lastTouch) > 200)
+      #endif
       {
         handleInput({0,0}, false, 0);
 
@@ -2374,8 +2314,36 @@ class UIManager : public UI
         kbdShortcuts = 0;//reset kbd shortcuts back to zero so we can use keyboard shortcuts again
       }
     }
+  }
 
+  //UIManager::touchUpdateAddition
+  //add the touch updating to the UIManager UI only because we don't want to update the whole touch thingy when we simply want to update UIs
+  void touchUpdateAddition()
+  {
+    //update keyboard (fetch new keys)
+    kbd.update();
+
+    //handle for touch inputs
+    handleTouch();
+    
+    //let all other elements use keyboard info
     handleKeyboardInput();
+    
+    //as long as we have keys being pressed, loop
+    while(kbd.available)
+    {
+      //update keyboard (fetch new keys)
+      kbd.update();
+
+      //we didn't draw so make it zero
+      drawingTime = 0;
+
+      //handle for touch inputs
+      handleTouch();
+      
+      //let all other elements use keyboard info
+      handleKeyboardInput();
+    }
   }
 
   UIManager()
@@ -4078,13 +4046,13 @@ class Terminal : public UIelement
   uint8_t terminalSelect = 0;//helper variable to see if teh window just got selected
   uint8_t pressedEnter = 0;//helper variable to not repeat Enter when held
   uint8_t windowDied = 0;//helper variable to check if the window died, and if it did, we should delete the whole Terminal object as well
+  uint8_t terminalDying = 0;
   uint8_t barCollision = 0;//stop code from registering  
   uint8_t cmdAvailable = 0;
   int textScrollingSpeed = 10;//speed / size of the steps each time you scroll
   char* cmdBuffer = nullptr;//make a cmd buffer (which is going to the sdram)
   void* deathCallbackInput = nullptr;//this is what is going to get inputed to the deathCallBack function
-  void (*deathCallback)(void*) = nullptr;//this function gets called during the destructo rof the Window element (this is for some use that I needed, don't ask)
-  
+  void (*deathCallback)(void*) = nullptr;//this function gets called during the destructo rof the Window element (this is for some use that I needed, don't ask)  
 
   //if the window ever dies then its going to call this function (make it static so complier don't go KABOOM)
   static void deathCallbackTerminal(void* input)
@@ -4095,11 +4063,33 @@ class Terminal : public UIelement
 
       terminal->windowDied = 1;
 
-      terminal->ui1->remove(terminal);      
+      if(!terminal->terminalDying)
+      {
+        terminal->ui1->remove(terminal);   
+      }   
     }else
     {
       println(F("ERROR line "),__LINE__,F(", the input was a nullptr"));
     }
+  }
+
+  //Terminal::write
+  void write(char c)
+  {
+    text.fixedText += c;
+  }
+  
+  //Terminal::available
+  uint8_t available()
+  {
+    return cmdAvailable;
+  }
+
+  //Terminal::read
+  char* read()
+  {
+    cmdAvailable--;//decrease cmdAvailable
+    return cmdBuffer;
   }
 
   //Terminal::handleInput
@@ -4108,10 +4098,7 @@ class Terminal : public UIelement
     //if we started a new click
     if(holding == 0 && focus == 1)
     {
-      DisplacePointUI d = ::ui.getTotalDisplacement();
-
-      //did the touch touch the top bar of the window
-      barCollision = ::ui.touchCollide(p, d.x + window.x, d.y + window.y, window.w, 10);
+      barCollision = window.highBarSelected;
     }
   }
 
@@ -4134,8 +4121,6 @@ class Terminal : public UIelement
     {
       ui1->remove(this);//self destruct if child window is gone
     }
-
-    // DEBUG(window.selected);
 
     //when we click the window (select it) it should also select the text
     if((window.selected == 1 || window.selected == 2) && terminalSelect == 0 && !barCollision)
@@ -4343,6 +4328,14 @@ class Terminal : public UIelement
 
   ~Terminal()
   {
+    terminalDying = true;
+
+    //delete window if it didn't die
+    if(!windowDied)
+    {
+      //remove window
+      ui1->remove(&window);
+    }
     
     //play the mistery deathCallback function if it is not a nullptr
     if(deathCallback != nullptr)
@@ -4357,7 +4350,7 @@ class Terminal : public UIelement
     #endif
 
     println(F("Terminal destructor for ID : "),id,F(" <- NOTICE ------------------------------------------------------------"));
-  
+
     //de-allocation of id char array
     delete[] this->id;
   }
