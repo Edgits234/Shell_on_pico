@@ -4,52 +4,18 @@
 #include <Utility.h>
 
 //pins and usefull screen related constants
-
-#if defined(ARDUINO_ARCH_RP2040) || defined(ARDUINO_ARCH_MBED) && !defined(ARDUINO_GIGA)
-  // Pin assignments for the Pico
-  
-  #define TFT_MISO_PIN 12 // GP12
-  #define TFT_SCK_PIN  10 // GP10
-  #define TFT_MOSI_PIN 11 // GP11
-
-  #define CS_PIN   1  // GP1
-  #define DC_PIN   6  // GP6
-  #define RST_PIN  7  // GP7
-  #define BLK_PIN  8  // GP8
-
-  // Custom SPI object for the Pico's Mbed core
-//   arduino::MbedSPI custom_spi(0, 3, 2); // Forces MISO=GP0, MOSI=GP3, SCK=GP2
-#else
-  // Legacy Arduino Mega assignments
-  #define DC_PIN  8
-  #define CS_PIN  10
-  #define RST_PIN 9
-  #define BLK_PIN 2
-#endif
+#define DC_PIN 8
+#define CS_PIN 10
+#define RST_PIN 9
+#define BLK_PIN 2
 
 #define SCREEN_WIDTH  240
 #define SCREEN_HEIGHT 320
 
 #define FRAMEBUFFER_SIZE SCREEN_WIDTH*SCREEN_HEIGHT*2
 
-#if !defined(ENABLE_ACCENTS)
-    #define ENABLE_ACCENTS 1
-#endif
-
 #define FONT_WIDTH  5
-
-#if ENABLE_ACCENTS
-    #define FONT_HEIGHT 11
-    #define FONT_CHAR_START_HEIGHT 3
-    #define FONT_CHAR_END_HEIGHT   2
-#else
-    #define FONT_HEIGHT 6
-    #define FONT_CHAR_START_HEIGHT 0
-    #define FONT_CHAR_END_HEIGHT   0
-#endif
-
-#define FONT_CHAR_WIDTH  5
-#define FONT_CHAR_HEIGHT 6
+#define FONT_HEIGHT 6
 
 #define ILI9341_CASET 0x2A
 #define ILI9341_PASET 0x2B
@@ -91,30 +57,17 @@
 
 // Are we running Wokwi simulation? (automatically assigns based on the current board (if its a mega its wokwiSIM))
 #ifndef WOKWI_SIM
-
-  #if defined(ARDUINO_GIGA)
-    #define WOKWI_SIM 0
-  #elif defined(__AVR_ATmega2560__) || defined(ARDUINO_AVR_MEGA2560) || defined(ARDUINO_ARCH_RP2040) || defined(ARDUINO_ARCH_MBED)
+  #if defined(__AVR_ATmega2560__) || defined(ARDUINO_AVR_MEGA2560)
     #define WOKWI_SIM 1
+  #elif defined(ARDUINO_GIGA)
+    #define WOKWI_SIM 0
   #else
     #warning "ERROR, if you don't have a GIGA or a MEGA board, this library most likely wont work, if you want to try anyways do '#define WOKWI_SIM [0 or 1]' just before including the library"
   #endif
 #endif
 
-#if !defined(NORMAL_DRAWING_ORDER)
-    //default to normal drawing order
-    #define NORMAL_DRAWING_ORDER 1
-#endif
-
 #if WOKWI_SIM
-    #if defined(ARDUINO_ARCH_RP2040) || defined(ARDUINO_ARCH_MBED)
-
-        arduino::MbedSPI pico_wokwi_spi(TFT_MISO_PIN, TFT_MOSI_PIN, TFT_SCK_PIN);
-
-        #define SPI_BUS pico_wokwi_spi 
-    #else
-        #define SPI_BUS SPI
-    #endif
+    #define SPI_BUS SPI
 
     #if defined(EMULATE_SCREEN)
         //detailed explaination : 
@@ -124,7 +77,7 @@
         #warning "IMPORTANT, SCREEN EMULATION ON ARDUINO MEGA CANNOT BE DONE DUE TO INSUFICIENT MEMORY, STRONGLY SUGGESTED THAT YOU GET RID OF THE \"#define EMULATE_SCREEN\" LINE"
     #endif
 
-    #if !NORMAL_DRAWING_ORDER
+    #if !defined(NORMAL_DRAWING_ORDER)
         //detailed explaination : 
         //the arduino GIGA which is more powerful, also has more memory, because of this, I decided that it would be better to have a screen buffer
         //a screen buffer is something to store the screen, imagine storing the screen you are watching, all in memory, every color of every pixel in memory, thats a screen buffer
@@ -145,7 +98,7 @@
     #define SCREEN_BUFFER_SIZE SCREEN_WIDTH*2*SCREEN_HEIGHT
     /*inline*/ uint8_t* screenBuffer = nullptr;
     //we don't need to waste sapce if we don't need the drawn pixel buffer
-    #if !NORMAL_DRAWING_ORDER
+    #if !defined(NORMAL_DRAWING_ORDER)
         /*inline*/ uint8_t  drawnPixel[(240 * 320) / 8];
     #endif
 
@@ -153,15 +106,10 @@
     #define SPI5_HW ((SPI_TypeDef *)SPI5_BASE)
 #endif
 
-#if !defined(ENABLE_TEXT_BACKTRACKING)
-    //text backtracking isn't perfect
-    #define ENABLE_TEXT_BACKTRACKING 1
-#endif
-
 /*inline*/ void resetDrawnPixel()
 {
     //drawnPixel doesn't exist when inverting the drawing order
-    #if !NORMAL_DRAWING_ORDER
+    #if !defined(NORMAL_DRAWING_ORDER)
         #if WOKWI_SIM
             #error add this line before #include <AwesomeUI.h> or #include <CustomGraphics.h>: '#define NORMAL_DRAWING_ORDER', go check warning above for more explaination
         #endif
@@ -180,10 +128,7 @@
 #endif
 
 //for indexing the right character
-/*inline*/ const char* fontChar = "\x1A""aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ1234567890+-.,!?=:/\\*(){}'\"_$<>[]~#;&\u0301\u0300\u0302\u0308";
-
-//the font
-const uint8_t font[] = {0b00000001,0b00010101,0b00010101,0b00010000,0b00000000,0b01110100,0b10100100,0b11110111,0b01000111,0b11110001,0b10001100,0b01100001,0b00001110,0b01001010,0b01001100,0b11110100,0b01111101,0b00011000,0b11111000,0b00000000,0b01110100,0b00100000,0b11100111,0b01000110,0b00010000,0b10001011,0b10000010,0b00010111,0b11000110,0b00101111,0b11110100,0b01100011,0b00011000,0b11111000,0b00001100,0b10010111,0b00100000,0b11101111,0b11000011,0b10010000,0b10000111,0b11000100,0b01000111,0b00010000,0b10000100,0b11111100,0b00111001,0b00001000,0b01000000,0b00001110,0b10001011,0b11000010,0b11100111,0b01000010,0b00010011,0b10001011,0b11100001,0b00001111,0b01000110,0b00110001,0b10001100,0b01111111,0b00011000,0b11000100,0b00000100,0b00000001,0b00001000,0b01000111,0b00010000,0b10000100,0b00100011,0b10001000,0b00000010,0b00010000,0b10001000,0b11111000,0b10000100,0b00101001,0b00110010,0b00010000,0b10100110,0b00101001,0b00101001,0b01010011,0b00010100,0b10010100,0b01001000,0b01000010,0b00010000,0b10000010,0b10000100,0b00100001,0b00001000,0b01111100,0b00000000,0b01010101,0b01101011,0b00011101,0b11010110,0b10110101,0b10101101,0b01000000,0b00001111,0b01000110,0b00110001,0b10001110,0b01101011,0b01011001,0b11000100,0b00000000,0b01110100,0b01100010,0b11100111,0b01000110,0b00110001,0b10001011,0b10000001,0b11101000,0b11111010,0b00010000,0b11110100,0b01100011,0b11101000,0b01000000,0b00001111,0b10001011,0b11000010,0b00010111,0b01000110,0b00110001,0b10011011,0b11000000,0b00000100,0b00111101,0b00001000,0b11110100,0b01111101,0b00011000,0b11000100,0b00000110,0b01000001,0b00000100,0b11000111,0b01000001,0b10000011,0b10001011,0b10001000,0b11100010,0b00010000,0b10000100,0b11111001,0b00001000,0b01000010,0b00010000,0b00000000,0b10001100,0b01100010,0b11111000,0b11000110,0b00110001,0b10001011,0b10000000,0b00001000,0b11000101,0b01000100,0b10001100,0b01100010,0b10100101,0b00010000,0b00000000,0b10101101,0b01101010,0b10101010,0b11010110,0b10110101,0b10101010,0b10000001,0b00011000,0b10111010,0b00110001,0b10001100,0b01011101,0b00011000,0b11000100,0b00010001,0b10001011,0b11000010,0b11101000,0b11000101,0b11000100,0b00100001,0b00000000,0b00001111,0b10001001,0b00011111,0b11111000,0b10001000,0b10001000,0b01111100,0b10001100,0b00100001,0b00001000,0b11100111,0b01000100,0b00101110,0b10000111,0b11011101,0b00010011,0b00000110,0b00101110,0b10010100,0b10111110,0b00100001,0b00001011,0b11110000,0b11110000,0b01100010,0b11100111,0b11000011,0b11010001,0b10001011,0b10111110,0b00010001,0b00010001,0b00001000,0b01110100,0b01011101,0b00011000,0b10111001,0b11010001,0b01111000,0b01000010,0b00010111,0b01000110,0b10110101,0b10001011,0b10000000,0b01000010,0b01111100,0b10000100,0b00000000,0b00000001,0b11110000,0b00000000,0b00000000,0b00000000,0b00000000,0b01000000,0b00000000,0b00000000,0b00100001,0b00001000,0b01000010,0b00010000,0b00000100,0b01110100,0b01000100,0b01000000,0b00010000,0b00000000,0b11111000,0b00111110,0b00000000,0b00010000,0b00000000,0b00100000,0b00000100,0b00100010,0b00010001,0b00001000,0b01000010,0b00001000,0b01000001,0b00001001,0b01000100,0b01010000,0b00000000,0b00000010,0b00100001,0b00001000,0b01000001,0b00001000,0b00100001,0b00001000,0b01000100,0b00110001,0b00010000,0b10000010,0b00011001,0b10000100,0b00011000,0b10001000,0b11000010,0b00010000,0b10000000,0b00000000,0b00010100,0b10100101,0b00000000,0b00000000,0b00000000,0b00000000,0b00000000,0b01111100,0b10001110,0b10100011,0b10001010,0b11100000,0b00001000,0b10001000,0b00100000,0b10000000,0b10000010,0b00001000,0b10001000,0b01110010,0b00010000,0b10000100,0b00111001,0b11000010,0b00010000,0b10000100,0b11100000,0b00000001,0b00010101,0b00010000,0b00000000,0b10101111,0b10101011,0b11101010,0b00000001,0b00000000,0b00000010,0b00010001,0b00010100,0b01001011,0b01100100,0b11010000,0b00000000,0b00000000,0b00111000,0b00000000,0b00000000,0b00000011,0b10000000,0b00000000,0b00000000,0b01000101,0b00000000,0b00000000,0b00000000,0b00010100,0b00000010,0b00100000,0b00000000,0b00000000,0b00000000};
+/*inline*/ const char* fontChar = "\x1A""aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ1234567890+-.,!?=:/*()'_$<>[]~#;&";
 
 /*this is a very dumb function to let me see differences between stuff that have a different index so I can see if my shit is optimal, it probably doesn't do what you think it does*/
 /*inline*/ uint16_t convertNumberToColor(uint8_t number)
@@ -206,6 +151,9 @@ const uint8_t font[] = {0b00000001,0b00010101,0b00010101,0b00010000,0b00000000,0
 
     return 0;
 }
+
+//the font
+const uint8_t font[] = {0b00000001,0b00010101,0b00010101,0b00010000,0b00000000,0b01110100,0b10100100,0b11110111,0b01000111,0b11110001,0b10001100,0b01100001,0b00001110,0b01001010,0b01001100,0b11110100,0b01111101,0b00011000,0b11111000,0b00000000,0b01110100,0b00100000,0b11100111,0b01000110,0b00010000,0b10001011,0b10000010,0b00010111,0b11000110,0b00101111,0b11110100,0b01100011,0b00011000,0b11111000,0b00001100,0b10010111,0b00100000,0b11101111,0b11000011,0b10010000,0b10000111,0b11000100,0b01000111,0b00010000,0b10000100,0b11111100,0b00111001,0b00001000,0b01000000,0b00001110,0b10001011,0b11000010,0b11100111,0b01000010,0b00010011,0b10001011,0b11100001,0b00001111,0b01000110,0b00110001,0b10001100,0b01111111,0b00011000,0b11000100,0b00000100,0b00000001,0b00001000,0b01000111,0b00010000,0b10000100,0b00100011,0b10001000,0b00000010,0b00010000,0b10001000,0b11111000,0b10000100,0b00101001,0b00110010,0b00010000,0b10100110,0b00101001,0b00101000,0b11001011,0b00010100,0b10010100,0b01001000,0b01000010,0b00010000,0b10000010,0b10000100,0b00100001,0b00001000,0b01111100,0b00000000,0b01010101,0b01101011,0b00011101,0b11010110,0b10110101,0b10101101,0b01000000,0b00001111,0b01000110,0b00110001,0b10001110,0b01101011,0b01011001,0b11000100,0b00000000,0b01110100,0b01100010,0b11100111,0b01000110,0b00110001,0b10001011,0b10000001,0b11101000,0b11111010,0b00010000,0b11110100,0b01100011,0b11101000,0b01000000,0b00001111,0b10001011,0b11000010,0b00010111,0b01000110,0b00110001,0b10011011,0b11000000,0b00000100,0b00111101,0b00001000,0b11110100,0b01111101,0b00011000,0b11000100,0b00000110,0b01000001,0b00000100,0b11000111,0b01000001,0b10000011,0b10001011,0b10001000,0b11100010,0b00010000,0b10000100,0b11111001,0b00001000,0b01000010,0b00010000,0b00000000,0b10001100,0b01100010,0b11111000,0b11000110,0b00110001,0b10001011,0b10000000,0b00001000,0b11000101,0b01000100,0b10001100,0b01100010,0b10100101,0b00010000,0b00000000,0b10101101,0b01101010,0b10101010,0b11010110,0b10110101,0b10101010,0b10000001,0b00011000,0b10111010,0b00110001,0b10001100,0b01011101,0b00011000,0b11000100,0b00010001,0b10001011,0b11000010,0b11101000,0b11000101,0b11000100,0b00100001,0b00000000,0b00001111,0b10001001,0b00011111,0b11111000,0b10001000,0b10001000,0b01111100,0b10001100,0b00100001,0b00001000,0b11100111,0b01000100,0b01000100,0b01000111,0b11011101,0b00010011,0b00000110,0b00101110,0b10010100,0b10111110,0b00100001,0b00001011,0b11110000,0b11110000,0b01100010,0b11100111,0b11000011,0b11010001,0b10001011,0b10111110,0b00010001,0b00010001,0b00001000,0b01110100,0b01011101,0b00011000,0b10111001,0b11010001,0b01111000,0b01000010,0b00010111,0b01000110,0b10110101,0b10001011,0b10000000,0b01000010,0b01111100,0b10000100,0b00000000,0b00000001,0b11110000,0b00000000,0b00000000,0b00000000,0b00000000,0b01000000,0b00000000,0b00000000,0b00100001,0b00001000,0b01000010,0b00010000,0b00000100,0b01110100,0b01000100,0b01000000,0b00010000,0b00000000,0b11111000,0b00111110,0b00000000,0b00010000,0b00000000,0b00100000,0b00000000,0b00010001,0b00010001,0b00010000,0b01010001,0b00010100,0b00000000,0b00000000,0b10001000,0b01000010,0b00010000,0b01000010,0b00001000,0b01000010,0b00010001,0b00001000,0b01000010,0b00000000,0b00000000,0b00000000,0b00000000,0b00000000,0b01111100,0b10001110,0b10100011,0b10001010,0b11100000,0b00001000,0b10001000,0b00100000,0b10000000,0b10000010,0b00001000,0b10001000,0b01110010,0b00010000,0b10000100,0b00111001,0b11000010,0b00010000,0b10000100,0b11100000,0b00000001,0b00010101,0b00010000,0b00000000,0b10101111,0b10101011,0b11101010,0b00000001,0b00000000,0b00000010,0b00010001,0b00010100,0b01001011,0b01100100,0b11010000};
 
 /*inline*/ bool fontUnpacker(int i)
 {
@@ -319,7 +267,7 @@ const uint8_t font[] = {0b00000001,0b00010101,0b00010101,0b00010000,0b00000000,0
 
     void displayFrameBuffer()
     {
-        //doesn't do anything on mega, there is no frame buffer in the first place
+        //doesn't do anything on giga, there is no frame buffer in the first place
     }
 
 #else
@@ -339,7 +287,99 @@ const uint8_t font[] = {0b00000001,0b00010101,0b00010101,0b00010000,0b00000000,0
 
     #endif
 
-    void displayFrameBuffer();
+    /*inline*/ void displayFrameBuffer() {
+        
+        #if defined(EMULATE_SCREEN)
+            displayFrameBufferSerial();
+        #endif
+
+        // **DISABLE INTERRUPTS - Critical section**
+        // noInterrupts();
+
+        // RESET SPI5 completely before each frame
+        SPI5_HW->CR1 &= ~SPI_CR1_SPE; // Disable
+        delayMicroseconds(10);
+        SPI5_HW->IFCR = 0xFFFFFFFF; // Clear all flags
+        SPI5_HW->CR1 |= SPI_CR1_SPE; // Re-enable
+        delayMicroseconds(10);
+        
+        writeCommand(0x2A);
+        writeData(0x00); writeData(0x00);
+        writeData(0x00); writeData(0xEF);
+        
+        writeCommand(0x2B);
+        writeData(0x00); writeData(0x00);
+        writeData(0x01); writeData(0x3F);
+        
+        writeCommand(0x2C);
+        
+        digitalWrite(DC_PIN, HIGH);
+        digitalWrite(CS_PIN, LOW);
+        
+        // for(uint32_t i = 0; i < SCREEN_BUFFER_SIZE; i++) {
+        //     SPI5_HW->IFCR = 0xFFFFFFFF; // Clear flags EVERY byte
+        //     SPI5_HW->CR2 = 1;
+        //     SPI5_HW->CR1 |= SPI_CR1_CSTART;
+            
+        //     while (!(SPI5_HW->SR & SPI_SR_TXP));
+        //     *((volatile uint8_t*)&SPI5_HW->TXDR) = screenBuffer[i];
+            
+        //     while (!(SPI5_HW->SR & SPI_SR_EOT));
+        // }
+
+        for(uint32_t i = 0; i < SCREEN_BUFFER_SIZE; i += 2) {
+            // Send HIGH byte first, then LOW byte
+            uint8_t hi = screenBuffer[i + 1];  // High byte
+            uint8_t lo = screenBuffer[i];      // Low byte
+            
+            // Send HIGH byte
+            SPI5_HW->IFCR = 0xFFFFFFFF;
+            SPI5_HW->CR2 = 1;
+            SPI5_HW->CR1 |= SPI_CR1_CSTART;
+            while (!(SPI5_HW->SR & SPI_SR_TXP));
+            *((volatile uint8_t*)&SPI5_HW->TXDR) = hi;
+            while (!(SPI5_HW->SR & SPI_SR_EOT));
+            
+            // Send LOW byte
+            SPI5_HW->IFCR = 0xFFFFFFFF;
+            SPI5_HW->CR2 = 1;
+            SPI5_HW->CR1 |= SPI_CR1_CSTART;
+            while (!(SPI5_HW->SR & SPI_SR_TXP));
+            *((volatile uint8_t*)&SPI5_HW->TXDR) = lo;
+            while (!(SPI5_HW->SR & SPI_SR_EOT));
+        }
+        
+        // // **NEW: CRITICAL CLEANUP FOR TOUCH TO WORK**
+        // // Wait for the SPI to completely finish
+        // // while (SPI5_HW->SR & SPI_SR_BSY);
+        // while (SPI5_HW->SR & SPI_SR_EOT) {}  // Wait for End Of Transfer
+        // while (!(SPI5_HW->SR & SPI_SR_TXC));  // Wait for TX Complete
+                
+        // // Clear ALL flags one more time
+        // SPI5_HW->IFCR = 0xFFFFFFFF;
+        
+        // // Deselect display CS
+        // digitalWrite(CS_PIN, HIGH);
+        
+        // // **Give the SPI bus a moment to settle**
+        // delayMicroseconds(10);
+
+        // Wait for the SPI to completely finish
+        delayMicroseconds(50);  // Give it time to finish
+
+        // Clear ALL flags one more time
+        SPI5_HW->IFCR = 0xFFFFFFFF;
+
+        // Deselect display CS
+        digitalWrite(CS_PIN, HIGH);
+
+        // Give the SPI bus a moment to settle
+        delayMicroseconds(10);
+
+        // **RE-ENABLE INTERRUPTS**
+        // interrupts();
+    }
+
     
     
 #endif
@@ -391,94 +431,13 @@ class TFT
     int16_t gx;
     int16_t gy;
     int16_t cursor_x_start;
-    int16_t cursor_y_start;
     int16_t cursor_x;
     int16_t cursor_y;
     int8_t  fontSize;
     uint16_t fontColor;
     Point pencil[150];
     int16_t pencilIndex;
-    uint8_t override_char = 0;//are we overriding a character at the moment (used in s_prints when using backspace characters)
-    uint8_t sequence_length = 0;
-    uint8_t special_sequence = 255;//special character sequences, used to capture them (also index for char_sequence)
-    char char_sequence[5];//array to store the special character sequence
-    char prev_char = 0;
-    int16_t screen_width  =  SCREEN_WIDTH;
-    int16_t screen_height = SCREEN_HEIGHT;
-    uint8_t screen_orientation = 0;//default portrait, every increase is a 90deg clockwise rotation
-    uint8_t disable_fillRect = 0;//boolean to disable fillRectangle for performence (usually for Wokwi users)
 
-    /**
-     * @param a set screen rotation (90deg ONLY) (in degrees)
-     */
-    void rotate(int16_t a)
-    {
-        //check if defaulted viewport (if yes, then persmission to change it)
-        bool default_viewport = false;
-        if(vx == 0 && vy == 0 && vw == screen_width && vh == screen_height) default_viewport = true;
-
-        a /= 90;
-
-        screen_orientation = a % 4;
-
-        //set correct screen width and height
-        if(screen_orientation % 2 != 0)
-        {
-            //if we had a orientation that switched x and y, make screen_height output screen_width and vise versa
-            screen_width = SCREEN_HEIGHT;
-            screen_height = SCREEN_WIDTH;
-        }
-
-        if(default_viewport)
-        {
-            
-            //set new default viewport
-            setViewport(0, 0, screen_width, screen_height);
-            
-            // DEBUG_BANNER();
-            // ::println("setting viewport");
-            // DEBUG(vx, vy, vw, vh);
-        }
-
-    }
-
-    //rotates point to simulate rotation of screen
-    void internal_screen_rotate(int16_t& x, int16_t& y)
-    {
-        //c stands for center
-        int16_t cx = SCREEN_WIDTH  / 2;
-        int16_t cy = SCREEN_HEIGHT / 2;
-
-        if(screen_orientation % 4 == 1 || screen_orientation % 4 == 3)
-        {
-            //set proper center of rotation you would expect the display to do (change the 0,0 corner)
-            cx = SCREEN_WIDTH / 2;
-            cy = SCREEN_WIDTH / 2;
-        }
-
-        Pointd p = pivot({(double)x, (double)y}, {(double)cx - 0.5, (double)cy - 0.5}, screen_orientation * 90);
-
-        x = p.x;
-        y = p.y;
-    }
-
-    //rotates point to simulate rotation of screen
-    void internal_screen_rotate(int16_t& x, int16_t& y, int16_t& w, int16_t& h)
-    {
-        if(screen_orientation == 1)
-        {
-            y -= h - 1;
-        }else if(screen_orientation == 2)
-        {
-            x -= w - 1;
-            y -= h - 1;
-        }else if(screen_orientation == 3)
-        {
-            x -= w - 1;
-        }
-
-        internal_screen_rotate(x, y);
-    }
 
     //TFT::setBrightness
     /**
@@ -499,9 +458,9 @@ class TFT
     }
 
     //TFT::getTextBounds
-    Size getTextBounds(const char* text, int16_t fontSize)
+    Size getTextBounds(const char* text, int16_t w, int16_t h, int16_t fontSize)
     {
-        return ::getTextBounds(text, fontSize);
+        return getTextBounds(text, w, h, fontSize);
     }
 
     //TFT::begin
@@ -555,16 +514,9 @@ class TFT
         DELAY(20);
         digitalWrite(RST_PIN, HIGH);
         DELAY(150);
-
-        // // DYNAMIC REMAPPING (Supported natively by this core)
-        // SPI_BUS.setTX(3);   // Explicitly binds MOSI to GP3
-        // SPI_BUS.setSCK(2);  // Explicitly binds SCK to GP2
-        // SPI_BUS.setRX(0);   // Binds MISO to GP0
-        // SPI_BUS.begin();
-        
         
         #if WOKWI_SIM
-            // SPI_BUS.setClockDivider(SPI_CLOCK_DIV2);
+            SPI_BUS.setClockDivider(SPI_CLOCK_DIV2);
             SPI_BUS.begin();
         #else
             
@@ -676,10 +628,10 @@ class TFT
         w = w + x - 1;
         h = h + y - 1;
     
-        x = max( 0, min(screen_width , x));
-        y = max( 0, min(screen_height, y));
-        w = max(-1, min(screen_width  - 1, w));
-        h = max(-1, min(screen_height - 1, h));
+        x = max( 0, min(240, x));
+        y = max( 0, min(320, y));
+        w = max(-1, min(239, w));
+        h = max(-1, min(319, h));
 
         w = w - x + 1;
         h = h - y + 1;
@@ -693,8 +645,6 @@ class TFT
     //TFT::drawPixel
     void drawPixel(int16_t x, int16_t y, uint16_t color) {
 
-        // internal_screen_rotate(x, y);
-        
         // //update position based on global
         // x += gx;
         // y += gy;
@@ -709,7 +659,7 @@ class TFT
         #else
             // delay(500);
 
-            #if NORMAL_DRAWING_ORDER
+            #if defined(NORMAL_DRAWING_ORDER)
                 //draw the pixel in the screen buffer
                 *((uint16_t*)(screenBuffer + ((y) * SCREEN_WIDTH * 2) + ((x) * 2))) = color;
             #else
@@ -754,36 +704,25 @@ class TFT
     //TFT::fillRect
     void fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color) {
         
-        if(disable_fillRect)
-        {
-            return;
-        }
-
         #if WOKWI_SIM
-        //update position to be based on global
-        // x += gx;
-        // y += gy;
+            //update position to be based on global
+            // x += gx;
+            // y += gy;
         #endif
 
-
-        //fit to the viewport
-
-        //transform width into a secondary position to make math easier
         w = w + x - 1;
         h = h + y - 1;
     
-        //when x goes too much to the right we want it to warp at 240 instead of 239 bcs thats going to make the result width 0 (so we display nothing)
-        x = max((vx), min((vx + vw), x));
-        y = max((vy), min((vy + vh), y));
-        w = max((vx - 1), min((vx + vw - 1), w));
-        h = max((vy - 1), min((vy + vh - 1), h));
+        x = max((vx), min((vx + vw), x)); // (vx), (vx + vw)
+        y = max((vy), min((vy + vh), y)); // (vy), (vy + vh)
+        w = max((vx - 1), min((vx + vw - 1), w)); // (vx - 1), (vx + vw - 1)
+        h = max((vy - 1), min((vy + vh - 1), h)); // (vy - 1), (vy + vh - 1)
 
-        //transform width back into original position
         w = w - x + 1;
         h = h - y + 1;
-
+        
         //if on mega, then directly transfer the fillRect to the screen
-        #if WOKWI_SIM  
+        #if WOKWI_SIM   
             setWindow(x, y, x + w - 1, y + h - 1);
             
             uint32_t totalPixels = (uint32_t)w * (uint32_t)h;
@@ -804,7 +743,7 @@ class TFT
         //else, on giga, we have enough space for a screen buffer so write to the screen buffer instead
         #else
 
-            #if NORMAL_DRAWING_ORDER
+            #if defined(NORMAL_DRAWING_ORDER)
 
                 for(int i = x; i <= (x + w - 1); i++)
                 {
@@ -878,9 +817,7 @@ class TFT
         #endif
     }
 
-    void fillBinImage(int16_t x, int16_t y, int16_t w, int16_t h, const uint8_t* buffer, bool is_buffer_horizontal = false, bool inverse_byte = false) ;
 
-    //TFT::testfillRect
     void testfillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color) {
         
         #if WOKWI_SIM
@@ -987,108 +924,22 @@ class TFT
     }
 
     //TFT::drawChar
-    void drawChar(const char* str, int16_t x, int16_t y, int16_t si, uint16_t colour)
+    void drawChar(char c, int16_t x, int16_t y, int16_t si, uint16_t colour)
     {
-        //take the first character of str no matter what (if the first character isn't a special character (most signficant bit isn't turned on) then we don't need to worry about the other characters)
-        const char c = *str;
-
-        //return if the character is space (we don't need to draw space) (or carriage return, we don't allow for carriage returns, or well we could... but it would draw characters on top of characters)
-        if(c == '\r')
+        //return if the character is space (we don't need to draw space)
+        if(c == ' ' || c == '\t')
         {
             return;
         }
 
-
-        if(c == ' ' || c == '\t' )
+        int charIndex = -1;
+        for (int i = 0; (int unsigned)i < strlen(fontChar); i++)
         {
-
-            //are we overriding a character (going back, using backspace or smth)
-            if(override_char > 0)
+            if(fontChar[i] == c)
             {
-                //decrease override_char to indicate we override a character (backspace for example increases override, so it only overrides previous characters)
-                override_char--;
-
-                //print a square (override) previous character
-                fillRect(x, y, FONT_WIDTH * si, FONT_HEIGHT * si, 0);
+                charIndex = i;
+                break;
             }
-
-            return;
-        }
-
-        if(c == '\b')
-        {
-            ::println("ERROR, ",__LINE__," in ",__FILE__,", not supposed to be drawing a \b (backspace) character (supposed to be handled by s_print)");
-        }
-
-        int charIndex = 0;
-        bool isAccent = 0;
-        bool isDiacritic = 0;
-        {
-            int i = 0;
-            while(i < (int)(strlen(fontChar)))
-            {
-                //short for character of fontchar at index "i"
-                char f = fontChar[i];
-
-                //are we currently in a continuation character (not a character, so increase index and skip all checks)
-                if(0x80 <= f && f <= 0xBF)
-                {
-                    i++;
-                    continue;
-                }
-
-                //result for character check (are)
-                bool result = false;
-
-                //if the original input is a string
-                if(c & 0b10000000)
-                {
-                    //0xCC = any type of accent/diacritic
-                    //0x80 - 0x9F = Accents specifically
-                    //0xA0 - 0xBF = diacritics specifically
-
-                    if(str[0] == 0xCC && (0x80 <= str[1] && str[1] <= 0x9F))
-                    {
-                        isAccent = 1;
-                    }else if(str[0] == 0xCC && (0xA0 <= str[1] && str[1] <= 0xBF))
-                    {
-                        isDiacritic = 1;
-                    }
-
-                    //check for the multi byte character
-                    result = checkstr(fontChar, str, i, 0, nullptr);
-                }else
-                {
-                    //check for regular character match
-                    result = fontChar[i] == c;
-                }
-
-                //if we found the character, get out of the loop
-                if(result)
-                {
-                    break;
-                }
-
-                i++;
-                charIndex++;//increase the character index (the character index dictates the position inside of the font)
-            }
-        
-            //if we went past fontChar (didn't find anything)
-            if(i >= (int)(strlen(fontChar)))
-            {
-                //set charIndex to -1 to indicate that we didn't find a character in the list
-                charIndex = -1;
-            }
-        }
-
-        //are we overriding a character (do not override when we are working with an accent) (going back, using backspace or smth)
-        if(!isAccent && !isDiacritic && override_char > 0)
-        {
-            //decrease override_char to indicate we override a character (backspace for example increases override, so it only overrides previous characters)
-            override_char--;
-
-            //print a square (override) previous character
-            fillRect(x, y, FONT_WIDTH * si, FONT_HEIGHT * si, 0);
         }
 
         //si ont a pas trouvé le charactère (c)
@@ -1105,40 +956,21 @@ class TFT
         for (int iChar = charIndex; iChar < 1 + charIndex; iChar ++) //ont rajoute charIndex pour modifier où ont itère (trust sa marche)
         {
             //itération de la position y de la lettre
-            for (int posY = 0; posY < FONT_CHAR_HEIGHT * si; posY += si) //ont ajoute la position pour déplacé la lettre
+            for (int posY = 0; posY < 6 * si; posY += si) //ont ajoute la position pour déplacé la lettre
             {
-                //itération de la position x de la lettre
-                for (int posX = 0; posX < FONT_CHAR_WIDTH * si; posX += si)
+            //itération de la position x de la lettre
+            for (int posX = 0; posX < 5 * si; posX += si)
+            {
+                //ont vas déterminé l'index qu'il faut pour déterminé l'index dans la variables font
+                int trueIndex = iChar * 5 * 6 + posY / si * 5 + posX / si;
+
+                if (fontUnpacker(trueIndex))
                 {
-                    //ont vas déterminé l'index qu'il faut pour déterminé l'index dans la variables font
-                    int trueIndex = iChar * FONT_CHAR_WIDTH * FONT_CHAR_HEIGHT + posY / si * FONT_WIDTH + posX / si;
-
-                    //handle diactricits and accent offset (they should be drawn either on top or bellow the letter)
-                    int y_offset = 0;
-
-                    if(isAccent == 1)
-                    {
-                        y_offset -= FONT_CHAR_HEIGHT * si;
-                    }
-
-                    if(isDiacritic)
-                    {
-                        y_offset += FONT_CHAR_HEIGHT * si;
-                    }
-
-                    if (fontUnpacker(trueIndex))
-                    {
-                        fillRect(posX + x, posY + y + FONT_CHAR_START_HEIGHT * si + y_offset, si, si, colour);
-                    }
+                    fillRect((uint16_t)(posX + x), (uint16_t)(posY + y), (uint16_t)(si), (uint16_t)(si), colour);
                 }
             }
+            }
         }
-    }
-
-    //TFT::drawChar
-    void drawChar(char c, int16_t x, int16_t y, int16_t si, uint16_t colour)
-    {
-        drawChar(&c, x, y, si, colour);
     }
 
     //TFT::setCursor
@@ -1158,394 +990,21 @@ class TFT
     }
 
     //TFT::setCursor
-    void setCursor(int16_t cursor_x, int16_t cursor_y, int8_t fontSize, uint16_t fontColor, int16_t cursor_x_start, int16_t cursor_y_start)
+    void setCursor(int16_t cursor_x, int16_t cursor_y, int8_t fontSize, uint16_t fontColor, int16_t cursor_x_start)
     {
         this->cursor_x = cursor_x;
         this->cursor_y = cursor_y;
         this->fontSize = fontSize;
         this->fontColor = fontColor;
         this->cursor_x_start = cursor_x_start;
-        this->cursor_y_start = cursor_y_start;
     }
 
-    
     //TFT::print
-    void s_print(char c)
-    {
-        // ::print("'",c,"' -> ",(int)(c)," (0x");
-        // Serial.print((int)(c), HEX);
-        // ::println(")");
-
-        if(special_sequence != 255)
-        {
-            //set current char_sequence character and increase index
-            char_sequence[special_sequence] = c;
-            special_sequence++;
-            
-            //if we see a letter, then its the end of the special sequence and we should print its output
-            if((ISLETTER(c) && char_sequence[0] == '\033') || ((0xC2  <= char_sequence[0] && char_sequence[0] <= 0xF4) && special_sequence >= sequence_length))
-            {
-                //reset sequence_length to 0
-                sequence_length = 0;
-
-                //set last character to \0 (emulate a normal string)
-                char_sequence[special_sequence] = '\0';
-
-                //set to 255 indicating that we are no longer inside of a special sequence
-                special_sequence = 255;
-
-                //print based on the special sequence : 
-                char* cs = char_sequence;//short for char_sequence, make code more readable, same as if I was using char_sequence
-
-                //clear screen
-                if      (checkstr(cs, "\033[2J" , 0, 0, nullptr))
-                {
-                    //clear all possible characters at the same time (with a big black square)
-                    fillRect(cursor_x_start, cursor_y_start, screen_width - 1, cursor_y - cursor_y_start, 0);
-
-                //text color red
-                }else if(checkstr(cs, "\033[31m", 0, 0, nullptr))
-                {
-                    fontColor = TFT_RED;
-
-                //text color yellow
-                }else if(checkstr(cs, "\033[33m", 0, 0, nullptr))
-                {
-                    fontColor = TFT_YELLOW;
-
-                //text color white
-                }else if(checkstr(cs, "\033[37m", 0, 0, nullptr))
-                {
-                    fontColor = TFT_WHITE;
-
-                //left arrow
-                }else if(checkstr(cs, "\033[D"  , 0, 0, nullptr))
-                {
-                    s_print('\b');//simulate backspace character (it does the same thing)
-
-                //cursor home
-                }else if(checkstr(cs, "\033[H"  , 0, 0, nullptr))
-                {
-                    cursor_x = cursor_x_start;
-                    cursor_y = cursor_y_start;
-                }else if(checkstr(cs, "\xC3\xA9", 0, 0, nullptr))
-                {
-                    //draw letter
-                    drawChar('e', cursor_x, cursor_y, fontSize, fontColor);
-                    
-                    #if ENABLE_ACCENTS
-                        //draw the accent on top
-                        drawChar("\u0301", cursor_x, cursor_y, fontSize, fontColor);
-                    #endif
-
-                    //advance cursor
-                    cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
-
-                }else if(checkstr(cs, "\xC3\x89", 0, 0, nullptr))
-                {
-                    //draw letter
-                    drawChar('E', cursor_x, cursor_y, fontSize, fontColor);
-                    
-                    #if ENABLE_ACCENTS
-                        //draw the accent on top
-                        drawChar("\u0301", cursor_x, cursor_y, fontSize, fontColor);
-                    #endif
-
-                    //advance cursor
-                    cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
-
-                }else if(checkstr(cs, "\xC3\xA8", 0, 0, nullptr))
-                {
-                    //draw letter
-                    drawChar('e', cursor_x, cursor_y, fontSize, fontColor);
-                    
-                    #if ENABLE_ACCENTS
-                        //draw the accent on top
-                        drawChar("\u0300", cursor_x, cursor_y, fontSize, fontColor);
-                    #endif
-
-                    //advance cursor
-                    cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
-
-                }else if(checkstr(cs, "\xC3\xA0", 0, 0, nullptr))
-                {
-                    //draw letter
-                    drawChar('a', cursor_x, cursor_y, fontSize, fontColor);
-                    
-                    #if ENABLE_ACCENTS
-                        //draw the accent on top
-                        drawChar("\u0300", cursor_x, cursor_y, fontSize, fontColor);
-                    #endif
-
-                    //advance cursor
-                    cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
-
-                }else if(checkstr(cs, "\xC3\x88", 0, 0, nullptr))
-                {
-                    //draw letter
-                    drawChar('E', cursor_x, cursor_y, fontSize, fontColor);
-                    
-                    #if ENABLE_ACCENTS
-                        //draw the accent on top
-                        drawChar("\u0300", cursor_x, cursor_y, fontSize, fontColor);
-                    #endif
-
-                    //advance cursor
-                    cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
-
-                }else if(checkstr(cs, "\xC3\x80", 0, 0, nullptr))
-                {
-                    //draw letter
-                    drawChar('A', cursor_x, cursor_y, fontSize, fontColor);
-                    
-                    #if ENABLE_ACCENTS
-                        //draw the accent on top
-                        drawChar("\u0300", cursor_x, cursor_y, fontSize, fontColor);
-                    #endif
-
-                    //advance cursor
-                    cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
-
-                }else if(checkstr(cs, "\xC3\xAA", 0, 0, nullptr))
-                {
-                    //draw letter
-                    drawChar('e', cursor_x, cursor_y, fontSize, fontColor);
-                    
-                    #if ENABLE_ACCENTS
-                        //draw the accent on top
-                        drawChar("\u0302", cursor_x, cursor_y, fontSize, fontColor);
-                    #endif
-
-                    //advance cursor
-                    cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
-
-                }else if(checkstr(cs, "\xC3\xA2", 0, 0, nullptr))
-                {
-                    //draw letter
-                    drawChar('a', cursor_x, cursor_y, fontSize, fontColor);
-                    
-                    #if ENABLE_ACCENTS
-                        //draw the accent on top
-                        drawChar("\u0302", cursor_x, cursor_y, fontSize, fontColor);
-                    #endif
-
-                    //advance cursor
-                    cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
-
-                }else if(checkstr(cs, "\xC3\x8A", 0, 0, nullptr))
-                {
-                    //draw letter
-                    drawChar('E', cursor_x, cursor_y, fontSize, fontColor);
-                    
-                    #if ENABLE_ACCENTS
-                        //draw the accent on top
-                        drawChar("\u0302", cursor_x, cursor_y, fontSize, fontColor);
-                    #endif
-
-                    //advance cursor
-                    cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
-
-                }else if(checkstr(cs, "\xC3\x82", 0, 0, nullptr))
-                {
-                    //draw letter
-                    drawChar('A', cursor_x, cursor_y, fontSize, fontColor);
-                    
-                    #if ENABLE_ACCENTS
-                        //draw the accent on top
-                        drawChar("\u0302", cursor_x, cursor_y, fontSize, fontColor);
-                    #endif
-
-                    //advance cursor
-                    cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
-
-                }else if(checkstr(cs, "\xC3\xAB", 0, 0, nullptr))
-                {
-                    //draw letter
-                    drawChar('e', cursor_x, cursor_y, fontSize, fontColor);
-                    
-                    #if ENABLE_ACCENTS
-                        //draw the accent on top
-                        drawChar("\u0308", cursor_x, cursor_y, fontSize, fontColor);
-                    #endif
-
-                    //advance cursor
-                    cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
-
-                }else if(checkstr(cs, "\xC3\xAF", 0, 0, nullptr))
-                {
-                    //draw letter
-                    drawChar('i', cursor_x, cursor_y, fontSize, fontColor);
-                    
-                    #if ENABLE_ACCENTS
-                        //draw the accent on top
-                        drawChar("\u0308", cursor_x, cursor_y, fontSize, fontColor);
-                    #endif
-
-                    //advance cursor
-                    cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
-
-                }else if(checkstr(cs, "\xC3\x8B", 0, 0, nullptr))
-                {
-                    //draw letter
-                    drawChar('E', cursor_x, cursor_y, fontSize, fontColor);
-                    
-                    #if ENABLE_ACCENTS
-                        //draw the accent on top
-                        drawChar("\u0308", cursor_x, cursor_y, fontSize, fontColor);
-                    #endif
-
-                    //advance cursor
-                    cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
-
-                }else if(checkstr(cs, "\xC3\x8F", 0, 0, nullptr))
-                {
-                    //draw letter
-                    drawChar('I', cursor_x, cursor_y, fontSize, fontColor);
-                    
-                    #if ENABLE_ACCENTS
-                        //draw the accent on top
-                        drawChar("\u0308", cursor_x, cursor_y, fontSize, fontColor);
-                    #endif
-
-                    //advance cursor
-                    cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
-
-                }else if(checkstr(cs, "\xC3\xA7", 0, 0, nullptr))
-                {
-                    //draw letter
-                    drawChar('c', cursor_x, cursor_y, fontSize, fontColor);
-                    
-                    #if ENABLE_ACCENTS
-                        //draw the accent on top
-                        drawChar("\u0327", cursor_x, cursor_y, fontSize, fontColor);
-                    #endif
-
-                    //advance cursor
-                    cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
-
-                }else if(checkstr(cs, "\xC3\x87", 0, 0, nullptr))
-                {
-                    //draw letter
-                    drawChar('C', cursor_x, cursor_y, fontSize, fontColor);
-                    
-                    #if ENABLE_ACCENTS
-                        //draw the accent on top
-                        drawChar("\u0327", cursor_x, cursor_y, fontSize, fontColor);
-                    #endif
-
-                    //advance cursor
-                    cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
-
-                }else
-                {
-                    //draw unknown character
-                    drawChar('\x1A', cursor_x, cursor_y, fontSize, fontColor);
-
-                    //advance cursor
-                    cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
-                }
-                
-                #if ENABLE_ACCENTS
-                    //special accent (accent will go somewhere else depending on the state of the letter before (capital or lowercase))
-                    if(char_sequence[0] == 0xCC)
-                    {
-                        //go back one character
-                        if(cursor_x > cursor_x_start)
-                        {
-                            cursor_x -= (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
-                        }
-
-                        //draw the accent
-                        drawChar(cs, cursor_x, cursor_y, fontSize, fontColor);
-
-                        //go back on the character you just were
-                        cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
-
-                    }
-                #endif
-            }
-
-            //early return, we don't want to print the code
-            return;
-        }
-
-        //if c is a starting byte or a escape sequence startin character
-        if(c == '\033' || (0xC2  <= c && c <= 0xF4))
-        {
-            //SPECIAL CHARACTER SEQUENCE
-            special_sequence = 0;
-
-            //if we found a multi byte character start, figure out the length based that character 
-            if(0xC2  <= c && c <= 0xF4)
-            {
-                sequence_length = getMultiByteCharLen(c);
-            }
-
-            //set current char_sequence character and increase index
-            char_sequence[special_sequence] = c;
-            special_sequence++;
-
-            //early return so to not update the prev_char variable
-            return;
-
-        }else if(c == '\n')
-        {
-            cursor_y += (FONT_HEIGHT + 1) * fontSize;//step the cursor_y down (since new line)
-            cursor_x = cursor_x_start;//reset x
-
-            //reset the override_char (new line = no override)
-            override_char = 0;
-            
-        }else if(c == '\b' || c == 127)
-        {
-            //if we specifically enabled the quirky backtracking feature
-            #if ENABLE_TEXT_BA0CKTRACKING
-                //only do backslash if we aren't gone past the cursor_x_start
-                if(cursor_x > cursor_x_start)
-                {
-                    //decrease the cursor x (move cursor to the left one character)
-                    cursor_x -= (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
-
-                    //increase override (keeps track of previous overrides)
-                    override_char++;
-                }
-            #endif
-
-        //handle carriage returns
-        }else if(c == '\r')
-        {
-            //if we specifically enabled the quirky backtracking feature
-            #if ENABLE_TEXT_BACKTRACKING
-                
-                //handle for override (do simple math based on font size)
-                int n_of_char_between = (cursor_x_start - cursor_x) / (FONT_WIDTH + 1);
-
-                //skip for negative number of char
-                if(n_of_char_between > 0)
-                {
-                    override_char += n_of_char_between;
-                }
-
-                //set cursor x to start (move the cursor all the way left on the current line) (carriage return)
-                cursor_x = cursor_x_start;
-            #endif
-        }else
-        {
-            //draw the character
-            drawChar(c, cursor_x, cursor_y, fontSize, fontColor);
-
-            cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
-        }
-    
-        prev_char = c;
-    }
-    
-    //TFT::print
-    void s_print(const char* s, int line = __builtin_LINE(), const char* file = __builtin_FILE())
+    void s_print(const char* s)
     {
         if(s == nullptr)
         {
-            Serial.print("ERROR line ");Serial.print(line);Serial.print(" in ");Serial.print(file);Serial.println(" in function print, the string inputed in the function did not point to a valid place in memory (it was a nullptr)");
+            Serial.print("ERROR line ");Serial.print(__LINE__);Serial.println(" in function print, the string inputed in the function did not point to a valid place in memory (it was a nullptr)");
             return;
         }
 
@@ -1553,48 +1012,84 @@ class TFT
         int i = 0;
         while(s[i] != '\0')
         {
-            //use single character s_print for short (does the same thing)
-            s_print(s[i]);
+
+            if(s[i] == '\n')
+            {
+                cursor_y += (FONT_HEIGHT + 1) * fontSize;//step the cursor_y down (since new line)
+                cursor_x = cursor_x_start;//reset x
+                
+            }else
+            {
+                drawChar(s[i], cursor_x, cursor_y, fontSize, fontColor);
+
+                cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
+            }
 
             i++;
         }
     }
 
     //TFT::print
-    void s_print(String s, int line = __builtin_LINE(), const char* file = __builtin_FILE())
+    void s_print(String s)
     {
-        s_print(s.c_str(), line, file);
+        s_print(s.c_str());
+    }
+
+    //TFT::print
+    void s_print(char c)
+    {
+        if(c == '\n')
+        {
+            cursor_y += (FONT_HEIGHT + 1) * fontSize;//step the cursor_y down (since new line)
+            cursor_x = cursor_x_start;//reset x
+            
+        }else
+        {
+            //draw the character
+            drawChar(c, cursor_x, cursor_y, fontSize, fontColor);
+
+            cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
+        }
     }
 
     //TFT::print
     void s_print(long long n)
     {
-        //if negative, draw "-" minus sign in front and revert to positive
-        if(n < 0)
-        {
-            //print a minus sign
-            s_print('-');
 
-            //revert back to normal
-            n = -n;
+        int nlength = 0;//length of the number
+        {
+            long long n2 = n;//copy n
+            while(0 < n2)
+            {
+                //everytime that ther is a new number we get rid of it and add to the counter of numbers we have
+                n2 /= 10;
+                nlength += 1;
+            }
         }
 
-        //use other print function to print the rest
-       return  s_print((unsigned long long)(n));
+
+        //we will go through all of the digits of the number, starting from the left (the biggest digits, to the smallest)
+        while(nlength > 0)
+        {
+
+            //convert the number into a character
+            char converted = '0' + getDigits(n, nlength);
+
+            //draw that character
+            drawChar(converted, cursor_x, cursor_y, fontSize, fontColor);
+
+            //move the cursor to the right
+            cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
+
+            //update our index, which is nlength
+            nlength -= 1;
+        }
+
     }
 
     //TFT::print
     void s_print(unsigned long long n)
     {
-        //special case for 0 (as it doesn't work with current logic)
-        if(n == 0)
-        {
-            //print zero
-            s_print('0');
-
-            return;//return, handled zero
-        }
-
         int nlength = 0;//length of the number
         {
             long long n2 = n;//copy n
@@ -1612,8 +1107,11 @@ class TFT
             //convert the number into a character
             char converted = '0' +  getDigits(n, nlength);
 
-            //print number
-            s_print(converted);
+            //draw that character
+            drawChar(converted, cursor_x, cursor_y, fontSize, fontColor);
+
+            //move the cursor to the right
+            cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
 
             //update our index, which is nlength
             nlength -= 1;
@@ -1651,57 +1149,86 @@ class TFT
     }
 
     //TFT::print
-    void s_print(double d, int precision = -1)
+    void s_print(double d)
     {
-        if(precision == -1)
+
+        long long n = d*1000000;//convert double to long long
+
+        int nlength = 0;//length of the number
         {
-            int last_accurate_decimal_digit = getSmallestPreciseDecimalExponent(d);
-            
-            precision = MAX(0, -last_accurate_decimal_digit - 1);
+            long long n2 = n;//copy n
+            while(0 < n2)
+            {
+                //everytime that ther is a new number we get rid of it and add to the counter of numbers we have
+                n2 /= 10;
+                nlength += 1;
+            }
         }
 
-        //convert double long long
-        long long n = d * powi(10, precision);//convert double to long long
+        //we will go through all of the digits of the number, starting from the left (the biggest digits, to the smallest)
+        int i = nlength;
+        while(6 < i)
+        {
 
-        //print the first party of the numbe (without the decimals)
-        s_print((long long)(d));
+            //convert the number into a character
+            char converted = '0' +  getDigits(n, i);
+
+            //draw that character
+            drawChar(converted, cursor_x, cursor_y, fontSize, fontColor);
+
+            //move the cursor to the right
+            cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
+
+            //update our index, which is i
+            i -= 1;
+        }
+
+        //draw the middle dot
+        drawChar('.', cursor_x, cursor_y, fontSize, fontColor);
         
-        //get rid of negative (doesn't matter anymore since we already printed it with first s_print call)
-        n = ABS(n);
+        //move the cursor to the right
+        cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
 
-        //calculate reverse length (how many decimals to print)
-        //start from higher signifcant to lower significant
-        int nlength = 0;
-        for(int i = precision; i >= 1; i--)
+
+        //get rid of the digits before the dot
+        n = getDigits(n, 0, 6);
+
+        //update nlength to go reverse so we don't include ending zero digits
         {
-            //get digit at index i
-            int digit = getDigits(n, i);      
-            
-            if(digit != 0)
+            nlength = 0;//reset nlength
+            long long n2 = n;//copy n
+            while(0 < n2)
             {
-                nlength = precision - i + 1;
+                //remove the most significant digit
+                n2 = getDigits(n2, 1, 6 - nlength);
+
+                nlength += 1;
+
+                if(6 < nlength - 1)
+                {
+                    Serial.print("ERROR line ");Serial.print(__LINE__);Serial.println(", nlength hast gone outside of what it should be at");
+                    while(true);//hold
+                }
             }
+
+            nlength -= 1; //decrease nlength by one because was causing issues (wouldn't get the right size)
         }
 
-        //print the "." if we have length bigger then 0 (0 means there are no decimals)
-        if(nlength > 0)
+
+        //print all of the last digits after the dot
+        for(int i = 0; i < nlength; i++)
         {
-            //print a dot '.'
-            s_print('.');
 
-            //draw decmials from left to right (most significant to less significant)
-            for(int i = precision; i >= precision - nlength + 1; i--)
-            {
-                //get decimal digit
-                int digit = getDigits(n, i);
+            //convert the number into a character
+            char converted = '0' + getDigits(n, 6 - i);
 
-                //convert digit into a character
-                char converted = '0' + digit;
+            //draw that character
+            drawChar(converted, cursor_x, cursor_y, fontSize, fontColor);
 
-                //print the number
-                s_print(converted);
-            }
+            //move the cursor to the right
+            cursor_x += (FONT_WIDTH + 1) * fontSize;//step cursor_x for next character
         }
+
     }
 
     void print(){}
@@ -1736,12 +1263,12 @@ class TFT
                 
             }else if(sChar != ' ')//if its not a space
             {
-                drawChar(&sChar, x + i * 6 * si + displacement * 6 * si, y, si, colour);
+                drawChar(sChar, x + i * 6 * si + displacement * 6 * si, y, si, colour);
             }
 
             if(sChar != '\n')
             {
-                if((screen_width - 1 < (x + i * 6 * si + displacement * 6 * si) + (FONT_WIDTH + 1) * si) && wrapText)
+                if((SCREEN_WIDTH - 1 < (x + i * 6 * si + displacement * 6 * si) + (FONT_WIDTH + 1) * si) && wrapText)
                 {
                     //simulate a new line
                     y += si * 7;//move the text down one line
@@ -1773,8 +1300,6 @@ class TFT
     //TFT::drawLine
     void drawLine(double x1, double y1, double x2, double y2, uint16_t colour)
     {
-        fillTriangle(round(x1), round(y1), round(x2), round(y2), round(x2), round(y2), colour);
-        return;
         ((x1)>(x2)?(x1):(x2)) += 1;
         ((y1)>(y2)?(y1):(y2)) += 1;
 
@@ -2042,178 +1567,161 @@ class TFT
         drawTriangle(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, colour);
     }
 
-    // //TFT::oldfillTriangle
-    // void oldfillTriangle(int16_t x1, int16_t y1, int16_t x2, int16_t y2, int16_t x3, int16_t y3, uint16_t colour, int line = __builtin_LINE(), const char* file = __builtin_FILE())
-    // {
-    //
-    //     // debug triangle
-    //     // drawTriangle(x1, y1, x2, y2, x3, y3, color(255, 0, 0));
-    //
-    //     //classify all of the x and y coordinates highest to lowest y
-    //     {
-    //         int16_t y[3];
-    //         int16_t x[3];
-    //
-    //         y[0] = y1;
-    //         y[1] = y2;
-    //         y[2] = y3;
-    //         x[0] = x1;
-    //         x[1] = x2;
-    //         x[2] = x3;
-    //
-    //         //find the lowest of the numbers
-    //         int16_t best_i = -1;
-    //         for(int i = 0; i < 3; i++)
-    //         {
-    //             //if we found a smaller y
-    //             if((best_i == -1 && y[i] != INT16_MAX) || (best_i != -1 && y[i] < y[best_i]))
-    //             {
-    //                 best_i = i;
-    //             }
-    //         }
-    //
-    //         if(best_i == -1)
-    //         {
-    //             println(F("ERROR line "),line,F(" in "),file,F(", could not find the lowest number"));
-    //         }
-    //
-    //         y1 = y[best_i];//set smallest number
-    //         x1 = x[best_i];//set smallest number
-    //
-    //         y[best_i] = INT16_MAX;//remove off list
-    //         x[best_i] = INT16_MAX;//remove off list
-    //
-    //         //find the lowest of the numbers
-    //         best_i = -1;
-    //         for(int i = 0; i < 3; i++)
-    //         {
-    //             //if we found a smaller y
-    //             if((best_i == -1 && y[i] != INT16_MAX) || (best_i != -1 && y[i] < y[best_i]))
-    //             {
-    //                 best_i = i;
-    //             }
-    //         }
-    //
-    //         if(best_i == -1)
-    //         {
-    //             println(F("ERROR line "),line,F(" in "),file,F(", could not find the lowest number"));
-    //         }
-    //
-    //         y2 = y[best_i];//set smallest number
-    //         x2 = x[best_i];//set smallest number
-    //
-    //         y[best_i] = INT16_MAX;//remove off list
-    //         x[best_i] = INT16_MAX;//remove off list
-    //
-    //         //find the lowest of the numbers
-    //         best_i = -1;
-    //         for(int i = 0; i < 3; i++)
-    //         {
-    //             //if we found a smaller y
-    //             if((best_i == -1 && y[i] != INT16_MAX) || (best_i != -1 && y[i] < y[best_i]))
-    //             {
-    //                 best_i = i;
-    //             }
-    //         }
-    //
-    //         if(best_i == -1)
-    //         {
-    //             println(F("ERROR line "),line,F(" in "),file,F(", could not find the lowest number"));
-    //         }
-    //
-    //         y3 = y[best_i];//set smallest number
-    //         x3 = x[best_i];//set smallest number
-    //
-    //         y[best_i] = INT16_MAX;//remove off list
-    //         x[best_i] = INT16_MAX;//remove off list
-    //
-    //         if(x1 == INT16_MAX || x2 == INT16_MAX || x3 == INT16_MAX || y1 == INT16_MAX || y2 == INT16_MAX || y3 == INT16_MAX){println(F("ERROR line "),line,F(" in "),file,F(", was not able to sort the coordinates given in a correct order (had INT16_MIN in numbers)"));}
-    //     }
-    //
-    //
-    //     //1 and 2
-    //     float a1 = (float)(y1 - y2) / (float)(x1 - x2);
-    //     float b1 = (float)y1 - a1 * (float)x1;
-    //
-    //
-    //     //1 and 3
-    //     float a2 = (float)(y1 - y3) / (float)(x1 - x3);
-    //     float b2 = (float)y1 - a2 * (float)x1;
-    //
-    //
-    //     //2 and 3
-    //     float a3 = (float)(y2 - y3) / (float)(x2 - x3);
-    //     float b3 = (float)y2 - a3 * (float)x2;
-    //
-    //
-    //     //get the starting points of each of the lines (xs -> x_start, xe -> x_end, xis -> x_increment_start, xie -> x_increment_end)
-    //     float xs = (x2==x3)?(x2):(y3 - b3) / a3;
-    //     float xe = (x1==x3)?(x1):(y3 - b2) / a2;
-    //
-    //     //get the increment for those lines
-    //     float xis = (x2==x3)?(0):1 / a3;
-    //     float xie = (x1==x3)?(0):1 / a2;
-    //
-    //     //go through all of the lines one by one top to bottom until we reach the middle
-    //     for(float i = y3; i > y2; i--)
-    //     { 
-    //         //if numbers are both not nan then we draw because normal numbers
-    //         if(xs == xs && xe == xe)
-    //         {
-    //             //draw the line of the triangle
-    //             fillRect(roundf(MIN(xs, xe)), i, roundf(MAX(xs, xe)) - roundf(MIN(xs, xe)) + 1, 1, colour);
-    //         }
-    //
-    //         //get the current line start x and end x
-    //         xs -= xis;
-    //         xe -= xie;
-    //     }
-    //
-    //
-    //     //get the starting points of each of the lines (xs -> x_start, xe -> x_end, xis -> x_increment_start, xie -> x_increment_end)
-    //     xs = (x1==x3)?(x1):(y2 - b2) / a2;
-    //     xe = (x1==x2)?(x1):(y2 - b1) / a1;
-    //
-    //     //get the increment for those lines
-    //     xis = (x1==x3)?(0):1 / a2;
-    //     xie = (x1==x2)?(0):1 / a1;
-    //
-    //     //go through all of the lines one by one middle to the bottom
-    //     for(float i = y2; i >= y1; i--)
-    //     {
-    //         //if numbers are both not nan then we draw because normal numbers
-    //         if(xs == xs && xe == xe)
-    //         {
-    //             //draw the line of the triangle
-    //             fillRect(roundf(MIN(xs, xe)), i, roundf(MAX(xs, xe)) - roundf(MIN(xs, xe)) + 1, 1, colour);
-    //         }
-    //
-    //         //get the current line start x and end x
-    //         xs -= xis;
-    //         xe -= xie;
-    //     }
-    // }
+    //TFT::oldfillTriangle
+    void oldfillTriangle(int16_t x1, int16_t y1, int16_t x2, int16_t y2, int16_t x3, int16_t y3, uint16_t colour, int line = __builtin_LINE(), const char* file = __builtin_FILE())
+    {
+        
+        // debug triangle
+        // drawTriangle(x1, y1, x2, y2, x3, y3, color(255, 0, 0));
+
+        //classify all of the x and y coordinates highest to lowest y
+        {
+            int16_t y[3];
+            int16_t x[3];
+
+            y[0] = y1;
+            y[1] = y2;
+            y[2] = y3;
+            x[0] = x1;
+            x[1] = x2;
+            x[2] = x3;
+
+            //find the lowest of the numbers
+            int16_t best_i = -1;
+            for(int i = 0; i < 3; i++)
+            {
+                //if we found a smaller y
+                if((best_i == -1 && y[i] != INT16_MAX) || (best_i != -1 && y[i] < y[best_i]))
+                {
+                    best_i = i;
+                }
+            }
+
+            if(best_i == -1)
+            {
+                println(F("ERROR line "),line,F(" in "),file,F(", could not find the lowest number"));
+            }
+
+            y1 = y[best_i];//set smallest number
+            x1 = x[best_i];//set smallest number
+
+            y[best_i] = INT16_MAX;//remove off list
+            x[best_i] = INT16_MAX;//remove off list
+
+            //find the lowest of the numbers
+            best_i = -1;
+            for(int i = 0; i < 3; i++)
+            {
+                //if we found a smaller y
+                if((best_i == -1 && y[i] != INT16_MAX) || (best_i != -1 && y[i] < y[best_i]))
+                {
+                    best_i = i;
+                }
+            }
+
+            if(best_i == -1)
+            {
+                println(F("ERROR line "),line,F(" in "),file,F(", could not find the lowest number"));
+            }
+
+            y2 = y[best_i];//set smallest number
+            x2 = x[best_i];//set smallest number
+
+            y[best_i] = INT16_MAX;//remove off list
+            x[best_i] = INT16_MAX;//remove off list
+
+            //find the lowest of the numbers
+            best_i = -1;
+            for(int i = 0; i < 3; i++)
+            {
+                //if we found a smaller y
+                if((best_i == -1 && y[i] != INT16_MAX) || (best_i != -1 && y[i] < y[best_i]))
+                {
+                    best_i = i;
+                }
+            }
+
+            if(best_i == -1)
+            {
+                println(F("ERROR line "),line,F(" in "),file,F(", could not find the lowest number"));
+            }
+
+            y3 = y[best_i];//set smallest number
+            x3 = x[best_i];//set smallest number
+
+            y[best_i] = INT16_MAX;//remove off list
+            x[best_i] = INT16_MAX;//remove off list
+
+            if(x1 == INT16_MAX || x2 == INT16_MAX || x3 == INT16_MAX || y1 == INT16_MAX || y2 == INT16_MAX || y3 == INT16_MAX){println(F("ERROR line "),line,F(" in "),file,F(", was not able to sort the coordinates given in a correct order (had INT16_MIN in numbers)"));}
+        }
+
+
+        //1 and 2
+        float a1 = (float)(y1 - y2) / (float)(x1 - x2);
+        float b1 = (float)y1 - a1 * (float)x1;
+
+
+        //1 and 3
+        float a2 = (float)(y1 - y3) / (float)(x1 - x3);
+        float b2 = (float)y1 - a2 * (float)x1;
+
+
+        //2 and 3
+        float a3 = (float)(y2 - y3) / (float)(x2 - x3);
+        float b3 = (float)y2 - a3 * (float)x2;
+
+
+        //get the starting points of each of the lines (xs -> x_start, xe -> x_end, xis -> x_increment_start, xie -> x_increment_end)
+        float xs = (x2==x3)?(x2):(y3 - b3) / a3;
+        float xe = (x1==x3)?(x1):(y3 - b2) / a2;
+
+        //get the increment for those lines
+        float xis = (x2==x3)?(0):1 / a3;
+        float xie = (x1==x3)?(0):1 / a2;
+
+        //go through all of the lines one by one top to bottom until we reach the middle
+        for(float i = y3; i > y2; i--)
+        { 
+            //if numbers are both not nan then we draw because normal numbers
+            if(xs == xs && xe == xe)
+            {
+                //draw the line of the triangle
+                fillRect(roundf(MIN(xs, xe)), i, roundf(MAX(xs, xe)) - roundf(MIN(xs, xe)) + 1, 1, colour);
+            }
+            
+            //get the current line start x and end x
+            xs -= xis;
+            xe -= xie;
+        }
+
+
+        //get the starting points of each of the lines (xs -> x_start, xe -> x_end, xis -> x_increment_start, xie -> x_increment_end)
+        xs = (x1==x3)?(x1):(y2 - b2) / a2;
+        xe = (x1==x2)?(x1):(y2 - b1) / a1;
+
+        //get the increment for those lines
+        xis = (x1==x3)?(0):1 / a2;
+        xie = (x1==x2)?(0):1 / a1;
+
+        //go through all of the lines one by one middle to the bottom
+        for(float i = y2; i >= y1; i--)
+        {
+            //if numbers are both not nan then we draw because normal numbers
+            if(xs == xs && xe == xe)
+            {
+                //draw the line of the triangle
+                fillRect(roundf(MIN(xs, xe)), i, roundf(MAX(xs, xe)) - roundf(MIN(xs, xe)) + 1, 1, colour);
+            }
+
+            //get the current line start x and end x
+            xs -= xis;
+            xe -= xie;
+        }
+    }
 
     //TFT::fillTriangle
     void fillTriangle(int16_t x1, int16_t y1, int16_t x2, int16_t y2, int16_t x3, int16_t y3, uint16_t colour, int line = __builtin_LINE(), const char* file = __builtin_FILE())
     {
-        //draw horizontal degenerate triangles first, (they fuck up our logic)
-        if(y1 == y2 && y1 == y3 && y2 == y3)
-        {
-            double x_min = MIN(MIN(x1, x2), x3);
-            double x_max = MAX(MAX(x1, x2), x3);
-
-            //get lowest x possible (floored)
-            int l_x = FLOOR(x_min + 0.5f);
-
-            //get the highest x possible (ceilling)
-            int h_x = CEIL(x_max - 0.5f);
-
-            fillRect(l_x, y1, h_x - l_x + 1, 1, colour);
-
-            return;
-        }
-        
         //classify all of the coordiantes by their y values
         {
             //temporary variables
@@ -2308,6 +1816,12 @@ class TFT
             x3 = t_x3;
             y3 = t_y3;
         }
+    
+        drawPixel(x1, y1, TFT_RED);
+        drawPixel(x2, y2, TFT_YELLOW);
+        drawPixel(x3, y3, TFT_BLUE);
+
+        delay(1000);
 
         //slope and initial value of line connecting 1 to 2
         double a_1_2 = (double)(x2 - x1) / (double)(y2 - y1);        //standart slope formula
@@ -2323,7 +1837,7 @@ class TFT
 
         //fill first part of the triangle (from y1 to y2 (y2 excluded))
         for(double i = y1; i <= y2; i++)
-        {  
+        {
             double x_1_2_low  = a_1_2 * (i - 0.5f) + b_1_2;
             double x_1_3_low  = a_1_3 * (i - 0.5f) + b_1_3;
 
@@ -2350,16 +1864,11 @@ class TFT
                 x_1_2_high = x2;
                 // x_1_3_high = x2;
             }
+
             
             double x_min = MIN(MIN(x_1_2_low, x_1_3_low), MIN(x_1_2_high, x_1_3_high));
-            double x_max = MAX(MAX(x_1_2_low, x_1_3_low), MAX(x_1_2_high, x_1_3_high));
+            double x_max = MAX(MAX(x_1_2_low, x_1_3_low), MIN(x_1_2_high, x_1_3_high));
 
-            //if we have some NaNs
-            if(x_min != x_min || x_max != x_max)
-            {
-                ::println(F("ERROR line "),line,F(" in "),file,F(", "),(x_min!=x_min)?((x_max!=x_max)?("x_min and x_max were"):("x_min was")):("x_max was"),F(" nul in the following triangle : "));
-                ::println(F("{"),x1,F(", "),y1,F("}, {"),x2,F(", "),y2,F("}, {"),x3,F(", "),y3,F("}"));
-            }
             
             //get lowest x possible (floored)
             int l_x = FLOOR(x_min + 0.5f);
@@ -2367,11 +1876,14 @@ class TFT
             //get the highest x possible (ceilling)
             int h_x = CEIL(x_max - 0.5f);
 
+            ::println("fillRect(",l_x,", ",i,", ",h_x - l_x + 1,", ",1,", ",colour,")");
+
             //fill that little horizontal slice of the triangle
             fillRect(l_x, i, h_x - l_x + 1, 1, colour);
 
         }
         
+        delay(1000);
 
         //fill second part of the triangle (from y2 to y3)
         for(double i = y2; i <= y3; i++)
@@ -2415,6 +1927,8 @@ class TFT
 
             //get the highest x possible (ceilling)
             int h_x = CEIL(x_max - 0.5f);
+
+            ::println("fillRect(",l_x,", ",i,", ",h_x - l_x + 1,", ",1,", ",colour,")");
 
             //fill that little horizontal slice of the triangle
             fillRect(l_x, i, h_x - l_x + 1, 1, colour); 
@@ -2804,19 +2318,14 @@ class TFT
         }
     }
 
-    void displayFrameBuffer()
-    {
-        ::displayFrameBuffer();
-    }
-
     //TFT::TFT
     TFT()
     {
         //Variable Initializations
         this->vx = 0;
         this->vy = 0;
-        this->vw = screen_width;
-        this->vh = screen_height;
+        this->vw = SCREEN_WIDTH;
+        this->vh = SCREEN_HEIGHT;
         this->gx = 0;
         this->gy = 0;
         this->cursor_x_start = 0;
@@ -2876,10 +2385,10 @@ class Rectangle
             int a     = 180 + truei;
             int r     = roundness;
 
-            double cx = cos((double)(a) * PI / 180.0) * (double)(r);
-            double cy = sin((double)(a) * PI / 180.0) * (double)(r);
+            int cx = cos(a * PI / 180.0) * r;
+            int cy = sin(a * PI / 180.0) * r;
 
-            tft.dashPencil(pivot({p5.x + cx, p6.y + cy}, {x, y}, this->r));
+            tft.dashPencil(pivot({p5.x + cx, p6.y + cy}, {x, y}, r));
         }
 
         // tft.dashPencil(p5);
@@ -2894,10 +2403,10 @@ class Rectangle
             int a     = 270 + truei;
             int r     = roundness;
 
-            double cx = cos((double)(a) * PI / 180.0) * (double)(r);
-            double cy = sin((double)(a) * PI / 180.0) * (double)(r);
+            int cx = cos(a * PI / 180.0) * r;
+            int cy = sin(a * PI / 180.0) * r;
 
-            tft.dashPencil(pivot({p8.x + cx, p7.y + cy}, {x, y}, this->r));
+            tft.dashPencil(pivot({p8.x + cx, p7.y + cy}, {x, y}, r));
         }
 
         // tft.dashPencil(p7);
@@ -2912,10 +2421,10 @@ class Rectangle
             int a     = 0 + truei;
             int r     = roundness;
 
-            double cx = cos((double)(a) * PI / 180.0) * (double)(r);
-            double cy = sin((double)(a) * PI / 180.0) * (double)(r);
+            int cx = cos(a * PI / 180.0) * r;
+            int cy = sin(a * PI / 180.0) * r;
 
-            tft.dashPencil(pivot({p3.x + cx, p4.y + cy}, {x, y}, this->r));
+            tft.dashPencil(pivot({p3.x + cx, p4.y + cy}, {x, y}, r));
         }
 
         // tft.dashPencil(p3);
@@ -2930,10 +2439,10 @@ class Rectangle
             int a     = 90 + truei;
             int r     = roundness;
 
-            double cx = cos((double)(a) * PI / 180.0) * (double)(r);
-            double cy = sin((double)(a) * PI / 180.0) * (double)(r);
+            int cx = cos(a * PI / 180.0) * r;
+            int cy = sin(a * PI / 180.0) * r;
 
-            tft.dashPencil(pivot({p2.x + cx, p1.y + cy}, {x, y}, this->r));
+            tft.dashPencil(pivot({p2.x + cx, p1.y + cy}, {x, y}, r));
         }
 
         // tft.dashPencil(p1);
@@ -2992,5 +2501,3 @@ class Rectangle
 };
 
 #endif
-
-

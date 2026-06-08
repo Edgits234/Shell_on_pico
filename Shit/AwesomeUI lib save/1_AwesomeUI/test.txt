@@ -1,0 +1,97 @@
+
+should make it so that elements can't be deselected if the main UI is deselected (but that fucks up windows)
+
+
+
+
+
+    if(kbd.keys.lctrl == 1 && kbd.keys.lalt == 0 && kbd.keys.lshift == 0 && kbd.checkForKey(KEY_T))
+    {
+
+        if(addedTerminal == false)
+        {
+            int recursionLevel = 0;
+            UI* currentUI = (UI*)(&ui);
+
+            //figure out which window we are currently selecting
+            while(true)
+            {
+
+                //go through all of the UI elements inside of the base UI
+                
+                UIelement* curr = currentUI->selectedElement;
+                
+
+                if(curr == nullptr)
+                {
+                    break;//get out of the loop immediatly if there is no selected element
+
+                //else, only if the element exists we do stuff with it
+                }else if(currentUI->exists(curr))
+                {
+                    if(strcmp(curr->type, "Window") == 0)
+                    {
+                        Window* currWindow = (Window*)(curr);
+                        currentUI = &currWindow->ui;//set the currentUI to be this
+                        recursionLevel += 1;
+                    }else
+                    {
+                        break;//get out of the while(true) loop
+                    }
+                //else if the element doesn't exist we break out of the loop
+                }else
+                {
+                    break;//get out of the while(true) lo
+                }
+
+            }
+
+            println("adding window at recursion level ",recursionLevel);
+            ui.printarray();
+
+            //get the current window's size
+            int16_t  window_w = 200;
+            int16_t  window_h = 200;
+            uint16_t window_c = color(160, 160, 160);//starts out default white 
+            if(currentUI->parent != nullptr && strcmp(currentUI->parent->type, "Window") == 0)
+            {
+                println();
+                println("printing the array of the current window we are about to add something into");
+                currentUI->printarray();
+                //get the window element
+                Window* window = (Window*)currentUI->parent;
+                
+                //set the width and the height
+                window_w = window->w;
+                window_h = window->h;
+                window_c = window->colour;
+
+                //adjust width and height accordingly (make it smaller)
+                window_w = MAX(window_w - 50, 50);
+                window_h = MAX(window_h - 50, 50);
+
+                print("real color : 0x");Serial.println(window_c, HEX);
+                Color t = toColor(window_c);
+                println("started out with colour : (R:",t.r," G:",t.g," B:",t.b,")");
+                //make the colors darker
+                Color colour = toColor(window_c);
+                
+                colour.r = (colour.r - 30);
+                colour.g = (colour.g - 30);
+                colour.b = (colour.b - 30);
+
+                println("now at           colour : (R:",colour.r," G:",colour.g," B:",colour.b,")");
+                window_c = color(colour);
+            }
+
+            //with the UIelement of that window we just add a window to that (and it will have - 20 in width and height as its parent)
+            currentUI->addWindow("window", window_c, "middle", "middle", window_w, window_h);
+
+
+            addedTerminal = true;
+        }
+
+    }else if(addedTerminal == true)
+    {
+        addedTerminal = false;
+    }

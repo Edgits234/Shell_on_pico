@@ -1,7 +1,241 @@
 
+/*
+
+[ ] Scrolling
+[ ] Images
+[ ] Mouse
+
+*/
+
+#define INVERT_DRAWING_ORDER
+#define EMULATE_KEYBOARD
+#include <AwesomeUI.h>
+
+// Window& window = ui.addWindow("window", rgb(50, 50, 50), "middle", "middle", 200, 200);
+
+void setup()
+{
+    SerialBegin();
+    SerialWait();
+
+    tft.begin();
+
+    tft.setPencil ( 10,  10);
+    tft.dashPencil(150,  30);
+    tft.dashPencil(130,  80);
+    tft.dashPencil(100, 100);
+    tft.dashPencil( 50, 200);
+    tft.dashPencil( 40,  30);
+    tft.dashPencil( 30, 100);
+    tft.dashPencil( 10,  10);
+
+    tft.fillPencil(rgb(255, 255, 255));
+    
+    displayFrameBuffer();
+}
+
+void loop()
+{
+    ui.update();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#define EMULATE_KEYBOARD
+#define NORMAL_DRAWING_ORDER
+#include <AwesomeUI.h>
+
+
+char str[10];
+
+void setup() {
+    SerialBegin();
+    SerialWait();
+    tft.begin();
+
+
+    // delay(1000);
+    // tft.fillTriangle({5, 5}, {100, 6}, {5, 7}, 0);
+
+
+    // tft.oldfillTriangle(5, 5, 100, 6, 5, 7, rgb(30, 100, 30));
+
+
+    // Rectangle r(120, 160, 200, 200, 40, rgb(255, 0, 0));
+
+    // r.precision = 5;
+    // r.roundness = 15;
+
+    // r.fill();
+
+    // tft.drawPixel({2, 2}, TFT_BLUE);
+    // tft.fillTriangle({10, 70}, {30, 70}, {15, 10}, rgb(30, 100, 30));
+
+    // Point p[3] = {{10, 70}, {30, 70}, {15, 10}};
+
+    // for(unsigned int i = 0; i < sizeofarray(p); i++)
+    // {
+    //     tft.drawPixel(p[i], rgb(0, 255, 0));
+    // }
+
+    // tft.fillTriangle({10, 10}, {30, 10}, {15, 70}, rgb(30, 100, 30));
+    // tft.drawTriangle({1, 1}, {3, 5}, {4, 1}, rgb(100, 30, 30));
+    
+    // tft.fillTriangle({10, 70}, {30, 70}, {15, 10}, rgb(30, 100, 30));
+    
+    // tft.drawPixel({10, 70}, rgb(100, 255, 100));
+    // tft.drawPixel({30, 70}, rgb(100, 255, 100));
+    // tft.drawPixel({15, 10}, rgb(100, 255, 100));
+    str[0] = '\0';
+
+    recieveInput(str);
+    
+    println(F("recieved : \""),str,F("\""));
+}
+
+void loop() {
+    
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // #define UI_SETTINGS 0b00000001
 #include <AwesomeUI.h>
+#include <bad_apple_frame_buffer.h>
+
+#define SD_CS         17
+#define WIDTH        320
+#define HEIGHT       240
+#define BYTES_PER_FRAME (WIDTH * HEIGHT / 8)  // 9600
 
 // Pinout defaults (see fs.hpp):
 //   SD CS   → GP17
@@ -12,13 +246,48 @@
 // CustomGraphics does not have this feature
 // uint16_t lineBuffer[WIDTH];
 
-unsigned long start = 0;
+class BadApplePlayer : public UIelement {
+public:
+    long long frameIndex = BYTES_PER_FRAME * (long long)(24 * (double)0);
+
+    void update() override {
+
+        //print the output_bin_data array
+        // for(int j = 0; j < HEIGHT; j++)
+        // {
+        //     for(int i = 0; i < WIDTH; i++)
+        //     {
+        //         int trueIndex = j * WIDTH + i;
+        //         uint8_t currByte = pgm_read_byte(output_bin_data + frameIndex + trueIndex / 8);
+        //         uint8_t currBit  = currByte & (1 << (trueIndex % 8));
+        //         uint16_t colour  = (currBit) ? (rgb(255, 255, 255)) : (rgb(0, 0, 0));
+
+        //         tft.drawPixel(j, i, colour);
+        //     }
+        // }
+        
+        // tft.fillFullScreenBinImage((const uint8_t*)output_bin_data + frameIndex, 1);
+
+
+        frameIndex += BYTES_PER_FRAME * 24 / 2;
+    }
+
+    BadApplePlayer(UI* ui1, const char* id) {
+        this->ui1        = ui1;
+        this->id         = create_string_copy(id);
+        this->type       = "BadApplePlayer";
+        this->x          = 0;
+        this->y          = 0;
+        this->w          = WIDTH;
+        this->h          = HEIGHT;
+        this->selectable = false; // no input needed, its just a video
+        this->settings   = 0;
+    }
+};
 
 void setup() {
     ui.begin();
-
-    Window& win = ui.add<Window>("win");
-    win.add<BadApplePlayer>("player");
+    ui.add<BadApplePlayer>("player");
 }
 
 void loop() {
@@ -26,6 +295,378 @@ void loop() {
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+#include <Arduino.h>
+#include <LittleFS.h>
+
+// 1. Set up the filesystem engine targeting the 16MB QSPI flash
+LittleFS_Program QSPI_Drive; 
+
+// 2. Define your gigantic data array size (Adjust this number as needed!)
+const uint32_t ARRAY_SIZE = 1000; 
+
+void setup() {
+    Serial.begin(115200);
+    while (!Serial); // Wait for you to open the serial monitor
+
+    Serial.println("\n=== GIGA External Flash Asset Loader ===");
+
+    // 3. Mount the 16MB flash drive
+    if (!QSPI_Drive.begin()) {
+        Serial.println("[-] Mount failed! You must run the format script once first.");
+        while (1); 
+    }
+    Serial.println("[+] 16MB External Flash Mounted successfully.");
+
+    // 4. Check if our array file is already saved on the chip
+    if (!QSPI_Drive.exists("big_array.bin")) {
+        Serial.println("[*] Array file not found. Creating it now...");
+
+        // Allocate a temporary buffer in RAM just to generate your initial data
+        uint8_t* tempBuffer = (uint8_t*)malloc(ARRAY_SIZE);
+        if (tempBuffer == nullptr) {
+            Serial.println("[-] RAM allocation failed for temporary buffer!");
+            while(1);
+        }
+
+        // Fill the temporary buffer with mock data (e.g., 0, 1, 2, 3...)
+        for (uint32_t i = 0; i < ARRAY_SIZE; i++) {
+            tempBuffer[i] = (uint8_t)(i % 256);
+        }
+
+        // Open a fresh file on the 16MB flash chip
+        File file = QSPI_Drive.open("big_array.bin", FILE_WRITE_BEGIN);
+        if (file) {
+            // Write the entire array from RAM straight into the physical flash chip
+            file.write(tempBuffer, ARRAY_SIZE);
+            file.close();
+            Serial.println("[+] Success! Gigantic array safely baked into the 16MB Flash.");
+        } else {
+            Serial.println("[-] Failed to create file on Flash!");
+        }
+
+        // Clean up temporary RAM space immediately so it isn't wasted
+        free(tempBuffer); 
+    } else {
+        Serial.println("[+] Array file detected! Skipping write process to preserve flash life.");
+    }
+
+    // 5. READ BACK TEST: Stream the data straight from the 16MB flash
+    File readFile = QSPI_Drive.open("big_array.bin", FILE_READ);
+    if (readFile) {
+        Serial.print("[+] Verified File Size on Flash: ");
+        Serial.print(readFile.size());
+        Serial.println(" bytes.");
+
+        Serial.println("[*] Printing first 20 bytes straight from the 16MB chip:");
+        for (int i = 0; i < 20 && readFile.available(); i++) {
+            uint8_t dataByte = readFile.read();
+            Serial.print(dataByte);
+            Serial.print(" ");
+        }
+        Serial.println("\n========================================");
+        readFile.close();
+    }
+}
+
+void loop() {
+    // Your main loop stays empty and fast. Your array is safe on the chip.
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ============================================================
+// main.cpp  —  picoOS entry point
+//
+// Build with the arduino-pico core (mbed flavour) or the
+// official Raspberry Pi Pico Arduino board package that
+// exposes the mbed RTOS.  Requires the Arduino SD library.
+//
+// Pinout defaults (see fs.hpp):
+//   SD CS   → GP17
+//   SD MOSI → GP19  (SPI0 MOSI)
+//   SD MISO → GP16  (SPI0 MISO)
+//   SD SCK  → GP18  (SPI0 SCK)
+//
+// Serial baud: 115200 (USB CDC — baud is irrelevant but set
+// it in your monitor to 115200 for consistency).
+// ============================================================
+
+#include <Arduino.h>      // Arduino-pico / mbed glue
+#include <AwesomeUI.h>
+#include <BadApplePlayer.h>
+#include <os_core.hpp>
+
+// ---- Optional: swap I/O backend here -----------------------
+// Example — redirect to a hardware UART instead of USB serial:
+//
+//   static SerialUART uart1(8, 9);   // TX=GP8, RX=GP9
+//   void setup_io() {
+//       uart1.begin(115200);
+//       IO::set_backend(
+//           []() -> int  { return uart1.read(); },
+//           [](char c)   { uart1.write(c); },
+//           []() -> int  { return uart1.available(); }
+//       );
+//   }
+//
+// For now we use the default USB CDC backend defined in io.hpp.
+// ------------------------------------------------------------
+
+void setup() {
+    Serial.begin(115200);
+
+    // Wait up to 2 s for a serial monitor (helpful during dev;
+    // remove for headless / always-on deployment).
+    for (int i = 0; i < 200 && !Serial; i++)
+        delay(10);
+
+    //start the ui manager (AwesomeUI)
+    ui.basecolor = rgb(50, 50, 50);
+    ui.begin();
+
+    // Start the 1 ms tick thread.
+    Scheduler::init();
+
+    // Mount SD card (non-fatal — fs commands report errors if absent).
+    if (!FS::init()) {
+        IO::println("[warn] SD card not found - filesystem commands unavailable");
+    }
+
+    // Hand control to the shell (blocks forever).
+    Shell::run();
+}
+
+void loop() {
+    // loop() is never reached; Shell::run() owns the main thread.
+    // mbed RTOS preempts background threads spawned via Scheduler::spawn().
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#include <AwesomeUI.h>
+
+void setup()
+{
+    SerialBegin();
+    ui.begin();
+    Window& win = ui.addWindow("win");
+    Text& txt = win.addText("txt");
+    txt.editable = true;
+    txt.fixedText = "write:";
+    txt.x = 0;
+    txt.y = 0;
+}
+
+void loop()
+{
+    ui.update();
+}
 
 
 

@@ -1,3 +1,7 @@
+
+
+
+
 // ============================================================
 // main.cpp  —  picoOS entry point
 //
@@ -5,19 +9,24 @@
 // official Raspberry Pi Pico Arduino board package that
 // exposes the mbed RTOS.  Requires the Arduino SD library.
 //
-// Pinout defaults (see fs.hpp):
+// Pinout for Raspberry pi pico :
 //   SD CS   → GP17
 //   SD MOSI → GP19  (SPI0 MOSI)
 //   SD MISO → GP16  (SPI0 MISO)
 //   SD SCK  → GP18  (SPI0 SCK)
+//
+// Pinout for ARDUINO GIGA R1 WIFI : 
+//   SD CS   → D7
+//   SD MOSI → SPI1_COPI
+//   SD MISO → SPI1_CIPO
+//   SD SCK  → SPI1_SCK
+//   see : https://docs.arduino.cc/resources/pinouts/ABX00063-full-pinout.pdf
 //
 // Serial baud: 115200 (USB CDC — baud is irrelevant but set
 // it in your monitor to 115200 for consistency).
 // ============================================================
 
 #include <Arduino.h>      // Arduino-pico / mbed glue
-#include <AwesomeUI.h>
-#include <BadApplePlayer.h>
 #include <os_core.hpp>
 
 // ---- Optional: swap I/O backend here -----------------------
@@ -36,6 +45,15 @@
 // For now we use the default USB CDC backend defined in io.hpp.
 // ------------------------------------------------------------
 
+void updateUI()
+{
+    while(true)
+    {
+        ::println("updating");
+        ui.update();
+    }
+}
+
 void setup() {
     Serial.begin(115200);
 
@@ -48,6 +66,15 @@ void setup() {
     ui.basecolor = rgb(50, 50, 50);
     ui.begin();
 
+    //initialize SD
+    if(!SD.begin(SD_CS_PIN))
+    {
+        ::println("failed to initialize SD");
+    }
+
+    //begin audio set up audio
+    Audio::begin();
+
     // Start the 1 ms tick thread.
     Scheduler::init();
 
@@ -56,11 +83,13 @@ void setup() {
         IO::println("[warn] SD card not found - filesystem commands unavailable");
     }
 
-    // Hand control to the shell (blocks forever).
-    Shell::run();
+    Shell::run();//main thread
 }
 
 void loop() {
     // loop() is never reached; Shell::run() owns the main thread.
     // mbed RTOS preempts background threads spawned via Scheduler::spawn().
 }
+
+
+

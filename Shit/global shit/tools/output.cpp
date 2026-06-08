@@ -1,133 +1,21 @@
-
 #ifndef AwesomeUI_h
-#define AwesomeUI_h
-
-#include <Utility.h>
-
 #ifndef UI_SETTINGS
-  /*
-  Helper : 
-  0b00000000
-    ##^^^^^^
-    ##87654321
-
-  1 -> if 0 : clears frame buffer at the start of a new ui.update() 
-  2 -> if 0 : don't draw on screen if we are waiting for keyboard input (to catch up on keyboard lag because you can type faster than you can update the screen)
-  3 -> if 0 : display the screen buffer on the screen *(frame buffer = screen buffer)
-  4 -> ?
-  5 -> ?
-  6 -> ?
-  7 -> ?
-  8 -> ?
-
-  "?" means nothing/unknown
-  */
-  #define UI_SETTINGS 0b00000000
 #endif
-
-#ifndef MAX_ELEMENTS
-  #define MAX_ELEMENTS 10
+//this is useless ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#ifndef I_KNOW_WHAT_IM_DOING
 #endif
-
-// Pins for the DFR0665 Display
-#define TFT_CS 10
-#define TFT_DC 8
-#define TFT_RST 9
-
-// Pins for the XPT2046 Touch Controller (THIS IS FOR THE SCREEN IRL)(Verify these with DFRobot documentation)
-#define T_CLK 52 // Shares SCK pin
-#define T_DO 50  // Shares MISO pin
-#define T_DIN 51 // Shares MOSI pin
-#define T_CS 3   // This MUST be a unique digital pin (e.g., Pin 3)
-
-// These are typical starting values for many 2.8"/3.2" screens with the XPT2046 chip
-// Use these as placeholders until you run the calibration sketch on your hardware:
-#define TS_MINX 200
-#define TS_MAXX 3840
-#define TS_MINY 400
-#define TS_MAXY 3880
-
-#include "CustomGraphics.h"
-
-void nullfunc(bool nothing);
-
-struct RectangleParams
-{
-  int16_t x;
-  int16_t y;
-  int16_t w;
-  int16_t h;
-  // int16_t lx;
-  // int16_t ly;
-  // uint16_t lw;
-  // uint16_t lh;
-};
-
-struct point3d
-{
-  float x;
-  float y;
-  float z;
-
-  point3d operator+(const point3d& other) const
+point3d point3d::operator+(const point3d& other) const
   {
     return {x + other.x, y + other.y, z + other.z};
   }
-
-  point3d operator-(const point3d& other) const
+point3d point3d::operator-(const point3d& other) const
   {
     return {x - other.x, y - other.y, z - other.z};
   }
-
-  point3d operator-() const
+point3d point3d::operator-() const
   {
     return {-x, -y, -z};
   }
-};
-
-struct vertexPos
-{
-  uint16_t a;
-  uint16_t b;
-  uint16_t c;
-  uint16_t colour;
-};
-
-// struct DoubleRectangleParams
-// {
-//   int16_t x;
-//   int16_t y;
-//   int16_t w;
-//   int16_t h;
-//   int16_t lx;
-//   int16_t ly;
-//   int16_t lw;
-//   int16_t lh;
-// };
-
-struct RectangleParamsInt
-{
-  int x;
-  int y;
-  int w;
-  int h;
-};
-
-struct DisplacePointUI
-{
-  int16_t x;
-  int16_t y;
-  // int16_t lx;
-  // int16_t ly;
-};
-
-struct TriPoint
-{
-  Point a;
-  Point b;
-  Point c;
-};
-
 // struct Color
 // {
 //   byte red;
@@ -136,27 +24,11 @@ struct TriPoint
 // };
 
 #if WOKWI_SIM
-  #include <Wire.h> // Required for I2C communication
-  #include <Adafruit_FT6206.h>
-  #include <CustomKeyboard.h>
-  Adafruit_FT6206 ctp = Adafruit_FT6206(); // Initialize capacitive touch object
+Adafruit_FT6206 ctp = Adafruit_FT6206();
+// Initialize capacitive touch object
   SPISettings spiSettings(80000000, MSBFIRST, SPI_MODE0);
-
-
 #else
-
-  // #include <USBHostGiga.h>//this is for the keyboard
-  // #include <XPT2046_Touchscreen.h>
-
-  // Create touchscreen object
-  // XPT2046 ALSO uses SPI1 (shares MOSI, MISO, SCK with display)
-  // XPT2046_Touchscreen ts(T_CS);
-
-  // The hero (correct): IN homage to the GOAT, I would have never figured this out by myself
-
-  #include <CustomKeyboard.h>
 #endif
-
 // template <typename T> void print(T input){Serial.print(input);} template<typename T, typename... Args> void print(T input, Args... other){Serial.print(input); print(other...);}void println(){Serial.println();}template <typename T>void println(T input) {Serial.println(input);}template <typename T, typename... Args> void println(T input, Args... other){Serial.print(input);println(other...);}
 // template <typename T> void print1(T input){Serial.print(input);} template<typename T, typename... Args> void print1(T input, Args... other){Serial.print(input); Serial.print(", "); print1(other...);}void println1(){Serial.println();}template <typename T>void println1(T input) {Serial.println(input);}template <typename T, typename... Args> void println1(T input, Args... other){Serial.print(input);Serial.print(", ");println1(other...);}
 
@@ -191,12 +63,8 @@ struct TriPoint
 //     return *((float*)&bits);
 // }
 
-template<typename T1, typename T2>
-int strcmp(T1 str1_input, T2 str2_input, unsigned int len1, unsigned int len2 = SIZE_MAX)
+int strcmp(const char* str1, const char* str2, unsigned int len1, unsigned int len2 )
 {
-  HandleFlashString<T1> str1 = str1_input;
-  HandleFlashString<T2> str2 = str2_input;
-
   //figure out the length of the corresponding string if not provided
   if(len1 == SIZE_MAX)
   {
@@ -227,25 +95,6 @@ int strcmp(T1 str1_input, T2 str2_input, unsigned int len1, unsigned int len2 = 
 
   return 0;
 }
-
-template<typename T1, typename T2>
-int flash_strcmp(T1 str1_input, T2 str2_input)
-{
-  HandleFlashString<T1> str1 = str1_input;
-  HandleFlashString<T2> str2 = str2_input;
-  
-  size_t i = 0;
-  while (true) {
-    char c1 = str1[i]; // Pulls safely via your working operator[]
-    char c2 = str2[i]; // Pulls safely via your working operator[]
-    
-    if (c1 != c2 || c1 == '\0') {
-      return (c1 - c2);
-    }
-    i++;
-  }
-}
-
 /**
  * @brief this function sorts the inputed array of uint32_t from lowest to highest
  * @param arr this is the array that you want to modify / sort
@@ -259,7 +108,7 @@ void radixSort(uint32_t* arr, size_t size)
   //check for error in memory allocation
   if(buckets == nullptr)
   {
-    println(F("ERROR in file "),__FILE__,F(" in function "),__func__,F("() at line "),__LINE__,F(", was not able to allocate memory for buckets array (you are probably running out of space)"));
+    println("ERROR in file ",__FILE__," in function ",__func__,"() at line ",__LINE__,", was not able to allocate memory for buckets array (you are probably running out of space)");
   }
 
   //----------- sort by the least significant byte of the uint16_t -----------//
@@ -353,136 +202,14 @@ void radixSort(uint32_t* arr, size_t size)
   //free the buckets array we allocated earlier
   delete[] buckets;
 }
-
-/**
- * @brief this function sorts the inputed arrays of uint32_t from lowest to highest, and sorts secarr based on that
- * @param arr this is the array that you want to modify / sort
- * @param size this is the size of the array you want to modify / sort
- * @param secarr this is the secondary array, can be any type, the code will order them in the same order as array
- */
-template<typename T>
-void radixSort(uint32_t* arr, size_t size, T* secarr)
-{
-  uint32_t count[256];
-  uint32_t* buckets = new uint32_t[size];
-  T* secarr2 = new T[size];
-
-  //----------- sort by the least significant byte of the uint32_t -----------//
-
-  for(int k = 0; k < 2; k++)
-  {
-    //reset / clear the count array
-    for(int i = 0; i < 256; i++)
-    {
-      count[i] = 0;
-    }
-
-    //go through all of the array
-    for(size_t i = 0; i < size; i++)
-    {
-      //get the first byte of the uint32_t 
-      uint8_t bits = (arr[i] & (0b0000000011111111 << (k * 8))) >> (k * 8);
-
-      //add one to that specific bit in count
-      count[bits] += 1;
-    }
-
-    //reorder it in array form
-    size_t truei = 0;
-    for(int i = 0; i < 256; i++)
-    {
-      int countSize = count[i];//store the count[i]
-      count[i] = truei;//set count to the truei (the current position)
-      truei += countSize;//update the countsize to skip the number of size for count idk
-    }
-
-    //go through all of the array
-    for(size_t i = 0; i < size; i++)
-    {
-      //get the first byte of the uint32_t 
-      uint8_t bits = (arr[i] & (0b0000000011111111 << (k * 8))) >> (k * 8);
-
-      //get current position of specific number (based on the bits)
-      uint32_t position = count[bits];
-
-      //set that place of the array at that position in a temp array
-      buckets[position] = arr[i];
-
-      //also do for the secondary array
-      secarr2[position] = secarr[i];
-      
-      //increase the count (which is now the position) by one so that the next arr[i] with same bits goes in position just next to that
-      count[bits] += 1;
-    }
-
-
-
-    //----------- sort by the most significant byte of the uint16_t -----------//
-
-    //reset / clear the count array
-    for(int i = 0; i < 256; i++)
-    {
-      count[i] = 0;
-    }
-
-    //go through all of the array
-    for(size_t i = 0; i < size; i++)
-    {
-      //get the last byte of the uint32_t 
-      uint8_t bits = (buckets[i] & (0b1111111100000000 << (k * 8))) >> (8 + (k * 8));
-
-      //add one to that specific bit in count
-      count[bits] += 1;
-    }
-
-    //reorder it in array form
-    truei = 0;
-    for(int i = 0; i < 256; i++)
-    {
-      int countSize = count[i];//store the count[i]
-      count[i] = truei;//set count to the truei (the current position)
-      truei += countSize;//update the countsize to skip the number of size for count idk
-    }
-
-    //go through all of the array
-    for(size_t i = 0; i < size; i++)
-    {
-      //get the first byte of the uint16_t 
-      uint8_t bits = (buckets[i] & (0b1111111100000000 << (k * 8))) >> (8 + (k * 8));
-
-      //get current position of specific number (based on the bits)
-      uint32_t position = count[bits];
-
-      //set that place of the array at that position in a temp array
-      arr[position] = buckets[i];
-      
-      //also do for the secondary array
-      secarr[position] = secarr2[i];
-
-      //increase the count (which is now the position) by one so that the next arr[i] with same bits goes in position just next to that
-      count[bits] += 1;
-    }
-  }
-
-  delete[] buckets;
-  delete[] secarr2;
-}
-
-template<typename T>
-class Arraya
-{
-  public:
-  T* array;
-  unsigned int size;
-
-  void add(T input)
+void Arraya::add(T input)
   {
     // we allocate the size for the new array
     T* newArray = new T[size + 1];
 
     if(newArray == nullptr)
     {
-      println(F("WELL WE'VE JUST FOUND THE ERROR, THIS STUPID ASS ARRAY TRIED GETTING MEMORY BUT IT FAILED AND NOW WE BOUT TO BUST THE WHOLE FUCKING THING"));
+      println("WELL WE'VE JUST FOUND THE ERROR, THIS STUPID ASS ARRAY TRIED GETTING MEMORY BUT IT FAILED AND NOW WE BOUT TO BUST THE WHOLE FUCKING THING");
       while(1);// bug finding
     }else
     {
@@ -505,8 +232,7 @@ class Arraya
       size++;
     }
   }
-
-  void remove()
+void Arraya::remove()
   {
     // we allocate the size for the new array
     T* newArray = new T[size - 1];
@@ -526,8 +252,7 @@ class Arraya
     // we up the size by one
     size--;
   }
-
-  void remove(unsigned int index)
+void Arraya::remove(unsigned int index)
   {
     // we allocate the size for the new array
     T* newArray = new T[size - 1];
@@ -552,8 +277,7 @@ class Arraya
     // we up the size by one
     size--;
   }
-
-  T at(unsigned int index)
+T Arraya::at(unsigned int index)
   {
     // if the index is in bound
     if (0 <= index && index <= size - 1)
@@ -562,27 +286,24 @@ class Arraya
     }
     else
     {
-      println(F("ERROR, invalid index (the index you gave doesn't point to an element in the array)"));
+      println("ERROR, invalid index (the index you gave doesn't point to an element in the array)");
       while(1);// bug finding
       return 0;
     }
   }
-
-  Arraya()
+Arraya::Arraya()
   {
     //variable initializations (note to self, add this in front of any and all cosntructors)
     this->array = nullptr;
     this->size = 0;
-  };
-  // Arraya(const Arraya&) = delete;
+  }
+// Arraya(const Arraya&) = delete;
   // Arraya& operator=(const Arraya&) = delete;
 
-  ~Arraya()
+  Arraya::~Arraya()
   {
     delete[] array; // remove array from the memory
   }
-};
-
 /**
  * @param p : point
  * @param c : center
@@ -622,8 +343,7 @@ class Arraya
 
     return {rx + c.x, ry + c.y, rz + c.z};
 }
-
-/*inline*/ double strMath(const char* str, int len = -1, void* extraData = nullptr, double (*handleWord)(void* extradata, const char* word, int len) = nullptr)
+/*inline*/ double strMath(const char* str, int len , void* extraData , double (*handleWord)(void* extradata, const char* word, int len) )
 {
   //figure out the length if it wasn't provided in the input (if len was equal to -1)
   if(len == -1)
@@ -634,7 +354,7 @@ class Arraya
       len++;
     }
 
-    // println("length is ",len);
+    println("length is ",len);
   }
   
   const char signs[9] = {'*','/','+','-'};
@@ -700,12 +420,12 @@ class Arraya
     }
   }
 
-  // print("str math -> '");
-  // for(int i = 0; i < len; i++)
-  // {
-  //   print(str[i]);
-  // }
-  // println("'");
+  print("str math -> '");
+  for(int i = 0; i < len; i++)
+  {
+    print(str[i]);
+  }
+  println("'");
 
   //make a variable to remember if we ever found a operator (if we didn't then its probably just a normal number)
   bool foundAnySigns = false;
@@ -801,8 +521,6 @@ class Arraya
 
   return NAN;
 }
-
-
 /**
  * @brief this function is a helper function that sets the x and y positions automatically when putting words like "middle", "top", "right", while letting normal numbers pass
  * @param pos : this is the position of the object you want to move
@@ -811,21 +529,6 @@ class Arraya
  * @param vertical : this tells the function if we are treating this as x or y (0 -> x, 1 -> y), its purpose is to stop stuff like (x, y) -> ("top", "right") which is reversed
  */
 /*inline*/ int setPos(int pos, uint16_t len, int totalLen, bool vertical){return pos;}
-/**
- * @brief this function is a helper function that sets the x and y positions automatically when putting words like "middle", "top", "right", while letting normal numbers pass
- * @param pos : this is the position of the object you want to move
- * @param len : this is the length of the object you want to move
- * @param totalLen : this is the total length (usually the container of the object)
- * @param vertical : this tells the function if we are treating this as x or y (0 -> x, 1 -> y), its purpose is to stop stuff like (x, y) -> ("top", "right") which is reversed
- */
-
-struct HandleSetPosWordsStruct
-{
-  uint16_t len;
-  int totalLen;
-  bool vertical;
-};
-
 double handleSetPosWords(void* extraData, const char* str, int len)
 {
   HandleSetPosWordsStruct input = *((HandleSetPosWordsStruct*)(extraData));
@@ -839,44 +542,41 @@ double handleSetPosWords(void* extraData, const char* str, int len)
 
   if((strcmp(str,"left",len) == 0 && input.vertical == 0) || ((strcmp(str,"top",len) == 0 || strcmp(str,"up",len) == 0 || strcmp(str,"upper",len) == 0) && input.vertical == 1))
   {
-    // for(int i = 0; i < len; i++)
-    // {
-    //   print(str[i]);
-    // }
-    // println(" -> ",0);
+    for(int i = 0; i < len; i++)
+    {
+      print(str[i]);
+    }
+    println(" -> ",0);
     return 0;
   }else if(strcmp(str,"middle",len) == 0 || strcmp(str,"centered",len) == 0 || strcmp(str,"center",len) == 0)
   {
-    // for(int i = 0; i < len; i++)
-    // {
-    //   print(str[i]);
-    // }
-    // println();
-    // println(input.totalLen," / ",2," - ",input.len," / ",2);
-    // println(" -> ",input.totalLen / 2 - input.len / 2);
+    for(int i = 0; i < len; i++)
+    {
+      print(str[i]);
+    }
+    println(" -> ",input.totalLen / 2 - input.len / 2);
     return input.totalLen / 2 - input.len / 2;
   }else if((strcmp(str,"right",len) == 0 && input.vertical == 0) || ((strcmp(str,"bottom",len) == 0 || strcmp(str,"down",len) == 0 || strcmp(str,"lower",len) == 0) && input.vertical == 1))
   {
-    // for(int i = 0; i < len; i++)
-    // {
-    //   print(str[i]);
-    // }
-    // println(" -> ",input.totalLen - input.len);
+    for(int i = 0; i < len; i++)
+    {
+      print(str[i]);
+    }
+    println(" -> ",input.totalLen - input.len);
     return input.totalLen - input.len;
   }
 
-  println(F("ERROR, '"),str,F("' is not correct keyword (tip: your make sure your 'top'/'bottom' and 'right'/'left' are not inverted)"));
+  println("ERROR, '",str,"' is not correct keyword (tip: your make sure your 'top'/'bottom' and 'right'/'left' are not inverted)");
   return 0;
 }
-
 /*inline*/ int setPos(const char* str, uint16_t len, int totalLen, bool vertical)
 {
   HandleSetPosWordsStruct extraData = {len, totalLen, vertical};
   int mathOutput = (int)(strMath(str, -1, (void*)(&extraData), handleSetPosWords));
 
+  println("result : ",mathOutput);
   return mathOutput;
 }
-
 /*inline*/ int16_t globalx = 0;
 /*inline*/ int16_t globaly = 0;
 /*inline*/ bool cursorClicky = false;
@@ -886,57 +586,60 @@ double handleSetPosWords(void* extraData, const char* str, int len)
     return ctp.touched();
   #else
 
-    //if we haven't pressed ctrl, alt and have not pressed a previous key
-    if(kbd.keys.lctrl == 0 && kbd.keys.lalt == 0)
-    {
-      //if we just pressed the up arrow
-      if(kbd.checkForKey(KEY_UPARROW))
-      {
-        globaly -= 5;
-      }
-      
-      //if we just pressed the down arrow
-      if(kbd.checkForKey(KEY_DOWNARROW))
-      {
-        globaly += 5;        
-      }
-      
-      //if we just pressed the left arrow
-      if(kbd.checkForKey(KEY_LEFTARROW))
-      {
-        globalx -= 5;
-      }
-      
-      //if we just pressed the right arrow
-      if(kbd.checkForKey(KEY_RIGHTARROW))
-      {
-        globalx += 5;          
-      }
-      
-    }
+    //if the keys got changed, we check if we pressed spacebar
+    // if(kbd.available())
+    // {
 
-    if(kbd.checkForKey(KEY_SPACEBAR))
-    { 
-      cursorClicky = true;
-      return true;
-    }else
-    {
-      cursorClicky = false;    
-    }
+      //if we haven't pressed ctrl, alt and have not pressed a previous key
+      if(kbd.keys.lctrl == 0 && kbd.keys.lalt == 0)
+      {
+        //if we just pressed the up arrow
+        if(kbd.checkForKey(KEY_UPARROW))
+        {
+          globaly -= 5;
+        }
+        
+        //if we just pressed the down arrow
+        if(kbd.checkForKey(KEY_DOWNARROW))
+        {
+          globaly += 5;        
+        }
+        
+        //if we just pressed the left arrow
+        if(kbd.checkForKey(KEY_LEFTARROW))
+        {
+          globalx -= 5;
+        }
+        
+        //if we just pressed the right arrow
+        if(kbd.checkForKey(KEY_RIGHTARROW))
+        {
+          globalx += 5;          
+        }
+        
+        if(kbd.checkForKey(KEY_SPACEBAR))
+        {
+          cursorClicky = true;
+          return true;
+        }else
+        {
+          cursorClicky = false;    
+        }
+      }
+    // }
 
     return false;
 
   #endif
 }
-
 /*inline*/ Point getPoint()
 {
   #if WOKWI_SIM
     TS_Point p = ctp.getPoint(); // Get the touch point
 
     // fix the points, bcs they reverse for some reason
-    p.x = tft.screen_width  - p.x;
-    p.y = tft.screen_height - p.y;
+    p.x = SCREEN_WIDTH  - p.x;
+    p.y = SCREEN_HEIGHT - p.y;
 
     return {p.x, p.y};
   #else
@@ -944,11 +647,10 @@ double handleSetPosWords(void* extraData, const char* str, int len)
     return {globalx, globaly};
   #endif
 }
-
 /*inline*/ int16_t gvx = 0;
 /*inline*/ int16_t gvy = 0;
-/*inline*/ int16_t gvw = tft.screen_width;
-/*inline*/ int16_t gvh = tft.screen_height;
+/*inline*/ int16_t gvw = SCREEN_WIDTH;
+/*inline*/ int16_t gvh = SCREEN_HEIGHT;
 /*inline*/ void setTestViewport(int16_t x, int16_t y, int16_t w, int16_t h)
 {
   gvx = tft.vx;
@@ -958,13 +660,10 @@ double handleSetPosWords(void* extraData, const char* str, int len)
 
   tft.setViewport(x, y, w, h);
 }
-
 /*inline*/ void cancelTestViewport()
 {
   tft.setViewport(gvx, gvy, gvw, gvh);
 }
-
-
 // input two rectangles and get if they touch or not
 /*inline*/ bool collide(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2)
 {
@@ -976,7 +675,6 @@ double handleSetPosWords(void* extraData, const char* str, int len)
 
   return !((x2 > x1 + w1 && x2 + w2 > x1 + w1) || (x2 < x1 && x2 + w2 < x1)) && !((y2 > y1 + h1 && y2 + h2 > y1 + h1) || (y2 < y1 && y2 + h2 < y1)); // && !((y2 > y1 + h1 && y2 + h2 > y1 + h1) || (y2 > y1 && y2 + h2 > y1));
 }
-
 // uint16_t color(byte red, byte green, byte blue)
 // {
 //   // maping the colors from 255 to  their respective map
@@ -1039,73 +737,14 @@ double handleSetPosWords(void* extraData, const char* str, int len)
   // RectangleParams r = combineRectangles({30, 200, 50, 60}, {20, 20, 100, 50});
   // tft.drawRect(r.x, r.y, r.w, r.h, color(255,255,255));
 }
-
-//we might not need this function anymroe ------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// RectangleParams combine2Rectangles16(RectangleParams r1, RectangleParams r2)
-// {
-//   RectangleParams r3 = combineRectangles16({r1.x, r1.y, r1.w, r1.h}, {r2.x, r2.y, r2.w, r2.h});
-//   // RectangleParams r4 = combineRectangles16({r1.lx, r1.ly, r1.lw, r1.lh}, {r2.lx, r2.ly, r2.lw, r2.lh});
-//
-//   return {r3.x, r3.y, r3.w, r3.h};
-// }
-
-// RectangleParams combineRectangles(RectangleParamsInt r1, RectangleParams r2)
-// {
-//   return combineRectangles16((RectangleParams){(int16_t)r1.x, (int16_t)r1.y, (uint16_t)r1.w, (uint16_t)r1.h}, (RectangleParams){(int16_t)r2.x, (int16_t)r2.y, (uint16_t)r2.w, (uint16_t)r2.h});// typecast that BITCH
-// }
-
-class UI;
-
-//global::UIelement
-class UIelement
-{
-  public:
-  UI* ui1; // the parent ui
-  const char* type; // constant character pointer (string) that describes the type of the ui element
-  char* id; //id string representing the name of the element
-  int16_t x;
-  int16_t y;
-  int16_t w;
-  int16_t h;
-  int8_t z_index;
-  uint8_t selected;  // is this element selected?
-  uint8_t selectable; // is the element selectable (in other words, can its selected variable be changed?)
-  UI* container; // pointer to the UI class that an element holds (if it holds anything in the first place)
-  void* extradata; // this is a useless variable, but I'm keeping it because ya never know when its going to be useful
-  Function<void, UIelement*>                    userTick;//userTick(UIelement* self) // this function ALWAYS gets called BEFORE update (updating the element as well as drawing on the screen)
-  Function<void, UIelement*>                    userUpdate;//userUpdate(UIelement* self) // this function gets called before the UIelement's update (so you can draw your own custom stuff on top)
-  Function<void, UIelement*, Point, bool, bool> userHandleInput;//userHandleInput(UIelement* self, Point p, bool holding, bool lostfocus) // this function is to get the touch inputs (technically is now "cursor input")
-  Function<void, UIelement*>                    userHandleKeyboardInput;//userHandleKeyboardInput(UIelement* self) // this is to get the keybaord input (use the kbd object to get stuff about the keyboard)
-  Function<void, UIelement*>                    onDeath;//onDeath(UIelement* self) // this function plays when this UI element dies (when its destructor gets called)
-
-  /*0b00000000
-    ##^^^^^^
-    ##876543216
-
-  1 -> show selected outline
-  2 -> ?
-  3 -> ?
-  4 -> ?
-  5 -> ?
-  6 -> ?
-  7 -> ?
-  8 -> ?*/
-  uint8_t settings;
-
-  virtual void setx(int input);
-  virtual void sety(int input);
-  virtual void setx(const char* input);
-  virtual void sety(const char* input);
-  virtual void update(){}
-  virtual void handleInput(Point p, bool holding, bool lostfocus){}
-  virtual void handleKeyboardInput(){}
-
-  virtual Point absPos();
-
-  virtual void tick(){}
-  virtual void draw(){}
-  virtual void selectionChanged(uint8_t change){selected = change;}//defaults to change
-  UIelement()
+virtual void UIelement::update(){}
+virtual void UIelement::handleInput(Point p, bool holding, bool lostfocus){}
+virtual void UIelement::handleKeyboardInput(){}
+virtual void UIelement::tick(){}
+virtual void UIelement::draw(){}
+virtual void UIelement::selectionChanged(uint8_t change){selected = change;}
+//defaults to change
+  UIelement::UIelement()
   {
     this->ui1 = nullptr;
     this->type = nullptr;
@@ -1117,121 +756,40 @@ class UIelement
     this->z_index = 0;
     this->selected = false;
     this->selectable = true;
-    this->container = nullptr;
     this->extradata = nullptr;
     this->settings = 0b00000001;
   }
-  virtual ~UIelement()
-  {
-    if(onDeath)
-    {
-      onDeath(this);
-    }
-  }
-};
-
-// forward definition of the Text, button, Terminal, and Canvas3D class
-class Text;
-class Button;
-class Menu;
-class Window;
-class Canvas3D;
-class Terminal;
-
+virtual UIelement::~UIelement(){}
 // In AwesomeUI.h, add this BEFORE the UI class definition (around line 300):
 
 /*inline*/ UI* g_pathBuffer[10];
+//global::UI 
+//class to manage the UI array, (updating ui, input handling for ui, acts as the middle man between the ui elements and the inputs of the user)
 /*inline*/ uint8_t enabletouch = 1;
-
-#define RELW(a) ((int32_t)(currUI->w) * a / tft.screen_width)
-#define RELH(a) ((int32_t)(currUI->h) * a / tft.screen_height)
-
-class UIBridge
-{
-  public:
-  UI* currUI;
-  Array<UIelement*, MAX_ELEMENTS>* arr; // we are simply creating an array of pointers to UIelement object with a custom class (this class does some very basic memory managements for you and is kind of like vector exept all of the features are missing exept "push_back" which is now "add" and "remove" just removes at last index or the specified index)
-  
-  template <typename T1, typename T2>
-  Text& addText(const char* id_input, String text, int fontsize, uint16_t color, T1 posX, T2 posY);//UI::addText 
-  Text& addText(const char* id_input);//UI::addText
-  Text& getText(const char* id, bool globalScope, int line, const char* file);//UI::getText
-
-  /**
-   * @brief adds a button
-   * @param id_input the id of the ui element (can be changed once set)
-   * @param text the text that the button is displaying
-   * @param fontsize the size of the text
-   * @param colour the colour of the text (use "color()" function to input color with rgb (0 to 255 for each color))
-   * @param textOffsetX the position in x axis of the text, can be inputed as number (Ex:1, 2, 10, 20, etc...) or as string (Ex:"middle", "left", "right", etc...)
-   * @param textOffsetY the position in y axis of the text, can be inputed as number (Ex:1, 2, 10, 10, etc...) or as string (Ex:"middle", "top", "down", etc...)
-   * @param background is there a background? (in the case that there is no backgorund, the position of the text will take over and won't simply be the offset position based on the background position)
-   * @param backgroundColor the color of the background (if there is no background, the color you input doesn't matter)
-   * @param posX the position in the x axis of the background
-   * @param posY the position in the y axis of the background
-   * @param width the width of the background
-   * @param height the height of the background
-   * @param function1 a function that plays whenever the button changes states
-   * @param toggle the state of the button. Is it a toggle or a simple, push down to activate, stop pushing to deactivate
-   * @retval returns a button reference, (you can globaly initialize a button and set its variable to the button)
-   */
-  template <typename T1, typename T2, typename T3, typename T4>
-  Button& addButton(const char* id_input, String text, int fontsize, uint16_t colour, T3 textOffsetX, T4 textOffsetY, bool background, uint16_t backgroundcolor, T1 posX, T2 posY, uint16_t width, uint16_t height, Function<void, Button*, bool> function, bool toggle, int line = __builtin_LINE(), const char* file = __builtin_FILE());//UI::addButton
-  Button& addButton(const char* id_input);
-  Button& getButton(const char* id, bool globalScope, int line, const char* file);//UI::getButton
-
-  /**
-   * @brief adds a button
-   * @param id the id of the ui element (can be changed once set)
-   * @param x the position in the x axis of the background
-   * @param y the position in the y axis of the background
-   * @param w the width of the background
-   * @param h the height of the background
-   * @param background is there a background?
-   * @param colour the color of the background (if there is no background, the color you input doesn't matter)
-   * @retval returns a Menu reference, (you can globaly initialize a Menu and set its variable to the Menu)
-   */
-  template <typename T1, typename T2>
-  Menu& addMenu(const char* id, T1 x, T2 y, int16_t w, int16_t h, uint8_t background, uint16_t colour);//UI::addMenu
-  Menu& addMenu(const char* id);
-  Menu& getMenu(const char* id, bool globalScope, int line, const char* file);//UI::getMenu
-
-  template <typename T1, typename T2>
-  Window& addWindow(const char* id_input, uint16_t colour, T1 xpos, T2 ypos, uint16_t width, uint16_t height);//UI::addWindow
-  Window& addWindow(const char* id_input);
-  Window& getWindow(const char* id, bool globalScope, int line, const char* file);//UI::getWindow
-
-  template <typename T1, typename T2>
-  Terminal& addTerminal(const char* id_input, T1 window_x, T2 window_y, int16_t window_w, int16_t window_h, uint16_t backgroundColor, uint16_t textColor);//UI::addTerminal
-  Terminal& addTerminal(const char* id_input);
-  Terminal& getTerminal(const char* id, bool globalScope, int line, const char* file);//UI::getTerminal
-
-  template<typename T1, typename T2>
-  Canvas3D& addCanvas3D(const char* id, T1 x, T2 y, int16_t w, int16_t h, bool background = 1, uint16_t backgroundColour = 0);//UI::addCanvas3D
-  Canvas3D& addCanvas3D(const char* id);
-  Canvas3D& getCanvas3D(const char* id, bool globalScope, int line, const char* file);//UI::getCanvas3D
-
-  //global function to create a UIelement of any type
-  template<typename T, typename... Args>
-  T& add(const char* id, Args... args)
+#if WOKWI_SIM
+#else
+#endif
+//UI::printarray
+  void UI::printarray()
   {
-    T* element = new T(currUI, id, args...);   //call element constructor and create dynamically allocate memory for it
-    arr->add((UIelement*)element); //add it to the element array list inside of the current UI
-    return *element;               //return a reference to that specific element
-  }
+    println(" this function should not be playing (line ",__LINE__,")");
+    // test print println("printing array");
+    // test print println("the size is : ",uiPointerArray.size);
 
-  //global function to create a UIelement of any type
-  template<typename T, typename... Args>
-  T& get(const char* id, bool globalScope = 0, int line = __builtin_LINE(), const char* file = __builtin_FILE());
-  
-
-  //UI::exits
-  //check if the element exists based on its pointer
-  bool exists(UIelement* element)
-  {
-    for(unsigned int i = 0; i < arr->size; i++)
+    // test print
+    //println("(size : ",uiPointerArray.size,")");
+    for(unsigned int i = 0; i < uiPointerArray.size; i++)
     {
-      if(element == arr->at(i))
+      println("[",i,"] = ",uiPointerArray.at(i)->id);
+    }
+  }
+//UI::exits
+  //check if the element exists based on its pointer
+  bool UI::exists(UIelement* element)
+  {
+    for(unsigned int i = 0; i < uiPointerArray.size; i++)
+    {
+      if(element == uiPointerArray.at(i))
       {
         return true;
       }
@@ -1239,18 +797,17 @@ class UIBridge
 
     return false;
   }
-
-  //check if an element exists based on its id
-  bool exists(const char* id, bool globalScope = 0)
+//check if an element exists based on its id
+  bool UI::exists(const char* id)
   {
-    for(unsigned int i = 0; i < arr->size; i++)
+    for(unsigned int i = 0; i < uiPointerArray.size; i++)
     {
-      UIelement* elem = arr->at(i);
+      UIelement* elem = uiPointerArray.at(i);
       
       //we check if elem is a nullptr JUST IN CASE
       if(elem == nullptr)
       {
-        println(F("ERROR line "),__LINE__,F(", detected a nullptr element"));
+        println("ERROR line ",__LINE__,", detected a nullptr element");
         continue;//continue just to be sure we don't use the elem
       }else
       {
@@ -1261,274 +818,33 @@ class UIBridge
         }
       }
     }
-
-    return false;
   }
-
-  void remove(const char* id);
-
-  //UI::remove
-  void remove(UIelement* ptr)
-  {
-    // we go through all of the ui elements
-    for (unsigned int i = 0; i < arr->size; i++)
-    {
-      //if the ui element has the specific pointer we are looking for
-      if(arr->at(i) == ptr)
-      {
-        delete arr->at(i);
-        arr->remove(i); // don't forget to remove it from the array too
-        return;//return early no need to continue checking
-      }
-    }
-    
-    // // if we didn't find a corresponding id
-    println(F("ERROR line "),__LINE__,F(" in "),__FILE__,F(" couldn't find the pointer in the list of ui elements"));
-  }
-
-  //UI::clear
-  void clear()
-  {
-    unsigned int staticSize = arr->size;
-
-    // we go through all of the ui elements
-    for (unsigned int i = 0; i < staticSize; i++)
-    {
-      
-      if(arr->at(0) == nullptr)
-      {
-        println(F("ERROR line "),__LINE__,F(" in "),__FILE__,F(", nullptr detected in the arr"));
-        while(true);
-      }else
-      {
-        
-        // then we delete
-        delete arr->at(0);
-        arr->remove(0); // don't forget to remove from the array too
-      }
-    }
-  }
-
-  UIBridge(UI* currUI);
-};
-
-
-//global::UI 
-//class to manage the UI array, (updating ui, input handling for ui, acts as the middle man between the ui elements and the inputs of the user)
-class UI : public UIBridge
-{
-
-  public:
-  Array<UIelement*, MAX_ELEMENTS> arr; // we are simply creating an array of pointers to UIelement object with a custom class (this class does some very basic memory managements for you and is kind of like vector exept all of the features are missing exept "push_back" which is now "add" and "remove" just removes at last index or the specified index)
-  unsigned long lastTouch;
-  bool holding;
-  bool focus;
-  uint16_t basecolor;
-  UI* prevUI;
-  bool isManager; 
-  uint8_t selected;
-  UIelement* parent;
-  uint8_t kbdShortcuts;
-  UIelement* selectedElement;
-  unsigned long drawingTime;
-
-  #if WOKWI_SIM
-    int pointRadius;
-  #else
-    int pointRadius;
-  #endif
-
-  //UI::printarray
-  void printarray()
-  {
-    // test print println(F(" this function should not be playing (line "),__LINE__,F(")"));
-    // test print println("printing array");
-    // test print println("the size is : ",arr.size);
-
-    // test print
-    //println("(size : ",arr.size,")");
-    for(unsigned int i = 0; i < arr.size; i++)
-    {
-      println(F("["),i,F("] = "),arr.at(i)->id);
-    }
-  }
-
-  //is that too many variables? meh probably not thats like uhhhhhhhhhh 128 bytes.. dayum 128 bytes, ok thats maybe a bit much... we have 8 MB right...
-  int16_t x;
-  int16_t y;
-  int16_t w;
-  int16_t h;
-
-  //UIManager::touchCollide
-  bool touchCollide(Point p, int16_t x, int16_t y, int16_t w, int16_t h)
+//UIManager::touchCollide
+  bool UI::touchCollide(Point p, int16_t x, int16_t y, int16_t w, int16_t h)
   {
     return collide(x, y, w, h, p.x - pointRadius, p.y - pointRadius, pointRadius*2, pointRadius*2);
   }
-
-  //UI::findElementWithId
-  UIelement* findElementWithId(const char* id, int line = __builtin_LINE(), const char* file = __builtin_FILE())
+//UI::findElementWithId
+  UIelement* UI::findElementWithId(const char* id)
   {
     // println("this function should not be called (line ",__LINE__,")");
     // println("in file '",__FILE__,"', in function '",__func__,", at line '",__LINE__,"'");
-    for(unsigned int i = 0; i < arr.size; i++)
+    for(unsigned int i = 0; i < uiPointerArray.size; i++)
     {
-      if(strcmp(arr.at(i)->id, id) == 0)
+      if(strcmp(uiPointerArray.at(i)->id, id) == 0)
       {
-        return arr.at(i);
+        return uiPointerArray.at(i);
       }
     }
 
-    println(F("ERROR at line "),line,F(" in "),file,F(", COULD NOT FIND THE UI ELEMENT WITH ID: '"),id,F("' in the following list of UIs : "));
-    println(F("Array size ("),arr.size,F(")"));
+    println("ERROR, COULD NOT FIND THE UI ELEMENT WITH ID:'",id,"' in the following list of UIs : ");
+    println("Array size (",uiPointerArray.size,")");
     printarray();
-    println(F(""));
+    println("");
     return nullptr;
   }
-
-  //UI::globalFindElementWithId
-  UIelement* globalFindElementWithId(const char* id, int line = __builtin_LINE(), const char* file = __builtin_FILE())
-  {
-
-    if(this->arr.size > 0)
-    {
-      
-    }
-    // println("this function should not be called (line ",__LINE__,")");
-    // println("in file '",__FILE__,"', in function '",__func__,", at line '",__LINE__,"'");
-    UIelement* elem;
-    UI* curr[30];
-    int i[30];
-    clearArray(curr, nullptr)
-    clearArray(i, 0);
-    curr[0] = this;
-    int k = 0;
-    
-    while(this->arr.size > 0U)
-    {
-      elem = curr[k]->arr.at(i[k]);
-
-
-      // for(int n = 0; n < k; n++)
-      // {
-      //   print("  ");
-      // }
-      // println("[",i[k],"] (size: ",curr[k]->arr.size,", k: ",k,") = ",elem->id);
-
-
-      if(strcmp(elem->id, id) == 0)
-      {
-        return curr[k]->arr.at(i[k]);
-      }
-
-      //if element CAN contain elements and if the array of elements actually contains elements
-      if(elem->container != nullptr && elem->container->arr.size > 0)
-      {
-        //update the k coutner to remember the index somewhere else
-        k++;
-
-        //if recursion passed the level we are able to store then give error and continue searching in current ui array
-        if(sizeofarray(i) <= (size_t)(k))
-        {
-          println(F("ERROR line "),line,F(" in "),file,F(", recursion for globalFind went too deep ("),k,F(")"));
-
-          k--;
-        }else
-        {
-          //update the curr element (so we search in the container)
-          curr[k] = elem->container;
-        }
-        
-      }else
-      {
-        i[k]++;
-      }
-
-      while(curr[k]->arr.size <= (unsigned int)(i[k]))
-      {
-        //if we are done searching inside of current UI
-        if(k == 0)
-        {
-          //get out of the loop to print error since we didn't find the UIelement the user was looking for
-          goto breakOutOfLoop;
-        }
-
-        //go back one level
-        k--;
-
-        //increase the index too, we don't want to stay at the same element we were before going inside the container
-        i[k]++;
-      }
-    }
-    breakOutOfLoop:
-
-    println(F("ERROR at line "),line,F(" in "),file,F(", COULD NOT FIND THE UI ELEMENT WITH ID: '"),id,F("' in the following list of UIs : "));
-
-    clearArray(curr, nullptr)
-    clearArray(i, 0);
-    curr[0] = this;
-    k = 0;
-
-    //print the array in its fullest
-    while(this->arr.size > 0U)
-    {
-      elem = curr[k]->arr.at(i[k]);
-
-
-      for(int n = 0; n < k; n++)
-      {
-        print(F("  "));
-      }
-      println(F("["),i[k],F("] = "),elem->id);
-
-
-      //if element CAN contain elements and if the array of elements actually contains elements
-      if(elem->container != nullptr && elem->container->arr.size > 0)
-      {
-        //update the k coutner to remember the index somewhere else
-        k++;
-
-        //if recursion passed the level we are able to store then give error and continue searching in current ui array
-        if(sizeofarray(i) <= (size_t)(k))
-        {
-          println(F("ERROR line "),line,F(" in "),file,F(", recursion for globalFind went too deep ("),k,F(")"));
-
-          k--;
-        }else
-        {
-          //update the curr element (so we search in the container)
-          curr[k] = elem->container;
-        }
-        
-      }else
-      {
-        i[k]++;
-      }
-
-      while(curr[k]->arr.size <= (unsigned int)(i[k]))
-      {
-        //if we are done searching inside of current UI
-        if(k == 0)
-        {
-          //get out of the loop to print error since we didn't find the UIelement the user was looking for
-          goto breakOutOfLoop2;
-        }
-
-        //go back one level
-        k--;
-
-        //increase the index too, we don't want to stay at the same element we were before going inside the container
-        i[k]++;
-      }
-    }
-    breakOutOfLoop2:
-
-    println();
-    return nullptr;
-  }
-
-
-  //UI::getTotalDisplacement
-  DisplacePointUI getTotalDisplacement()
+//UI::getTotalDisplacement
+  DisplacePointUI UI::getTotalDisplacement()
   {
     UI* currentUI = this;
     DisplacePointUI t = {0,0};
@@ -1541,7 +857,7 @@ class UI : public UIBridge
       //if we itreated for too long (stuck in some kind of loop) we just print some error stuff and get out of the loop
       if(i > 30)
       {
-        println(F("ERROR, went down too many indexs (you might have too many elements in elements);"));
+        println("ERROR, went down too many indexs (you might have too many elements in elements);");
         break;
       }
 
@@ -1558,9 +874,8 @@ class UI : public UIBridge
 
     return t;
   }
-
-  //UI::getCombinedRectangle
-  RectangleParams getCombinedRectangle()
+//UI::getCombinedRectangle
+  RectangleParams UI::getCombinedRectangle()
   {
       int pathLen = 0;
       
@@ -1609,15 +924,53 @@ class UI : public UIBridge
       
       return r;
   }
+//UI::getCanvas3D
 
-  
-  //UI::select
+  //UI::remove
+  void UI::remove(const char* id)
+  {
+    println("SHOULD NOT BE REMOVING ANY UI ELEMENT WHAT THE FUCK");
+    // we go through all of the ui elements
+    for (unsigned int i = 0; i < uiPointerArray.size; i++)
+    {
+      // if the ui element has the specific id we are looking for
+      if (strcmp(uiPointerArray.at(i)->id, id) == 0)
+      {
+        delete uiPointerArray.at(i);
+        uiPointerArray.remove(i); // don't forget to remove it from the array too
+        
+        return;
+      }
+    }
+    
+    // if we didn't find a corresponding id
+    println("ERROR, couldn't find '", id, "' in the list of ui elements");
+  }
+//UI::remove
+  void UI::remove(UIelement* ptr)
+  {
+    // we go through all of the ui elements
+    for (unsigned int i = 0; i < uiPointerArray.size; i++)
+    {
+      //if the ui element has the specific pointer we are looking for
+      if(uiPointerArray.at(i) == ptr)
+      {
+        delete uiPointerArray.at(i);
+        uiPointerArray.remove(i); // don't forget to remove it from the array too
+        return;//return early no need to continue checking
+      }
+    }
+    
+    // // if we didn't find a corresponding id
+    println("ERROR line ",__LINE__," in ",__FILE__," couldn't find the pointer in the list of ui elements");
+  }
+//UI::select
   /**
    @param p the point where a touch even happent
    @brief this function gets the UIelement that is touching the point provided in the current UI object
    @retval returns the pointer to that UIelement
   */
-  UIelement* select(Point p)
+  UIelement* UI::select(Point p)
   {
     //if the point that has been pressed is not inside of the current window, then we know nothing is going to be selected
     {
@@ -1634,9 +987,9 @@ class UI : public UIBridge
     {
       //bm -> bestMatch (its the element that is colliding with the point that has the highest z)
       
-      for(int i = arr.size - 1; i >= 0 ; i--)
+      for(int i = uiPointerArray.size - 1; i >= 0 ; i--)
       {
-        UIelement* elem = arr.at(i);
+        UIelement* elem = uiPointerArray.at(i);
 
         if(elem != nullptr)
         {
@@ -1650,7 +1003,7 @@ class UI : public UIBridge
               bool collided = touchCollide(p, d.x + elem->x, d.y + elem->y, elem->w, elem->h);
 
               //if it is being touched
-              if(elem->selectable == 1 && collided)
+              if(collided)
               {
                 //the current element becomes the best element
                 bm = elem;
@@ -1661,8 +1014,8 @@ class UI : public UIBridge
               //if the pixel is not inside of the window
               bool collided = touchCollide(p, d.x + elem->x, d.y + elem->y, elem->w, elem->h);
 
-              //if the z_index of the current element is bigger than the best element (and check if the element is selectable)
-              if(elem->selectable == 1 && collided && (bm->z_index < elem->z_index))
+              //if the z_index of the current element is bigger than the best element
+              if(collided && (bm->z_index < elem->z_index))
               {
                 //if it is, the current element becomes the best element
                 bm = elem;
@@ -1671,7 +1024,7 @@ class UI : public UIBridge
           }
         }else
         {
-          println(F("ERROR line "),__LINE__,F(", detected a nullptr in the arr at index "),i);
+          println("ERROR line ",__LINE__,", detected a nullptr in the uiPointerArray at index ",i);
         }
       }
     }
@@ -1679,20 +1032,19 @@ class UI : public UIBridge
     //return best match
     return bm;
   }
-
-  //UI::handleInput
-  void handleInput(Point p, bool holding, bool focus)
+//UI::handleInput
+  void UI::handleInput(Point p, bool holding, bool focus)
   {
     
     //has a new touch started and this UI is selected 
     if(holding == 0 && focus == 1)
     {
-      // println(F("started a new touch"));
+      println("started a new touch");
 
       //if the selected element isn't nullptr (if there was a prior selected element)
       if(selectedElement != nullptr)
       {
-        // println(F("making an element DESELECTED"));
+        println("making an element DESELECTED");
 
         //if the element is selectable then we deselect it
         if(selectedElement->selectable == 1)
@@ -1711,27 +1063,23 @@ class UI : public UIBridge
         //if this UI has a parent associated with it
         if(parent != nullptr)
         {
-          //if the parent and the selected element is selectable
-          if(parent->selectable == 1 && selectedElement->selectable == 1)
+          //if the parent is selectable
+          if(parent->selectable == 1)
           {
             //set the parent to selected 2 (meaning it holds an element that is selected)
             parent->selectionChanged(2);
           }
         }
 
-        if(selectedElement->selectable == 2)
-        {
-          //set this current UI object to selected 2 because it holds an element that is selected
-          selected = 2;
-        }
+        //set this current UI object to selected 2 because it holds an element that is selected
+        selected = 2;
 
-        // println(F("making an element selected"));
+        println("making an element selected");
 
         //make the new selected element selected  (if it is selectable of course)
         if(selectedElement->selectable == 1)
         {
           //use the select() function (gives more control to the element, on what to do for selection)
-          ::println("selecting : \"",selectedElement->id,"\"");
           selectedElement->selectionChanged(1);
         }
 
@@ -1752,99 +1100,117 @@ class UI : public UIBridge
     //   }
     // }
 
-    //go through all of the arr and handleInput for them
-    for(unsigned int i = 0; i < arr.size; i++)
+    //go through all of the uiPointerArray and handleInput for them
+    for(unsigned int i = 0; i < uiPointerArray.size; i++)
     {
-      if(arr.at(i) == nullptr)
+      if(uiPointerArray.at(i) == nullptr)
       {
-        println(F("UH OH, NOT GOOD, WE HAVE A NULLPTR!!!---------------------------------------------notice"));
+        println("UH OH, NOT GOOD, WE HAVE A NULLPTR!!!---------------------------------------------notice");
       }else
       {
-        Function<void, UIelement*, Point, bool, bool>& userFunc = arr.at(i)->userHandleInput;
+        void (*userFunc)(UIelement* self, Point p, bool holding, bool focus) = uiPointerArray.at(i)->userHandleInput;
 
         //if the user function is not a nullptr (exists, then play it)
-        if(userFunc)
+        if(userFunc != nullptr)
         {
-          userFunc(arr.at(i), p, holding, focus);//play the custom user function (before actuall handle input)
+          (*userFunc)(uiPointerArray.at(i), p, holding, focus);//play the custom user function (before actuall handle input)
         }
 
-        arr.at(i)->handleInput(p, holding, focus);// play update functioon for all YOU NEED TO ADD THE Z_INDEX THINGY DON'T FORGET ABOUT IT PLEASE--------------------------------------
+        uiPointerArray.at(i)->handleInput(p, holding, focus);// play update functioon for all YOU NEED TO ADD THE Z_INDEX THINGY DON'T FORGET ABOUT IT PLEASE--------------------------------------
       }
     }
   }
-  
-  //UI::handleKeyboardInput
-  void handleKeyboardInput()
+//UI::handleKeyboardInput
+  void UI::handleKeyboardInput()
   {
 
     // println("WHAT THE FUCK, IT IS NOT SUPPOSED TO DO THIS FUNCTION ---------------------------------------notice");
-    for(unsigned int i = 0; i < arr.size; i++)
+    for(unsigned int i = 0; i < uiPointerArray.size; i++)
     {
-      if(arr.at(i) == nullptr)
+      if(uiPointerArray.at(i) == nullptr)
       {
-        println(F("UH OH, NOT GOOD, WE HAVE A NULLPTR!!!---------------------------------------------notice"));
+        println("UH OH, NOT GOOD, WE HAVE A NULLPTR!!!---------------------------------------------notice");
       }else
       {
-        Function<void, UIelement*>& userFunc = arr.at(i)->userHandleKeyboardInput;
+        void (*userFunc)(UIelement* self) = uiPointerArray.at(i)->userHandleKeyboardInput;
 
-        //if the user function exists, then play it
-        if(userFunc)
+        //if the user function is not a nullptr (exists, then play it)
+        if(userFunc != nullptr)
         {
-          userFunc(arr.at(i));//play the custom user function (before actuall handle input)
+          (*userFunc)(uiPointerArray.at(i));//play the custom user function (before actuall handle input)
         }
 
-        arr.at(i)->handleKeyboardInput();// play update functioon for all YOU NEED TO ADD THE Z_INDEX THINGY DON'T FORGET ABOUT IT PLEASE--------------------------------------
+        uiPointerArray.at(i)->handleKeyboardInput();// play update functioon for all YOU NEED TO ADD THE Z_INDEX THINGY DON'T FORGET ABOUT IT PLEASE--------------------------------------
       }
     }
   }
-
-  //UI::addUIpointer
-  void addUIpointer(UIelement *pointer)
+//UI::addUIpointer
+  void UI::addUIpointer(UIelement *pointer)
   {
-    arr.add(pointer); // add the pointer at the end of the array
+    uiPointerArray.add(pointer); // add the pointer at the end of the array
   }
-  
-  //UI::removeUIpointer 
+//UI::removeUIpointer 
   //this removes from the array only
-  void removeUIpointer(UIelement *pointer)
+  void UI::removeUIpointer(UIelement *pointer)
   {
-    println(F("this function should not playing right now (line 991)"));
+    println("this function should not playing right now (line 991)");
     // we go through all of the UIelement pointers in the array
-    for(unsigned int i = 0; i < arr.size; i++)
+    for(unsigned int i = 0; i < uiPointerArray.size; i++)
     {
       // we find the corresponding pointer (the same pointer as in the function input)
-      if(arr.at(i) == pointer)
+      if(uiPointerArray.at(i) == pointer)
       {
-        arr.remove(i); // we remove the pointer from the list
+        uiPointerArray.remove(i); // we remove the pointer from the list
       }
     }
   }
-  
-  //UI::tick
-  void tick()
+//UI::tick
+  void UI::tick()
   {
+    println("this function should not be called (line : 1009)");
     // maybe change the order idk
-    for (unsigned int i = 0; i < arr.size; i++)
+    for (unsigned int i = 0; i < uiPointerArray.size; i++)
     {
-      arr.at(i)->tick();
+      uiPointerArray.at(i)->tick();
     }
   }
+//UI::clear
+  void UI::clear()
+  {
+    unsigned int staticSize = uiPointerArray.size;
 
-  //UI::touchUpdateAddition
-  virtual void touchUpdateAddition(){}
-
-  //UI::update
-  void update()
+    // we go through all of the ui elements
+    for (unsigned int i = 0; i < staticSize; i++)
+    {
+      
+      if(uiPointerArray.at(0) == nullptr)
+      {
+        println("ERROR line ",__LINE__," in ",__FILE__,", nullptr detected in the uiPointerArray");
+        while(true);
+      }else
+      {
+        
+        // then we delete
+        delete uiPointerArray.at(0);
+        uiPointerArray.remove(0); // don't forget to remove from the array too
+      }
+    }
+  }
+//UI::touchUpdateAddition
+  virtual void UI::touchUpdateAddition(){}
+//UI::update
+  // FIX 4: Add bounds checking to update() loop
+  void UI::update()
   {
 
     //testprintln("touchUpdateAddition");
     
     touchUpdateAddition();
 
-    drawingTime = millis();//temporarly store time of start of drawing
-
     //after the keyboard (bcs emulation is weird and stops the whole code so we don't want to stop code after we drew a window)
-    #if defined(NORMAL_DRAWING_ORDER)
+    #if defined(INVERT_DRAWING_ORDER)
+
+      println("drawing the background");
 
       //first bit fo UI_SETTINGS is supposed to be "are we not clearing the screen?"
       if(isManager && !(UI_SETTINGS & 1))
@@ -1854,53 +1220,49 @@ class UI : public UIBridge
 
     #endif
 
-    #if !defined(NORMAL_DRAWING_ORDER)
-      
-      //show cursor on GIGA (because we are using the keyboard)
-      #if !WOKWI_SIM
+    //show cursor on GIGA (because we are using the keyboard)
+    #if !WOKWI_SIM
+      if(isManager && enabletouch)
+      {
+        // println("drawing the cursor");
 
-        if(isManager && enabletouch)
+        uint16_t cursorColor = color(0, 0, 255);
+
+        if(cursorClicky)
         {
-
-          uint16_t cursorColor = color(0, 0, 255);
-
-          if(cursorClicky)
-          {
-            cursorColor = color(255, 0, 0);
-          }
-
-          //upper part of the cursor
-          tft.fillRect(globalx, globaly - 6, 1, 5, cursorColor);
-
-          //lower part of the cursor
-          tft.fillRect(globalx, globaly + 1, 1, 5, cursorColor);
-
-          //lefter part of the cursor
-          tft.fillRect(globalx - 6, globaly, 5, 1, cursorColor);
-
-          //righter part of the cursor
-          tft.fillRect(globalx + 1, globaly, 5, 1, cursorColor);
+          cursorColor = color(255, 0, 0);
         }
-      #endif
-      
+
+        //upper part of the cursor
+        tft.fillRect(globalx, globaly - 6, 1, 5, cursorColor);
+
+        //lower part of the cursor
+        tft.fillRect(globalx, globaly + 1, 1, 5, cursorColor);
+
+        //lefter part of the cursor
+        tft.fillRect(globalx - 6, globaly, 5, 1, cursorColor);
+
+        //righter part of the cursor
+        tft.fillRect(globalx + 1, globaly, 5, 1, cursorColor);
+      }
     #endif
 
     //go through all of the possible z_indexs (switch between min->max and max->min depending on drawing order)
-    #if defined(NORMAL_DRAWING_ORDER)
+    #if defined(INVERT_DRAWING_ORDER)
     for(int j = INT8_MIN; j < INT8_MAX; j++)
     #else
     for(int j = INT8_MAX - 1; j >= INT8_MIN; j--)
     #endif
     {
       //go through all ofthe list of UIelements
-      for (int i = (int)arr.size - 1; i >= 0 ; i--)
+      for (int i = (int)uiPointerArray.size - 1; i >= 0 ; i--)
       {
-        UIelement* ptr = arr.at(i);//get ui element
+        UIelement* ptr = uiPointerArray.at(i);//get ui element
 
         //if its a nullptr, print error
         if(ptr == nullptr)
         {
-          println(F("ERROR, nullptr detected in uiPtrArray (go to line "),__LINE__,F(" to see where this print statement was put)"));
+          println("ERROR, nullptr detected in uiPtrArray (go to line ",__LINE__," to see where this print statement was put)");
           continue;
         }
 
@@ -1908,31 +1270,24 @@ class UI : public UIBridge
         if(ptr->z_index == j)
         {
           // println("drawing element ",ptr->id);
-          
-          if(ptr->userTick)
-          {
-            ptr->userTick(ptr);
-          }
-          
-          ptr->tick();
 
           //invert the user update and the element update (the user update must always be able to overwrite the element update)
-          #if defined(NORMAL_DRAWING_ORDER)
+          #if defined(INVERT_DRAWING_ORDER)
 
             ptr->update();
 
             //if the user update function exists 
-            if(ptr->userUpdate)
+            if(ptr->userUpdate != nullptr)
             {
-              ptr->userUpdate(ptr);//play the custom user function
+              (*ptr->userUpdate)(ptr);//play the custom user function
             }
 
           #else
 
             //if the user update function exists 
-            if(ptr->userUpdate)
+            if(ptr->userUpdate != nullptr)
             {
-              ptr->userUpdate(ptr);//play the custom user function
+              (*ptr->userUpdate)(ptr);//play the custom user function
             }
 
             ptr->update();
@@ -1952,7 +1307,7 @@ class UI : public UIBridge
       }
     }  
 
-    #if !defined(NORMAL_DRAWING_ORDER)
+    #if !defined(INVERT_DRAWING_ORDER)
 
       //first bit fo UI_SETTINGS is supposed to be "are we not clearing the screen?"
       if(isManager && !(UI_SETTINGS & 1))
@@ -1962,56 +1317,26 @@ class UI : public UIBridge
 
     #endif
 
-    #if defined(NORMAL_DRAWING_ORDER)
-      
-      //show cursor on GIGA (because we are using the keyboard)
-      #if !WOKWI_SIM
-
-        if(isManager && enabletouch)
-        {
-
-          uint16_t cursorColor = color(0, 0, 255);
-
-          if(cursorClicky)
-          {
-            cursorColor = color(255, 0, 0);
-          }
-
-          //upper part of the cursor
-          tft.fillRect(globalx, globaly - 6, 1, 5, cursorColor);
-
-          //lower part of the cursor
-          tft.fillRect(globalx, globaly + 1, 1, 5, cursorColor);
-
-          //lefter part of the cursor
-          tft.fillRect(globalx - 6, globaly, 5, 1, cursorColor);
-
-          //righter part of the cursor
-          tft.fillRect(globalx + 1, globaly, 5, 1, cursorColor);
-        }
-      #endif
-      
-    #endif
-
 
     // test print println("displaying the frame buffer");
     if(isManager && !(UI_SETTINGS & 0b100))
     {
-      //wokwi_sim's graphical commands print straight to the screen, we can therefor skip the displayFrameBuffer part... and fuck I just remembered I changed everything to be drawn in inverse order, damn thats annoying
-      #if !WOKWI_SIM
-        displayFrameBuffer();//display on the actuall screen
-        resetDrawnPixel();//reset the drawn pixel so that we can actually darw afterwards
-      #endif
+      // test print println("step one (!kbd.Available => ",kbd.Available,")");
+      //UI_SETTINGS == 1                   -> true
+      //UI_SETTINGS == 0 && !kbd.Available -> true  
+      if((UI_SETTINGS & 0b10) || !kbd.Available)
+      {
+        // test print println("step two");
+        //wokwi_sim's graphical commands print straight to the screen, we can therefor skip the displayFrameBuffer part... and fuck I just remembered I changed everything to be drawn in inverse order, damn thats annoying
+        #if !WOKWI_SIM
+          displayFrameBuffer();//display on the actuall screen
+          resetDrawnPixel();//reset the drawn pixel so that we can actually darw afterwards
+        #endif
+        // test print println("you should be seeing stuff now");
+      }
     }
-  
-    //calculate time it took to draw and set drawingTime to that
-    //drawing time temporarly used as storer of start time of drawing
-    drawingTime = millis() - drawingTime;
-    
   }
-
-
-  UI() : UIBridge(this)
+UI::UI()
   {
     //variable initializations
     this->lastTouch = 0;
@@ -2034,81 +1359,6 @@ class UI : public UIBridge
     this->w = 240;
     this->h = 320;
   }
-};
-
-//global function to create a UIelement of any type
-template<typename T, typename... Args>
-T& UIBridge::get(const char* id, bool globalScope, int line, const char* file)
-  {
-    //create UIelement (base element class) pointer (we are going to set it in the following code)
-    UIelement* elem;
-
-    //find the element based on scope
-    if(globalScope)
-    {
-      elem = currUI->globalFindElementWithId(id, line, file);
-    }else 
-    {
-      elem = currUI->findElementWithId(id, line, file);    
-    }
-
-    //if we DIDN'T an element, return a dummy element (error handled by find element function)
-    if(elem == nullptr)
-    {
-      //use default element constructor (empty constructor) and return dummy item
-      static T dummy(currUI, "dummy");
-      return dummy;
-    }
-
-    //if we found an element, return a reference to that element
-    return *((T*)(elem));
-  }
-  
-UIBridge::UIBridge(UI* currUI = nullptr)
-{
-  this->currUI = currUI;
-  
-  if(currUI == nullptr)
-  {
-    arr = nullptr;
-  }else
-  {
-    arr = &currUI->arr;
-  }
-}
-
-//UI::remove
-void UIBridge::remove(const char* id)
-{
-  println(F("SHOULD NOT BE REMOVING ANY UI ELEMENT WHAT THE FUCK"));
-
-  currUI->printarray();
-
-  // we go through all of the ui elements
-  for (unsigned int i = 0; i < arr->size; i++)
-  {
-    // if the ui element has the specific id we are looking for
-    if (strcmp(arr->at(i)->id, id) == 0)
-    {
-      UIelement* elem = arr->at(i);
-      delete elem;
-
-      //remove from pointer (and not known i, since the destructor of the element might have deleted some elements)
-      remove(elem);
-
-
-      return;
-    }
-  }
-  
-  // if we didn't find a corresponding id
-  println(F("ERROR, couldn't find '"), id, F("' in the list of ui elements"));
-}
-
-
-// #define RELW(a, b) (b * (a / tft.screen_width ))//relative width
-// #define RELH(a, b) (b * (a / tft.screen_height))//relative height
-
 //get absolute position (position acounting all of the parent positions)
 Point UIelement::absPos()
 {
@@ -2122,42 +1372,11 @@ Point UIelement::absPos()
     return {(int16_t)(d.x + x), (int16_t)(d.y + y)};
   }
 }
-
-void UIelement::setx(int input)
-{
-  x = setPos(input, w, ui1->w, 0);
-}
-
-void UIelement::setx(const char* input)
-{
-  x = setPos(input, w, ui1->w, 0);
-}
-
-void UIelement::sety(int input)
-{
-  y = setPos(input, h, ui1->h, 1);
-}
-
-void UIelement::sety(const char* input)
-{
-  y = setPos(input, h, ui1->h, 1);
-}
-
-//global::UIManager
-class UIManager : public UI
-{
-  public:
-
-  Function<void, Point, bool, bool> touchInput;//void touchInput(Point p, bool holding, bool lostfocus);
-  int number;//what the fuck is that ??? ----------------------------------------------------------------------
-  uint8_t initialized;
-  // bool selected = false;
+// bool selected = false;
 
   //UIManager::begin
-  void begin()
+  void UIManager::begin()
   {
-    
-
     if(initialized == 1) return;
     initialized = 1;
     // Serial.begin(9600);
@@ -2171,7 +1390,7 @@ class UIManager : public UI
     {
       #if !defined(EMULATE_KEYBOARD)
       
-        //always do once every repetition but if kbd.available is bigger than 0 repeat until it is 0
+        //always do once every repetition but if kbd.Available is bigger than 0 repeat until it is 0
         do
         {
           //update keyboard (let the keyboard fetch the keys that are being pressed)
@@ -2180,7 +1399,7 @@ class UIManager : public UI
           //if any keys are being pressed break out of everything
           if(!kbd.keysClear()) goto endLoop;
 
-        } while (kbd.available > 0);
+        } while (kbd.Available > 0);
 
       #endif
       
@@ -2192,14 +1411,11 @@ class UIManager : public UI
     endLoop:
     #endif
 
-    Serial.println("Starting...");  
-    kbd.begin();
-
+    Serial.println("Starting...");    
 
     //initialize customGraphics library
     tft.begin();
-
-
+    
     //fill with base color or smth
     tft.fillScreen(basecolor);
     #if !WOKWI_SIM
@@ -2209,7 +1425,7 @@ class UIManager : public UI
     selected = 1;
 
     #if WOKWI_SIM
-      if (!ctp.begin())
+      if (!ctp.begin(40))
       { // Initialize the capacitive touch screen
         Serial.println("Couldn't start FT6206 touchscreen controller");
         while (1);
@@ -2232,15 +1448,18 @@ class UIManager : public UI
       // digitalWrite(T_CS, HIGH);
     #endif
   }
-
-  void handleTouch()
+//UIManager::touchUpdateAddition
+  //add the touch updating to the UIManager UI only because we don't want to update the whole touch thingy when we simply want to update UIs
+  void UIManager::touchUpdateAddition()
   {
-    
+
+    //update the keyboard (fetch the keys that have been pressed or unpressed)
+    kbd.update();
+
     if(enabletouch == 1)
     {
       if(touched())
       {
-
         Point p = getPoint();
 
         //testprintln("god the point, now handling for input");
@@ -2251,35 +1470,31 @@ class UIManager : public UI
 
           // check if we are holding
           #if WOKWI_SIM
-          if ((long long)(millis()) - (long long)(lastTouch) - (long long)(drawingTime) <= 75)
+          if (millis() - lastTouch <= 75)
           #else
-          if ((long long)(millis()) - (long long)(lastTouch) - (long long)(drawingTime) <= 200)
+          if (millis() - lastTouch <= 200)
           #endif
           {
             holding = true;
-          }else
+          }
+          else
           {
             holding = false;
           }
 
           handleInput(p, holding, focus);
 
-          if(touchInput)
+          if(touchInput != nullptr)
           {
-            touchInput(p, holding, focus);
+            (*touchInput)(p, holding, focus);
           }
 
           lastTouch = millis();
         }
       }
 
-      #if WOKWI_SIM
-      if ((long long)(millis()) - (long long)(lastTouch) > 75)
-      #else
-      if ((long long)(millis()) - (long long)(lastTouch) > 200)
-      #endif
+      if(millis() - lastTouch > 75 && focus == 1)
       {
-
         handleInput({0,0}, false, 0);
 
         // disable all of the button thingy idk
@@ -2310,44 +1525,11 @@ class UIManager : public UI
         kbdShortcuts = 0;//reset kbd shortcuts back to zero so we can use keyboard shortcuts again
       }
     }
-  }
 
-  //UIManager::touchUpdateAddition
-  //add the touch updating to the UIManager UI only because we don't want to update the whole touch thingy when we simply want to update UIs
-  void touchUpdateAddition()
-  {
-    //update keyboard (fetch new keys)
-    kbd.update();
-
-    //handle for touch inputs
-    handleTouch();
-    
-    //let all other elements use keyboard info
     handleKeyboardInput();
-    
-    //as long as we have keys being pressed, loop
-    while(kbd.available)
-    {
-      //update keyboard (fetch new keys)
-      kbd.update();
-
-      //we didn't draw so make it zero
-      drawingTime = 0;
-
-      //handle for touch inputs
-      handleTouch();
-      
-      //let all other elements use keyboard info
-      handleKeyboardInput();
-    }
   }
-
-  UIManager()
+UIManager::UIManager()
   {
-    //Initialize the UIBridge to use the "addText" and "get..." functions
-    UIBridge::currUI = (UI*)(this);
-    UIBridge::arr    = &arr;
-
     //variable initializations
     this->number = 0;
     this->initialized = 0;
@@ -2359,44 +1541,9 @@ class UIManager : public UI
     // w = SCREEN_WIDTH;
     // h = SCREEN_HEIGHT;
   }
-};
-
 /*inline*/ UIManager ui;
-
-//global::Text
-class Text : public UIelement
-{
-  public:
-  String fixedText;
-  String text;
-  int8_t fontsize;
-  uint16_t colour;
-
-  //for when we want the text to be editable by the user
-  uint8_t editable;
-  uint8_t lastSelected;
-  uint8_t updateTextSize;
-  unsigned int lastBufferLength;
-
-  template<typename T>
-  void setx(T input)
-  {
-    String combined = fixedText + text;
-    Size info = getTextBounds(combined, fontsize);
-    x = setPos(input, info.w, ui1->w, 0);
-  }
-
-  template<typename T>
-  void sety(T input)
-  {
-    String combined = fixedText + text;
-    Size info = getTextBounds(combined, fontsize);
-    // x = setPos(input, w1, ui1->w, 0);
-    y = setPos(input, info.h, ui1->h, 1);
-  }
-
-  //Text::handleKeyboardInput
-  void handleKeyboardInput()
+//Text::handleKeyboardInput
+  void Text::handleKeyboardInput()
   {
     //make sure that we don't accidentally lock editable inside of one state
     if(editable == 1)
@@ -2446,15 +1593,14 @@ class Text : public UIelement
       }
     }
   }
-
-  //Text::draw
-  void draw()
+//Text::draw
+  void Text::draw()
   {
     DisplacePointUI d = ui1->getTotalDisplacement();
     // tft.drawText(fixedText + text, (x + d.x), (y + d.y), fontsize, colour);
     //combine both the fixed text and the text (for cursor and selector reasons
     // String combined = fixedText + text;
-    tft.setCursor((x + d.x), (y + d.y), fontsize, colour, (x + d.x), (y + d.y));
+    tft.setCursor((x + d.x), (y + d.y), fontsize, colour, (x + d.x));
 
     //print the fixed text first
     tft.print(fixedText);
@@ -2526,9 +1672,8 @@ class Text : public UIelement
     }
     
   }
-
-  //Text::update
-  void update()
+//Text::update
+  void Text::update()
   {
     if(updateTextSize == 1)
     {
@@ -2540,126 +1685,19 @@ class Text : public UIelement
     // ::println(text);
     draw();
   }
-
-  //Text::print
-  void print(){} template<typename T> void print(T input){::print(input); fixedText += input;}  
-  
-  //Text::println
-  void println(){fixedText += '\n';} template<typename T> void println(T input){::println(input); fixedText += input; fixedText += '\n';} 
-
-  //Text::Text
-  template <typename T1, typename T2>
-  Text(UI* ui1, const char* id_input, String text, int fontsize, uint16_t colour, T1 xpos, T2 ypos, uint16_t modew, uint16_t modeh)
-  {
-    //Variable Initializations (note to self : always add this to any and all constructor unless you want to change the default values of the variables)
-    this->fixedText = "";
-    this->text = "";
-    this->fontsize = 1;
-    this->colour = 0x0000;
-    this->editable = 0;
-    this->lastSelected = 0;
-    this->updateTextSize = 1;
-    this->lastBufferLength = 0;
-
-    this->type = "Text";//set the type of the object (so that we can know what it is)
-    this->ui1 = ui1;
-    // we replicate all of the values above
-
-    //this is the length of the string
-    size_t len = strlen(id_input);
-
-    //allocate memory for a id that is the same as input (we add one to include the \0 terminator character)
-    this->id = new char[len + 1];
-    
-    //copy the string over to "id" storage
-    strcpy(this->id, id_input);
-
-    this->text = text;
-    this->fontsize = fontsize;
-    this->colour = colour;
-    
-    Size info = getTextBounds(text, fontsize);//(text, 0, 0, &x1, &y1, &w1, &h1);
-
-    x = setPos(xpos, info.w, ui1->w, 0);
-    y = setPos(ypos, info.h, ui1->h, 1);
-
-    // ui1->addUIpointer(this); // add to the ui manager list
-  }
-
-  //default constructor with id only (default values for text)
-  Text(UI* currUI, const char* id_input) : Text(currUI, id_input, "Hello World!", 1, rgb(0, 100, 0), "middle", "middle", 0, 0){}
-
-  //Text::~Text
-  ~Text()
+//Text::print
+  void Text::print(){}
+//Text::println
+  void Text::println(){fixedText += '\n';}
+//Text::~Text
+  Text::~Text()
   {
     // delete[] id;//remove the id that was alocated in memory for this ui element
-    ::println(F("Text destructor for ID : "),id,F(" <- NOTICE ------------------------------------------------------------"));
-  
-    //don't forget to enable back the enabletouch (if we are editing) 
-    if(selected == 1 && editable)
-    {
-      enabletouch = true;
-    }
-
-    //de-alocate memory for the id (AFTER PRINTING MESSAGE CONTAINING THAT ID)
-    delete[] this->id;
+    ::println("Text destructor for ID : ",id," <- NOTICE ------------------------------------------------------------");
   }
-};
-
-//global::Button
-class Button : public UIelement
-{
-  public:
-  int16_t tx;
-  int16_t ty;
-  String text;
-  int8_t fontsize;
-  uint16_t colour;
-  uint16_t backgroundcolor;
-  bool background;
-  bool usingTextPos;
-  bool lastButtonState;
-  bool buttonState;
-  bool toggleable;
-  Function<void, Button*, bool> onClick; //onClick(Button* self, bool buttonState)
-
-  //Button::setx
-  template<typename T>
-  void setx(T input)
+//Button::handleinput
+  void Button::handleInput(Point p, bool holding, bool focus)
   {
-    x = setPos(input, w, ui1->w, 0);
-    // y = setPos(input, h, ui1->h, 1);
-  }
-
-  //Button::sety
-  template<typename T>
-  void sety(T input)
-  {
-    // x = setPos(input, w, ui1->w, 0);
-    y = setPos(input, h, ui1->h, 1);
-  }
-
-  //Button::setTextx
-  template<typename T>
-  void setTextx(T input)
-  {
-    Size info = getTextBounds(text, fontsize);
-    tx = setPos(input, info.w, w, 0);
-  }
-
-  //Button::setTexty
-  template<typename T>
-  void setTexty(T input)
-  {
-    Size info = getTextBounds(text, fontsize);
-    // tx = setPos(input, info.w, w, 0);
-    ty = setPos(input, info.h, h, 1);
-  }  
-
-  //Button::handleinput
-  void handleInput(Point p, bool holding, bool focus)
-  {
-
     DisplacePointUI d = ui1->getTotalDisplacement();
 
     if(background == false)
@@ -2699,7 +1737,6 @@ class Button : public UIelement
         //if a new touch started 
         if(selected == 1 && holding == 0 && focus == 1 && collided == 1)
         {
-          
           //invert the buttons state
           buttonState = !buttonState;
         }
@@ -2719,13 +1756,12 @@ class Button : public UIelement
 
     }
   }
-
-  //Button::draw
-  void draw()
+//Button::draw
+  void Button::draw()
   {
     DisplacePointUI d = ui1->getTotalDisplacement();
 
-    #if defined(NORMAL_DRAWING_ORDER)
+    #if defined(INVERT_DRAWING_ORDER)
     
       if(background)
       {
@@ -2745,17 +1781,15 @@ class Button : public UIelement
       
     #endif
   }
-
-  //Button::update
-  void update()
+//Button::update
+  void Button::update()
   {
     //if the state of the button changed
     if(buttonState != lastButtonState)
     {
-      //if the function exists
-      if(onClick)
+      if(function != nullptr)
       {
-        onClick(this, buttonState);//play the custom function
+        (*function)(buttonState);//play the custom function
       }
     }
 
@@ -2763,263 +1797,62 @@ class Button : public UIelement
 
     lastButtonState = buttonState;
   }
-
-  //Button::Button
-  template <typename T1, typename T2, typename T3, typename T4>
-  Button(UI* ui1, const char* id_input, String text, int fontsize, uint16_t colour, T3 textOffsetX, T4 textOffsetY, bool background, uint16_t backgroundcolor, T1 posX, T2 posY, int16_t width, int16_t height, Function<void, Button*, bool> onClick, bool toggle)
+//Button::~Button
+  Button::~Button()
   {
-    //Variable initializations (note to self add this to any and all constructors)
-    this->ui1 = ui1;
-    this->text = "";
-    this->fontsize = 1;
-    this->colour = 0x0000;
-    this->backgroundcolor = 0;
-    this->background = false;
-    this->lastButtonState = false;
-    this->buttonState = false;
-    this->toggleable = false;
-
-
-    this->type = "Button";//set the type so that we can know what it is
-    // we replicate all of the values above
-    toggleable = toggle;
-    
-    //this is the length of the string
-    size_t len = strlen(id_input);
-
-    //allocate memory for a id that is the same as input (we add one to include the \0 terminator character)
-    this->id = new char[len + 1];
-    
-    //copy the string over to "id" storage
-    strcpy(this->id, id_input);;
-
-    this->text = text;
-    this->fontsize = fontsize;
-    this->colour = colour;
-    
-    Size info = getTextBounds(text, fontsize);//(text, 0, 0, &x1, &y1, &w1, &h1);
-
-    //if we don't have a background
-    if(width == 0 || height == 0 || background == false)
-    {
-      tx = setPos(textOffsetX, info.w, ui1->w, 0);
-      ty = setPos(textOffsetY, info.h, ui1->h, 1);
-    }else
-    {
-      tx = setPos(textOffsetX, info.w, width, 0);
-      ty = setPos(textOffsetY, info.h, height, 1);
-    }
-    
-    this->onClick = onClick;
-    this->background = background;
-    this->backgroundcolor = backgroundcolor;
-    this->w = width;
-    this->h = height;
-    // this->toggleable = toggle;
-
-    x = setPos(posX, w, ui1->w, 0);
-    y = setPos(posY, h, ui1->h, 1);
-  }
-
-  //default constructor for id only
-  Button(UI* currUI, const char* id) : Button(currUI, id, "Button", 1, rgb(50, 50, 0), "middle", "middle", true, rgb(100, 100, 0), "middle", "middle", RELW(200), RELH(100), nullptr, false){}
-
-  //Button::~Button
-  ~Button()
-  {
-    
+    // delete[] id;//de alocatio
     //n of the id (cuz we alocated that right)
-    println(F("Button destructor for ID : "),id,F(" <- NOTICE ------------------------------------------------------------"));
-
-    delete[] id;//de alocation
+    println("Button destructor for ID : ",id," <- NOTICE ------------------------------------------------------------");
   }
-};
-
-
-
-//global::Menu
-class Menu : public UIBridge, public UIelement
-{
-  //make everything public
-  public:
-  UI ui; //UI class, contains ui elements
-  uint16_t colour; //colour of the background of the Menu
-  uint8_t background;
-  uint8_t hide_after_edge = false;
-  uint8_t handleScrolling = false;
-  int scroll_x = 0;
-  int scroll_y = 0;
-
-  //Menu::setx
-  template<typename T>
-  void setx(T input)
-  {
-    x = setPos(input, w, ui1->w, 0);
-
-    ui.x = this->x;
-    ui.y = this->y;
-    ui.w = this->w;
-    ui.h = this->h;
-  }
-
-  //Menu::sety
-  template<typename T>
-  void sety(T input)
-  {
-    y = setPos(input, h, ui1->h, 1);
-
-    ui.x = this->x;
-    ui.y = this->y;
-    ui.w = this->w;
-    ui.h = this->h;
-  }
-
-  //Menu::handleInput
-  void handleInput(Point p, bool holding, bool focus)
+//Menu::handleInput
+  void Menu::handleInput(Point p, bool holding, bool focus)
   {
     //let handleInput propagate to childrens
     ui.handleInput(p, holding, focus);
   }
-
-  //Menu::handleKeyboardInput
-  void handleKeyboardInput()
+//Menu::handleKeyboardInput
+  void Menu::handleKeyboardInput()
   {
     //let hanldeKeyboardInput propagate to childrens
     ui.handleKeyboardInput();
   }
-
-  //Menu::draw
-  void draw()
+//Menu::draw
+  void Menu::draw()
   {
-    ui.x = this->x;
-    ui.y = this->y;
-    ui.w = this->w;
-    ui.h = this->h;
-
     //get the real position (instead of the relative position)
     Point p = absPos();
 
     //draw rectangle of the menu
     tft.fillRect(p.x, p.y, w, h, colour);
   }
-
-  //Menu::update
-  void update()
+//Menu::update
+  void Menu::update()
   {
-    ui.x = this->x;
-    ui.y = this->y;
-    ui.w = this->w;
-    ui.h = this->h;
-
-    int16_t vx = tft.vx;
-    int16_t vy = tft.vy;
-    int16_t vw = tft.vw;
-    int16_t vh = tft.vh;
-    
-    #if defined(NORMAL_DRAWING_ORDER)
-
+    #if defined(INVERT_DRAWING_ORDER)
       //draw stuff
       draw();
 
-      //set viewport (only draw in a certain range)
-      if(hide_after_edge)
-      {
-        tft.setViewport(x, y, w, h);
-      }     
-
       //let draw function propagate to childs
       ui.update();
-
-      //put back the viewport as it was before
-      if(hide_after_edge)
-      {
-        tft.setViewport(vx, vy, vw, vh);
-      }
-
     #else
-      
-      //set viewport (only draw in a certain range)
-      if(hide_after_edge)
-      {
-        tft.setViewport(x, y, w, h);
-      } 
-
       //let draw function propagate to childs
       ui.update();
       
-      //put back the viewport as it was before
-      if(hide_after_edge)
-      {
-        tft.setViewport(vx, vy, vw, vh);
-      }
-
       //draw stuff
       draw();
     #endif
   }
-
-  //Menu::selectionChanged
-  void selectionChanged(uint8_t change)
+//Menu::selectionChanged
+  void Menu::selectionChanged(uint8_t change)
   {
     selected = change;//select the current element
     ui.selected = change;//set selected of ui to true (forward selection to children)
   }
-
-  //Menu::Menu
-  template<typename T1, typename T2>
-  Menu(UI* ui1, const char* id, T1 x, T2 y, int16_t w, int16_t h, uint8_t background, uint16_t colour)
+//Menu::~Menu
+  Menu::~Menu()
   {
-    UIBridge::currUI = &ui;
-    UIBridge::arr    = &ui.arr;
-
-    container = &ui; // set self pointer to indicate to global UI class that we contain a UI class
-
-    //Variable initializations (note to self, add this to any and all constructors!)
-    this->colour = 0;
-    this->background = true;
-
-    this->type = "Menu";
-
-
-    //this is the length of the string
-    size_t len = strlen(id);
-
-    //allocate memory for a id that is the same as input (we add one to include the \0 terminator character)
-    this->id = new char[len + 1];
-    
-    //copy the string over to "id" storage
-    strcpy(this->id, id);
-    
-    this->background = background;
-    this->colour = colour;
-
-    this->w = w;
-    this->h = h;
-
-    this->x = setPos(x, w, ui1->w, 0);
-    this->y = setPos(y, h, ui1->h, 1);
-
-    this->ui.x = this->x;
-    this->ui.y = this->y;
-    this->ui.w = this->w;
-    this->ui.h = this->h;
-
-    //also set prev UI of ui to ui1 (important but I missed it)
-    this->ui.prevUI = this->ui1;
-    this->ui.parent = this;//link up this uielement to the UI manager class so they can work in tandem
+    //nothing yet
   }
-
-  //default constructor for Menu
-  Menu(UI* currUI, const char* id) : Menu(currUI, id, "middle", "middle", RELW(200), RELH(200), true, rgb(30, 30, 30)){}
-
-  //Menu::~Menu
-  ~Menu()
-  {
-    //de-allocation of id string
-    delete[] this->id;
-  }
-};
-
 // //global::Canvas
 // class Canvas2D : public UIelement
 // {
@@ -3030,29 +1863,10 @@ class Menu : public UIBridge, public UIelement
 
 
 #if false
-//global::Canvas3D
-class Canvas3D : public UIelement
-{
-  public:
-  UI* ui1;
-  float   camFov;
-  point3d camPos;
-  point3d camRot;
-  uint8_t background;
-  uint16_t backgroundColour;
-
-  //don't touch these variables or your head will blow up
-  size_t posIndex;
-  size_t triIndex;
-  point3d pos[500];
-  vertexPos tri[sizeofarray(pos)];//This is the triangle positions, you have to say which position to use in the list of positions (pos array), just put the index of the desired position
-  TriPoint renderPos[sizeofarray(tri)];
-  uint8_t lastSelected;
-  uint8_t showDebug;
-  uint32_t* depthBuffer;//will be in the SDRAM, have to initialize inni the setup
+//will be in the SDRAM, have to initialize inni the setup
 
   //add handle input to be able to move the camera and rotate it
-  void handleKeyboardInput()
+  void Canvas3D::handleKeyboardInput()
   {
       //did a new click happen on the canvas
       if(selected == 1 && lastSelected == 0)
@@ -3164,9 +1978,8 @@ class Canvas3D : public UIelement
 
     }
   }
-
-  //sorts all of the triangles closest to farthest from camera
-  void sortTri()
+//sorts all of the triangles closest to farthest from camera
+  void Canvas3D::sortTri()
   {
     float dist[sizeofarray(tri)];
 
@@ -3199,8 +2012,7 @@ class Canvas3D : public UIelement
     //sort them, from lowest to greatest
     radixSort(avgConverted, sizeofarray(tri), tri);
   }
-  
-  Point getScreenPos(point3d p)
+Point Canvas3D::getScreenPos(point3d p)
   {
     //calculate the scale idk what it is
     float scale = tan(camFov * 0.5 * PI / 180.0);
@@ -3232,8 +2044,7 @@ class Canvas3D : public UIelement
       return {INT16_MIN, INT16_MIN};
     }
   }
-
-  uint16_t addTriangle(point3d a, point3d b, point3d c, uint16_t colour)
+uint16_t Canvas3D::addTriangle(point3d a, point3d b, point3d c, uint16_t colour)
   {
     //bound check and display error to user if something went wrong
     if(posIndex >= sizeofarray(pos) - 3)
@@ -3265,8 +2076,7 @@ class Canvas3D : public UIelement
 
     return triIndex - 1;
   }
-
-  uint16_t addCuboid(point3d p, point3d dim, point3d rot, uint16_t colour)
+uint16_t Canvas3D::addCuboid(point3d p, point3d dim, point3d rot, uint16_t colour)
   {
     //bound check and display error to user if something went wrong
     if(posIndex >= sizeofarray(pos) - 8)
@@ -3341,8 +2151,7 @@ class Canvas3D : public UIelement
 
     return triIndex - 8;
   }
-
-  void draw()
+void Canvas3D::draw()
   {
     sortTri();//sort all of the triangles closest to farthest from camera
 
@@ -3389,8 +2198,7 @@ class Canvas3D : public UIelement
       tft.fillRect(d.x + x, d.y + y, w, h, backgroundColour);
     }
   }
-
-  void update()
+void Canvas3D::update()
   {
     if(depthBuffer == nullptr)
     {
@@ -3402,106 +2210,12 @@ class Canvas3D : public UIelement
 
     draw();
   }
-
-  //constructor
-  template<typename T1, typename T2>
-  Canvas3D(UI* ui1, const char* id, T1 x, T2 y, int16_t w, int16_t h, bool background = 1, uint16_t backgroundColour = 0)
-  {
-    //Variable intializations (note to self, add this to any and all constructors)
-    this->ui1 = nullptr;
-    this->camFov = 90;
-    this->camPos = {0, 0, 0};
-    this->camRot = {0, 0, 0};
-    this->background = 1;
-    this->backgroundColour = 0;
-    this->posIndex = 0;
-    this->triIndex = 0;
-    this->lastSelected = 0;
-    this->showDebug = 0;
-    this->depthBuffer = nullptr;
-
-
-    //this is the length of the string
-    size_t len = strlen(id);
-
-    //allocate memory for a id that is the same as input (we add one to include the \0 terminator character)
-    this->id = new char[len + 1];
-    
-    //copy the string over to "id" storage
-    strcpy(this->id, id);
-
-
-    //set a pointer to the ui parent of this object
-    this->ui1 = ui1;
-
-    //set width first
-    this->w = w;
-    this->h = h;
-
-    //set x and y with custom function
-    this->x = setPos(x, w, ui1->w, 0);
-    this->y = setPos(y, h, ui1->h, 1);
-
-    //set the background
-    this->background = background;
-    this->backgroundColour = backgroundColour;
-
-    //clear all of the triangles (so they don't actually apear on the screen)
-    for(size_t i = 0; i < sizeofarray(tri); i++)
-    {
-      tri[i].a = 0;
-      tri[i].b = 0;
-      tri[i].c = 0;
-      tri[i].colour = 0;
-    }
-  }
-
-  //default constructor for Canvas3D
-  Canvas3D(UI* currUI, const char* id) : Canvas3D(currUI, id, "middle", "middle", RELW(200), RELH(200), true, rgb(50, 50, 255)){}
-
-  ~Canvas3D()
-  {
-    //de-allocation of id char array
-    delete[] this->id;
-  }
-};
-
-
-
-#else
-
-
-class Canvas3D : public UIelement
-{
-  public:
-
-  //constructor
-  template<typename T1, typename T2>
-  Canvas3D(UI* ui1, const char* id, T1 x, T2 y, int16_t w, int16_t h, bool background = 1, uint16_t backgroundColour = 0){}
-
-  //default constructor
-  Canvas3D(UI* currUI, const char* id) : Canvas3D(currUI, id, "middle", "middle", RELW(200), RELH(200), true, rgb(50, 50, 255)){}
-};
-
-
+Canvas3D::~Canvas3D(){}
 #endif
-
-
-//global::Window
-class Window : public UIBridge, public UIelement
-{
-
-  public:
-  UI ui;//add the ui (this is the middle man between the ui and the user. when user asks for ui.addButton, it adds a button and communicates to the outside via this object)
-  uint16_t colour;// had a realisation, to change the fuckkk in teh redrawAffectedUIS thing. we need to put the changed condition outside, like have it in a function to make the function optimized when two elements are in each other, get me?-------------------------------------------------------------------------------------------------------------
-  bool startSelect;
-  Point startPoint;
-  void* deathCallbackInput;//this is what is going to get inputed to the deathCallBack function
-  void (*deathCallback)(void* input);//this function gets called during the destructo rof the Window element (this is for some use that I needed, don't ask)
-  bool highBarSelected = false;
+//this function gets called during the destructo rof the Window element (this is for some use that I needed, don't ask)
 
   //Window::updateChildUIVariables
-  void updateChildUIVariables()
+  void Window::updateChildUIVariables()
   {
     ui.x = x;
     ui.y = y + 10;
@@ -3509,35 +2223,30 @@ class Window : public UIBridge, public UIelement
     ui.h = h - 10;
     ui.basecolor = colour;
   }
-
-  //Window::setx
-  void setx(const char* input)
+//Window::setx
+  void Window::setx(const char* input)
   {
     x = setPos(input, w, ui1->w, 0);
     ui.x = x;
   }
-
-  void setx(int16_t input)
+void Window::setx(int16_t input)
   {
     x = input;
     ui.x = x;
   }
-
-  //Window::sety
-  void sety(const char* input)
+//Window::sety
+  void Window::sety(const char* input)
   {
     y = setPos(input, h, ui1->h, 1);
     ui.y = y + 10;
   }
-
-  void sety(int16_t input)
+void Window::sety(int16_t input)
   {
     y = input;
     ui.y = y + 10;
   }
-
-  //Window::handleInput
-  void handleInput(Point p, bool holding, bool focus)
+//Window::handleInput
+  void Window::handleInput(Point p, bool holding, bool focus)
   {
     updateChildUIVariables();
 
@@ -3554,34 +2263,20 @@ class Window : public UIBridge, public UIelement
       //do some stuff with the z_index so that it goes over all of the other windows in the UI element
     }
 
-    //if we started clicking and we are clicking both the bar and the little x we delete the window
     if(focus == 1 && holding == 0 && deleteCollided == 1 && windowCollided == 1 && selected == 1) 
     {
       ui1->remove(this);//remove self
       return;
     }
 
-    //if we are starting a new click and its on the window (bar at the top)
+    //if we are starting a new click and its on the window
     if(focus == 1 && holding == 0 && movecollided == 1 && windowCollided == 1 && selected == 1)
     {
-      //set start select true (indicating that the little bar is being clicked)
       startSelect = true;
       startPoint = p;
     }else if(focus == 0)
     {
       startSelect = 0;
-    }
-
-    //if we are currently clicking the high bar and selecting the element (set highBarSelected to true until the element is deselected or the movecollide not selected while the window is seleceted
-    if(selected == 1 && startSelect == 1)
-    {
-      highBarSelected = true;
-    }
-
-    //if the element stopped being selected or if we aren't clicking on teh high bar anymore than we set "highBarSelected" to false
-    if((selected == 0 && startSelect == 0) || (focus == 1 && movecollided == 0))
-    {
-      highBarSelected = false;
     }
 
     if(startSelect)
@@ -3605,9 +2300,8 @@ class Window : public UIBridge, public UIelement
 
     ui.handleInput(p, holding, focus);
   }
-  
-  //Window::handleKeyboardInput
-  void handleKeyboardInput()
+//Window::handleKeyboardInput
+  void Window::handleKeyboardInput()
   {
     //if the window is currently selected
     if(selected == 1)
@@ -3690,17 +2384,16 @@ class Window : public UIBridge, public UIelement
         {
           x = 0;
           y = -10;
-          w = tft.screen_width;
-          h = tft.screen_height + 10;
+          w = SCREEN_WIDTH;
+          h = SCREEN_HEIGHT + 10;
         }
       }
     }
 
     ui.handleKeyboardInput();
   }
-
-  //Window::draw
-  void draw()
+//Window::draw
+  void Window::draw()
   {
     updateChildUIVariables();
     DisplacePointUI d = ui1->getTotalDisplacement();
@@ -3713,7 +2406,7 @@ class Window : public UIBridge, public UIelement
     int16_t vw = tft.vw;
     int16_t vh = tft.vh;
 
-    #if defined(NORMAL_DRAWING_ORDER)
+    #if defined(INVERT_DRAWING_ORDER)
     
       // Draw window background
       tft.fillRect(d.x + ui.x, d.y + ui.y, ui.w, ui.h, colour);
@@ -3762,80 +2455,21 @@ class Window : public UIBridge, public UIelement
 
     #endif
   }
-
-  //Window::update
-  void update()
+void Window::update()
   {
     updateChildUIVariables();
     draw();
   }
-
-  //set select() function (this function is to assure that when the ui element is touched, it should also set its UI class that it is holding to touched)
-  void selectionChanged(uint8_t change)
+//set select() function (this function is to assure that when the ui element is touched, it should also set its UI class that it is holding to touched)
+  void Window::selectionChanged(uint8_t change)
   {
     selected = change;//make element deselected
     ui.selected = change;//also make UI class unselected
   }
-
-  //Window::Window
-  template <typename T1, typename T2>
-  Window(UI* ui1, const char* id_input, uint16_t colour, T1 xpos, T2 ypos, int16_t width, int16_t height)
+//Window::~Window
+  Window::~Window()
   {
-    UIBridge::currUI = &ui;
-    UIBridge::arr    = &ui.arr;
-
-    container = &ui; // set self pointer to indicate to global UI class that we contain a UI class
-    //UIBridge(ui);//set up the UIBridge so we can call functions
-
-    //Variable initializations (add this to any and all constructors that you create in the futur)
-    this->colour = 0;
-    this->startSelect = false;
-    this->deathCallbackInput = nullptr;
-    this->deathCallback = nullptr;
-
-    this->type = "Window";//set the type of the UIelement so we can know what it is
-    // we replicate all of the values above
-    ui.prevUI = ui1;//link up the two UI manager classes together to fix the broken displacement
-    ui.parent = this;//link up this uielement to the UI manager class so they can work in tandem
-    this->ui1 = ui1;
-    
-    
-    if(id_input != nullptr)
-    {
-      //this is the length of the string
-      size_t len = strlen(id_input);
-
-      //allocate memory for a id that is the same as input (we add one to include the \0 terminator character)
-      this->id = new char[len + 1];
-      
-      //copy the string over to "id" storage
-      strcpy(this->id, id_input);  
-    }
-
-      
-    this->colour = colour;
-    this->w = width;
-    this->h = height;
-
-    //set the position based on the thing idk
-    x = setPos(xpos, w, ui1->w, 0);
-    y = setPos(ypos, h, ui1->h, 1);
-
-    updateChildUIVariables();
-  }
-
-  //default window constructor
-  Window(UI* currUI, const char* id_input) : Window(currUI, id_input, rgb(50, 50, 50), "middle", "middle", RELW(200), RELH(200)){}
-
-  //Window::~Window
-  ~Window()
-  {
-    println(F("Windows destructor for ID : "),id,F(" <- NOTICE ------------------------------------------------------------"));
-
-
-    //de-allocation of id
-    delete[] this->id;
-
+    println("Windows destructor for ID : ",id," <- NOTICE ------------------------------------------------------------");
 
     //play the mistery deathCallback function if it is not a nullptr
     if(deathCallback != nullptr)
@@ -3846,213 +2480,46 @@ class Window : public UIBridge, public UIelement
     //clear all of the elements in the Array
     ui.clear();
   }
-};
+// get the desired ui
+/*inline*/ Text& UI::getText(const char *id)
+{
+  // we go through all of the ui elements
+  return *((Text*)(findElementWithId(id)));
 
-template <typename T1, typename T2>
-Text& UIBridge::addText(const char *id_input, String text, int fontsize, uint16_t colour, T1 posX, T2 posY)
-{
-  Text* element = new Text(currUI, id_input, text, fontsize, colour, posX, posY, 0, 0);
-  element->ui1 = currUI;
-  arr->add((UIelement*)element);
-  return *element;
-}
-/*inline*/ Text& UIBridge::addText(const char *id_input)
-{
-  Text* element = new Text(currUI, id_input);
-  element->ui1 = currUI;
-  arr->add((UIelement*)element);
-  return *element;
-}
-/*inline*/ Text& UIBridge::getText(const char *id, bool globalScope = false, int line = __builtin_LINE(), const char* file = __builtin_FILE())
-{
-  UIelement* elem;
-  if(globalScope)
-  {
-    elem = currUI->globalFindElementWithId(id, line, file);
-  }else
-  {
-    elem = currUI->findElementWithId(id, line, file);
-  }
-
-  //if the ui element couldn't be found, return a static pointer to a UIelement dummy of that type
-  if(elem == nullptr)
-  {
-    //create default static element
-    static Text dummy(currUI, "dummy");
-    return dummy;
-  }
-
-  return *((Text*)(elem));
-}
-
-template <typename T1, typename T2, typename T3, typename T4>
-Button& UIBridge::addButton(const char* id_input, String text, int fontsize, uint16_t colour, T3 textOffsetX, T4 textOffsetY, bool background, uint16_t backgroundcolor, T1 posX, T2 posY, uint16_t width, uint16_t height, Function<void, Button*, bool> function, bool toggle, int line, const char* file)
-{
-  Button* element = new Button(currUI, id_input, text, fontsize, colour, textOffsetX, textOffsetY, background, backgroundcolor, posX, posY, width, height, function, toggle);
-  element->ui1 = currUI;
-  arr->add((UIelement*)element, line, file);
-  return *element;
-}
-Button& UIBridge::addButton(const char* id_input)
-{
-  Button* element = new Button(currUI, id_input);
-  element->ui1 = currUI;
-  arr->add((UIelement*)element);
-  return *element;
+  // if we didn't find a corresponding id
+  println("ERROR, couldn't find '", id, "' in the list of ui elements");
 }
 // get the desired ui
-/*inline*/ Button& UIBridge::getButton(const char* id, bool globalScope = false, int line = __builtin_LINE(), const char* file = __builtin_FILE())
+/*inline*/ Button& UI::getButton(const char* id)
 {
-  UIelement* elem;
+  return *((Button*)findElementWithId(id));
+
+  // if we didn't find a corresponding id
+  println("ERROR, couldn't find '", id, "' in the list of ui elements");
+}
+/*inline*/ Window& UI::getWindow(const char* id)
+{
+  return *((Window*)findElementWithId(id));
+
+  // if we didn't find a corresponding id
+  println("ERROR, couldn't find '", id, "' in the list of ui elements");
+}
+/*inline*/ Menu& UI::getMenu(const char* id)
+{
+  return *((Menu*)findElementWithId(id));
+}
+/*inline*/ Canvas3D& UI::getCanvas3D(const char* id)
+{
+  return *((Canvas3D*)findElementWithId(id));
+
+  // if we didn't find a corresponding id
+  println("ERROR, couldn't find '", id, "' in the list of ui elements");
+}
+//this function gets called during the destructo rof the Window element (this is for some use that I needed, don't ask)
   
-  if(globalScope) 
-  {
-    elem = currUI->globalFindElementWithId(id, line, file);
-  }else 
-  {
-    elem = currUI->findElementWithId(id, line, file);    
-  }
-  
-  if(elem == nullptr)
-  {
-    static Button dummy(currUI, "dummy");
-    return dummy;
-  }
-  
-  
-  return *((Button*)(elem));
-}
-
-template <typename T1, typename T2>
-Window& UIBridge::addWindow(const char* id_input, uint16_t colour, T1 xpos, T2 ypos, uint16_t width, uint16_t height)
-{
-  Window* element = new Window(currUI, id_input, colour, xpos, ypos, width, height);
-  element->ui1 = currUI;
-  arr->add((UIelement*)element);
-  return *element;
-}
-Window& UIBridge::addWindow(const char* id_input)
-{
-  Window* element = new Window(currUI, id_input);
-  element->ui1 = currUI;
-  arr->add((UIelement*)element);
-  return *element;
-}
-/*inline*/ Window& UIBridge::getWindow(const char* id, bool globalScope = false, int line = __builtin_LINE(), const char* file = __builtin_FILE())
-{
-  UIelement* elem;
-
-  if(globalScope) 
-  {
-    elem = currUI->globalFindElementWithId(id, line, file);
-  }else 
-  {
-    elem = currUI->findElementWithId(id, line, file);    
-  }
-
-  if(elem == nullptr)
-  {
-    static Window dummy(currUI, "dummy");
-    return dummy;
-  }
-
-
-  return *((Window*)(elem));
-}
-
-template <typename T1, typename T2>
-Menu& UIBridge::addMenu(const char* id, T1 x, T2 y, int16_t w, int16_t h, uint8_t background, uint16_t colour)
-{
-  Menu* element = new Menu(currUI, id, x, y, w, h, background, colour);
-  element->ui1 = currUI;
-  arr->add((UIelement*)(element));
-  return *element;
-}
-Menu& UIBridge::addMenu(const char* id)
-{
-  Menu* element = new Menu(currUI, id);
-  element->ui1 = currUI;
-  arr->add((UIelement*)(element));
-  return *element;
-}
-/*inline*/ Menu& UIBridge::getMenu(const char* id, bool globalScope = false, int line = __builtin_LINE(), const char* file = __builtin_FILE())
-{
-  UIelement* elem;
-
-  if(globalScope) 
-  {
-    elem = currUI->globalFindElementWithId(id, line, file);
-  }else 
-  {
-    elem = currUI->findElementWithId(id, line, file);    
-  }
-
-  if(elem == nullptr)
-  {
-    static Menu dummy(currUI, "dummy");
-    return dummy;
-  }
-
-
-  return *((Menu*)(elem));
-}
-
-template<typename T1, typename T2>
-Canvas3D& UIBridge::addCanvas3D(const char* id, T1 x, T2 y, int16_t w, int16_t h, bool background, uint16_t backgroundColour)
-{
-  Canvas3D* element = new Canvas3D(currUI, id, x, y, w, h, background, backgroundColour);
-  element->ui1 = currUI;
-  arr->add((UIelement*)element);
-  return *element;
-}
-Canvas3D& UIBridge::addCanvas3D(const char* id)
-{
-  Canvas3D* element = new Canvas3D(currUI, id);
-  element->ui1 = currUI;
-  arr->add((UIelement*)element);
-  return *element;
-}
-/*inline*/ Canvas3D& UIBridge::getCanvas3D(const char* id, bool globalScope = false, int line = __builtin_LINE(), const char* file = __builtin_FILE())
-{
-  UIelement* elem;
-
-  if(globalScope) 
-  {
-    elem = currUI->globalFindElementWithId(id, line, file);
-  }else 
-  {
-    elem = currUI->findElementWithId(id, line, file);    
-  }
-
-  if(elem == nullptr)
-  {
-    static Canvas3D dummy(currUI, "dummy");
-    return dummy;
-  }
-
-
-  return *((Canvas3D*)(elem));
-}
-
-//global::Terminal
-class Terminal : public UIelement
-{
-  public:
-  Window& window = ::ui.addWindow("Terminal_Window", color(50, 50, 50), 0, 0, 50, 50);//hostage window
-  Text& text = window.addText("Terminal_Text", "", 1, color(0, 255, 0), 0, 0);//hostage text
-  uint8_t terminalSelect = 0;//helper variable to see if teh window just got selected
-  uint8_t pressedEnter = 0;//helper variable to not repeat Enter when held
-  uint8_t windowDied = 0;//helper variable to check if the window died, and if it did, we should delete the whole Terminal object as well
-  uint8_t terminalDying = 0;
-  uint8_t barCollision = 0;//stop code from registering  
-  uint8_t cmdAvailable = 0;
-  int textScrollingSpeed = 10;//speed / size of the steps each time you scroll
-  char* cmdBuffer = nullptr;//make a cmd buffer (which is going to the sdram)
-  void* deathCallbackInput = nullptr;//this is what is going to get inputed to the deathCallBack function
-  void (*deathCallback)(void*) = nullptr;//this function gets called during the destructo rof the Window element (this is for some use that I needed, don't ask)  
 
   //if the window ever dies then its going to call this function (make it static so complier don't go KABOOM)
-  static void deathCallbackTerminal(void* input)
+  static void Terminal::deathCallbackTerminal(void* input)
   {
     if(input != nullptr)
     {
@@ -4060,47 +2527,26 @@ class Terminal : public UIelement
 
       terminal->windowDied = 1;
 
-      if(!terminal->terminalDying)
-      {
-        terminal->ui1->remove(terminal);   
-      }   
+      terminal->ui1->remove(terminal);      
     }else
     {
-      println(F("ERROR line "),__LINE__,F(", the input was a nullptr"));
+      println("ERROR line ",__LINE__,", the input was a nullptr");
     }
   }
-
-  //Terminal::write
-  void write(char c)
-  {
-    text.fixedText += c;
-  }
-  
-  //Terminal::available
-  uint8_t available()
-  {
-    return cmdAvailable;
-  }
-
-  //Terminal::read
-  char* read()
-  {
-    cmdAvailable--;//decrease cmdAvailable
-    return cmdBuffer;
-  }
-
-  //Terminal::handleInput
-  void handleInput(Point p, bool holding, bool focus)
+//Terminal::handleInput
+  void Terminal::handleInput(Point p, bool holding, bool focus)
   {
     //if we started a new click
     if(holding == 0 && focus == 1)
     {
-      barCollision = window.highBarSelected;
+      DisplacePointUI d = ::ui.getTotalDisplacement();
+
+      //did the touch touch the top bar of the window
+      barCollision = ::ui.touchCollide(p, d.x + window.x, d.y + window.y, window.w, 10);
     }
   }
-
-  //Terminal::handleKeyboardInput
-  void handleKeyboardInput()
+//Terminal::handleKeyboardInput
+  void Terminal::handleKeyboardInput()
   {
     //check if cmdBuffer has not been initialized
     if(cmdBuffer == nullptr)
@@ -4118,6 +2564,8 @@ class Terminal : public UIelement
     {
       ui1->remove(this);//self destruct if child window is gone
     }
+
+    // DEBUG(window.selected);
 
     //when we click the window (select it) it should also select the text
     if((window.selected == 1 || window.selected == 2) && terminalSelect == 0 && !barCollision)
@@ -4160,7 +2608,7 @@ class Terminal : public UIelement
         String textCommand = "";
         if((kbd.buffer.length()) - index <= 0)
         {
-          println(F("ERROR line "),__LINE__,F(", zero or bellow zero length command"));
+          println("ERROR line ",__LINE__,", zero or bellow zero length command");
         }else
         {
           //get the command based on the last '\n' character index
@@ -4243,9 +2691,8 @@ class Terminal : public UIelement
     }
 
   }
-
-  //Terminal::update
-  void update()
+//Terminal::update
+  void Terminal::update()
   {
     //check if cmdBuffer has not been initialized
     if(cmdBuffer == nullptr)
@@ -4263,76 +2710,8 @@ class Terminal : public UIelement
       ui1->remove(this);//self destruct if child window is gone
     }
   }
-
-  //Terminal::Terminal
-  template <typename T1, typename T2>
-  Terminal(UI* ui1, const char* id_input, T1 window_x, T2 window_y, int16_t window_w, int16_t window_h, uint16_t backgroundColor, uint16_t textColor)
+Terminal::~Terminal()
   {
-    this->type = "Terminal";//set the type so that we can know what it is
-
-    //link up the ui that manages this element to this 
-    this->ui1 = ui1;
-
-    if(id_input != nullptr)
-    {
-
-      //this is the length of the string
-      size_t len = strlen(id_input);
-
-      //allocate memory for a id that is the same as input (we add one to include the \0 terminator character)
-      this->id = new char[len + 1];
-      
-      //copy the string over to "id" storage
-      strcpy(this->id, id_input);
-    
-    }
-
-    //update window to match
-    window.colour = backgroundColor;
-    window.w = window_w;
-    window.h = window_h;
-    window.setx(window_x);
-    window.sety(window_y);
-
-    //make sure that the index is in the right order so the terminal's update function always gets called first
-    window.z_index = -100;
-    text.z_index = -99;
-    this->z_index = -98;
-
-    //update text to match
-    text.colour = textColor;
-    text.editable = 1; //make the text editable
-    text.settings &= ~0b1; //toggle OFF the settings that erases selection lines (so we don't see ugly rectangle arround the text box inside the termianl)
-    text.updateTextSize = 0;// toggle OFF update text size to stop the text from ever updating the width and height so we can modify it ourselfs
-
-    //change text dimentions to negative so that it doesn't overlap with anything (it'll mess with our logic otherwise)
-    text.w = -1;
-    text.h = -1; 
-
-    //make sure position isn't a problem (because this is kind of like an invisible ui element)
-    x = -100;
-    y = -100;
-    w = 0;
-    h = 0;
-
-    //add a death callback function to auto delete the Terminal class if the window was ever to be deleted
-    window.deathCallback = Terminal::deathCallbackTerminal;
-    window.deathCallbackInput = (void*)this;
-  }
-
-  //default constructor for Terminal
-  Terminal(UI* currUI, const char* id_input) : Terminal(currUI, id_input, "middle", "middle", RELW(200), RELH(200), rgb(0, 0, 0), rgb(0, 255, 0)){}
-
-  ~Terminal()
-  {
-    terminalDying = true;
-
-    //delete window if it didn't die
-    if(!windowDied)
-    {
-      //remove window
-      ui1->remove(&window);
-    }
     
     //play the mistery deathCallback function if it is not a nullptr
     if(deathCallback != nullptr)
@@ -4346,55 +2725,17 @@ class Terminal : public UIelement
       SDRAM.free((void*)(cmdBuffer));//free the cmd buffer or else we boutta get some memory leaks
     #endif
 
-    println(F("Terminal destructor for ID : "),id,F(" <- NOTICE ------------------------------------------------------------"));
-
-    //de-allocation of id char array
-    delete[] this->id;
+    println("Terminal destructor for ID : ",id," <- NOTICE ------------------------------------------------------------");
   }
-};
-
-template <typename T1, typename T2>
-Terminal& UIBridge::addTerminal(const char* id_input, T1 window_x, T2 window_y, int16_t window_w, int16_t window_h, uint16_t backgroundColor, uint16_t textColor)
+/*inline*/ Terminal& UI::getTerminal(const char* id)
 {
-  Terminal* element = new Terminal(currUI, id_input, window_x, window_y, window_w, window_h, backgroundColor, textColor);
-  element->ui1 = currUI;
-  arr->add((UIelement*)element);
-  return *element;
+  return *((Terminal*)findElementWithId(id));
+
+  // if we didn't find a corresponding id
+  println("ERROR, couldn't find '", id, "' in the list of ui elements");
 }
-Terminal& UIBridge::addTerminal(const char* id_input)
-{
-  Terminal* element = new Terminal(currUI, id_input);
-  element->ui1 = currUI;
-  arr->add((UIelement*)element);
-  return *element;
-}
-/*inline*/ Terminal& UIBridge::getTerminal(const char* id, bool globalScope = false, int line = __builtin_LINE(), const char* file = __builtin_FILE())
-{
-  UIelement* elem;
-
-  if(globalScope) 
-  {
-    elem = currUI->globalFindElementWithId(id, line, file);
-  }else 
-  {
-    elem = currUI->findElementWithId(id, line, file);    
-  }
-
-  if(elem == nullptr)
-  {
-    static Terminal dummy(currUI, "dummy");
-    return dummy;
-  }
-
-
-  return *((Terminal*)(elem));
-}
-
-
 /*inline*/ void nullfunc(bool nothing){}
-
 /*
-
 // void drawScreen()
 // {
   //   tft.fillScreen(ui.basecolor);
@@ -4424,7 +2765,7 @@ Terminal& UIBridge::addTerminal(const char* id_input)
     //   ui.begin();
     //   //ui.addText("Terminal", "terminal", 1, color(255,255,255), "left", "top");
     
-    //   ui.arr.add(&window);
+    //   ui.uiPointerArray.add(&window);
     
     //   ui.update();
     
@@ -4650,4 +2991,3 @@ Terminal& UIBridge::addTerminal(const char* id_input)
 */
     
 #endif
-
